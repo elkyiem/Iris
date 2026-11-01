@@ -28,8 +28,8 @@ function browserLabel() {
 export function BrowserConnectionHeader() {
   return (
     <header className={styles.header}>
+      <h1>Circé</h1>
       <img src={appIcon} width="56" height="56" alt="" />
-      <h1 className={styles.visuallyHidden}>Connect to Circé</h1>
     </header>
   );
 }
@@ -76,10 +76,6 @@ export function BrowserConnectionForm({
         {useKey ? (
           <>
             <Field.Label htmlFor="host-key">Access key</Field.Label>
-            <Field.Description>
-              Use the key saved on your Mac, or choose a key file copied to this
-              device.
-            </Field.Description>
             <Input.Root size="lg">
               <Input.Field
                 id="host-key"
@@ -204,7 +200,7 @@ export function BrowserConnectionForm({
       </Reveal>
       <Button
         type="button"
-        variant="link"
+        variant="secondary"
         id="connection-method"
         disabled={busy}
         onClick={() => {

@@ -8,7 +8,13 @@
 }
 .header {
   display: grid;
+  gap: 20px;
   place-items: center;
+}
+.header h1 {
+  font-size: var(--ds-text-xl);
+  font-weight: var(--ds-weight-xl);
+  letter-spacing: -0.02em;
 }
 .visuallyHidden {
   position: absolute;

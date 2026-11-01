@@ -2,10 +2,11 @@
 
 ## Minimal automatic pairing screen — 2026-11-01
 
-The sign-in screen now centers the logo, six OTP slots, Remember this browser and
-the access-key fallback. The title and code label remain available to assistive
-technology; the subtitle, setup instructions, expiry description and OTP Connect
-button are visually removed. Base UI's built-in `autoSubmit` submits after the
+The sign-in screen now centers the Circé title above the logo, six OTP slots,
+Remember this browser and the access-key fallback. The code label and expiry
+description remain available to assistive technology. The subtitle, code/key
+setup instructions and OTP Connect button are removed. The access-key option
+uses Pond's secondary button so its action is visible. Base UI's built-in `autoSubmit` submits after the
 sixth digit. Failed attempts clear the code and return focus to the first slot;
 busy controls prevent another submission. Access-key entry keeps explicit submit.
 

@@ -28,8 +28,8 @@ function browserLabel() {
 export function BrowserConnectionHeader() {
   return (
     <header className={styles.header}>
-      <h1>Circé</h1>
       <img src={appIcon} width="56" height="56" alt="" />
+      <h1>Circé</h1>
     </header>
   );
 }
@@ -200,7 +200,7 @@ export function BrowserConnectionForm({
       </Reveal>
       <Button
         type="button"
-        variant="secondary"
+        variant="link"
         id="connection-method"
         disabled={busy}
         onClick={() => {

@@ -7,9 +7,9 @@
   animation: enter var(--ds-duration-medium) var(--ds-easing-standard) both;
 }
 .header {
-  display: grid;
-  gap: 20px;
-  place-items: center;
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 .header h1 {
   font-size: var(--ds-text-xl);

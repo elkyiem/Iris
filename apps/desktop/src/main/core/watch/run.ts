@@ -1,11 +1,13 @@
-import type { SourceSyncPrefs, WatchedAccount } from "@pond/schema/db";
+import type { Source, SourceSyncPrefs, WatchedAccount } from "@pond/schema/db";
 import { saves } from "@pond/schema/db";
 import type { SyncRunEvent } from "@pond/schema/events";
-import { and, count, eq } from "drizzle-orm";
+import { WATCH_NEEDS_SESSION } from "@pond/schema/watches";
+import { and, count, eq, inArray, or, type SQL, sql } from "drizzle-orm";
 import log from "electron-log/main.js";
 import { getDb } from "../../db";
 import { commitEvent, startSyncEvent, toErrorInfo } from "../../lib/wide-event";
 import { enqueue } from "../pipeline/enqueue";
+import { enqueueCandidateKey } from "../pipeline/enqueue-input";
 import { isSyncBlockedByStorageGuard } from "../storage-watcher";
 import { listAccountsForSource, partitionForAccount } from "../sync/accounts";
 import { organizeIncoming } from "../sync/incoming";
@@ -13,9 +15,10 @@ import { emit, inFlight } from "../sync/sync-status";
 import { getWatch, getWatchSync, patchWatchSync } from "../sync/watches";
 import { listArenaWatch } from "./arena";
 import { listCosmosWatch } from "./cosmos-scrape";
+import { readFeed } from "./feed";
 import { listPinterestWatch } from "./pinterest-rss";
 import { listProfileWatch } from "./profile-scrape";
-import { WATCH_NEEDS_SESSION, type WatchHarvestResult } from "./types";
+import type { WatchEntry, WatchHarvestResult } from "./types";
 import { listYtdlpWatch } from "./ytdlp-list";
 
 interface WatchOptions {
@@ -137,7 +140,10 @@ async function runWatch(
         accountId: watchId,
         source,
         state: "auth_required",
-        message: `Connect a ${source} account to keep watching @${watch.handle}.`,
+        message:
+          watch.kind === "feed"
+            ? "The feed requires authentication. Use a public feed URL."
+            : `Connect a ${source} account to keep watching @${watch.handle}.`,
         lastError: "auth_required",
       });
       ev.outcome = "auth_required";
@@ -157,7 +163,9 @@ async function runWatch(
     }
     const message =
       harvest.reason === "not_found"
-        ? `Couldn't find @${watch.handle} on ${source}.`
+        ? watch.kind === "feed"
+          ? "No RSS or Atom feed was found at this URL."
+          : `Couldn't find @${watch.handle} on ${source}.`
         : `Check failed: ${harvest.reason}.`;
     await patchWatchSync(watchId, { lastError: harvest.reason });
     emit({
@@ -173,19 +181,33 @@ async function runWatch(
   }
 
   const db = await getDb();
+  const sourceFilter =
+    watch.kind === "feed" ? undefined : eq(saves.source, source);
   const knownRows = await db
-    .select({ sourceId: saves.sourceId })
+    .select({ source: saves.source, sourceId: saves.sourceId })
     .from(saves)
-    .where(eq(saves.source, source));
-  const knownIds = new Set(knownRows.map((r) => r.sourceId));
+    .where(
+      watch.kind === "feed"
+        ? feedEntriesFilter(harvest.entries, source)
+        : sourceFilter,
+    );
+  const knownIds = new Set(knownRows.map(enqueueCandidateKey));
   const totalRow = await db
     .select({ c: count() })
     .from(saves)
-    .where(and(eq(saves.source, source), eq(saves.accountId, watchId)))
+    .where(and(sourceFilter, eq(saves.accountId, watchId)))
     .get();
   const ownedTotal = totalRow?.c ?? 0;
 
-  const allFresh = harvest.entries.filter((e) => !knownIds.has(e.sourceId));
+  const allFresh = harvest.entries.filter(
+    (entry) =>
+      !knownIds.has(
+        enqueueCandidateKey({
+          source: entry.source ?? source,
+          sourceId: entry.sourceId,
+        }),
+      ),
+  );
   const fresh = firstCheck ? allFresh.slice(0, FIRST_CHECK_CAP) : allFresh;
   if (firstCheck && allFresh.length > fresh.length) {
     log.info(
@@ -260,11 +282,13 @@ async function harvestWatch(
   signal: AbortSignal,
 ): Promise<WatchHarvestResult> {
   const { source, handle, kind } = watch;
+  if (source === "web" && kind === "feed")
+    return readFeed(handle, fetch, signal);
   if (source === "arena") return listArenaWatch(handle, kind);
   if (source === "youtube" || source === "tiktok") {
     return listYtdlpWatch(source, handle, kind, signal);
   }
-  if (source === "pinterest") return listPinterestWatch(handle, kind);
+  if (source === "pinterest") return listPinterestWatch(handle, kind, signal);
   if (source === "cosmos") return listCosmosWatch(handle);
   if (WATCH_NEEDS_SESSION.includes(source)) {
     const partition = await resolveViaPartition(watch);
@@ -272,6 +296,27 @@ async function harvestWatch(
     return listProfileWatch(source, handle, partition, kind);
   }
   return { ok: false, reason: "unknown" };
+}
+
+/** Feed entries span Sources, so match each Source's IDs to stay on the `(source, source_id)` index. */
+function feedEntriesFilter(
+  entries: readonly WatchEntry[],
+  fallback: Source,
+): SQL {
+  const idsBySource = new Map<Source, string[]>();
+  for (const entry of entries) {
+    const source = entry.source ?? fallback;
+    const ids = idsBySource.get(source);
+    if (ids) ids.push(entry.sourceId);
+    else idsBySource.set(source, [entry.sourceId]);
+  }
+  return (
+    or(
+      ...[...idsBySource].map(([source, ids]) =>
+        and(eq(saves.source, source), inArray(saves.sourceId, ids)),
+      ),
+    ) ?? sql`0`
+  );
 }
 
 async function resolveViaPartition(

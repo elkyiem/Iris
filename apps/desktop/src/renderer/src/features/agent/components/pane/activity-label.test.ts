@@ -46,3 +46,16 @@ it("does not describe failed or cancelled actions as running", () => {
   ).toBe("Reading Saves");
   expect(currentActivityLabel("thinking", [])).toBe("Thinking");
 });
+
+it("reports routine edits while they run and after", () => {
+  expect(
+    currentActivityLabel("thinking", [
+      { id: "1", label: "Set up routine", status: "running" },
+    ]),
+  ).toBe("Setting up a routine");
+  expect(
+    currentActivityLabel("thinking", [
+      { id: "1", label: "Delete routine", status: "complete" },
+    ]),
+  ).toBe("Checking your routines");
+});

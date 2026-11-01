@@ -11,7 +11,7 @@ import { connectWebHost } from "./web-smoke-client.mjs";
 /** Local acceptance only: never run imports against the owner's normal profile. */
 const sandbox = await realpath(resolve(process.env.POND_SANDBOX ?? "."));
 const localAcceptance =
-  /\/\.artifacts\/web-verification\/added-commits-\d{8}\/sandbox(?:-[a-z0-9-]+)?$/.test(
+  /\/\.artifacts\/web-verification\/(?:added-commits-\d{8}\/sandbox(?:-[a-z0-9-]+)?|pond-220-\d{8}\/upgrade-220)$/.test(
     sandbox.split(sep).join("/"),
   );
 const isolatedCi =

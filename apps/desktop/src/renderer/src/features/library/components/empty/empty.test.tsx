@@ -1,4 +1,11 @@
-import { act } from "react";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
+import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FolderEmpty } from "./";
@@ -19,6 +26,26 @@ describe("FolderEmpty", () => {
     vi.unstubAllGlobals();
   });
 
+  async function mountInRouter(node: ReactNode) {
+    const rootRoute = createRootRoute({ component: () => node });
+    const children = ["/", "/downloads"].map((path) =>
+      createRoute({
+        getParentRoute: () => rootRoute,
+        path,
+        component: () => null,
+      }),
+    );
+    const router = createRouter({
+      routeTree: rootRoute.addChildren(children),
+      history: createMemoryHistory({ initialEntries: ["/"] }),
+    });
+    await act(async () => {
+      await router.load();
+      root.render(<RouterProvider router={router} />);
+    });
+    return router;
+  }
+
   it("invites dropping files instead of clearing a search", async () => {
     await act(async () => root.render(<FolderEmpty />));
     const text = host.textContent ?? "";
@@ -31,18 +58,22 @@ describe("FolderEmpty", () => {
   });
 
   it("says saves are downloading when the folder is waiting on them", async () => {
-    await act(async () => root.render(<FolderEmpty downloading={3} />));
+    const router = await mountInRouter(<FolderEmpty downloading={3} />);
     const text = host.textContent ?? "";
     expect(text).toContain("Downloading 3 saves");
     expect(text).toContain(
       "They appear in this folder as each download finishes.",
     );
-    expect(text).toContain("Open Downloads");
     expect(text).not.toContain("This folder is empty");
+    const link = host.querySelector<HTMLAnchorElement>('a[role="link"]');
+    expect(link?.textContent).toBe("Open Downloads");
+    expect(link?.getAttribute("href")).toBe("/downloads");
+    await act(async () => link?.click());
+    expect(router.state.location.pathname).toBe("/downloads");
   });
 
   it("uses the singular for one download", async () => {
-    await act(async () => root.render(<FolderEmpty downloading={1} />));
+    await mountInRouter(<FolderEmpty downloading={1} />);
     expect(host.textContent).toContain("Downloading 1 save");
     expect(host.textContent).not.toContain("1 saves");
   });

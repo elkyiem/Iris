@@ -1,4 +1,4 @@
-import { cssVars } from "@pond/ui";
+import { cssVars, Input } from "@pond/ui";
 import { type NodeProps, NodeResizer } from "@xyflow/react";
 import { clsx as cn } from "clsx";
 import { useEffect, useRef } from "react";
@@ -93,8 +93,10 @@ export function TableItem({
                   return (
                     <Cell key={key} className={styles.cell} data-cell={key}>
                       {editing ? (
-                        <textarea
+                        <Input.Textarea
                           data-cell={key}
+                          appearance="bare"
+                          rows={2}
                           className={cn(
                             styles.field,
                             "nodrag",

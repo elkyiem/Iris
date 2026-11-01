@@ -27,7 +27,9 @@ export function EnrichedText({ title, text }: { title: string; text: string }) {
       }
     >
       <div className={styles.root}>
-        <p className={styles.text}>{text}</p>
+        <p className={styles.text} data-scroll-fade="vertical">
+          {text}
+        </p>
       </div>
     </Section>
   );

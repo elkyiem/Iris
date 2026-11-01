@@ -41,10 +41,6 @@
   color: var(--ds-gray-12);
   tab-size: 2;
   white-space: pre;
-  resize: none;
-  outline: none;
-  background: transparent;
-  border: 0;
 
   &[data-empty] {
     font-family: inherit;

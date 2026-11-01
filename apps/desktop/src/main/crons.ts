@@ -28,8 +28,7 @@ export function registerTrashCron() {
 }
 
 export function registerYtDlpUpdateCron() {
-  // Restoring a binary left broken by an interrupted update must not wait for
-  // the first scheduled check.
+  /** A binary left broken by an interrupted update must not wait for the first scheduled check. */
   void recoverYtDlp();
   schedule({
     name: "yt-dlp-update",

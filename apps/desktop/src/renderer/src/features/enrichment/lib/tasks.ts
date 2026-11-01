@@ -6,7 +6,10 @@ import { clearEmbeddings } from "@/features/enrichment/state/embedding-store";
 import { clearMediaEmbeddings } from "@/features/enrichment/state/media-embedding-store";
 import { bulkMutation, ensureSaves, pool } from "@/features/saves/pool";
 import type { Save } from "@/features/saves/types";
+import { formatPlural } from "@/shared/lib/format";
 import { getPrefsSnapshot } from "@/shared/state/prefs";
+
+const ITEMS = { one: "item", other: "items" };
 
 const BackfillReplySchema = z.object({
   ok: z.boolean().catch(false),
@@ -39,10 +42,6 @@ export const TASK_ENABLED = {
 
 export type TaskScope = readonly string[] | undefined;
 
-function plural(n: number, one: string, many = `${one}s`): string {
-  return n === 1 ? one : many;
-}
-
 function targetSaves(ids: TaskScope): Save[] {
   const live = pool.snapshot().filter((s) => !s.deletedAt);
   if (!ids || ids.length === 0) return live;
@@ -60,13 +59,13 @@ export async function autoTag(ids?: TaskScope): Promise<TaskResult> {
       ).ids;
   const changed = await bulkMutation(targets, { kind: "suggested-tags" });
   if (changed > 0) {
-    statusFeed.note(`Applied tags to ${changed} ${plural(changed, "item")}`);
+    statusFeed.note(`Applied tags to ${formatPlural(changed, ITEMS)}`);
   }
   return {
     ok: true,
     message:
       changed > 0
-        ? `Applied tags to ${changed} ${plural(changed, "item")}.`
+        ? `Applied tags to ${formatPlural(changed, ITEMS)}.`
         : "No suggested tags to apply.",
   };
 }
@@ -84,14 +83,14 @@ export async function backfillColors(): Promise<TaskResult> {
   statusFeed.done(
     job,
     updated > 0
-      ? `Updated ${updated} ${plural(updated, "item")}`
+      ? `Updated ${formatPlural(updated, ITEMS)}`
       : "All items already have colors",
   );
   return {
     ok: true,
     message:
       updated > 0
-        ? `Updated ${updated} ${plural(updated, "item")}.`
+        ? `Updated ${formatPlural(updated, ITEMS)}.`
         : "All items already have colors.",
   };
 }
@@ -109,7 +108,7 @@ export async function backfillMetadata(): Promise<TaskResult> {
   statusFeed.done(
     job,
     updated > 0
-      ? `Updated ${updated} ${plural(updated, "item")}`
+      ? `Updated ${formatPlural(updated, ITEMS)}`
       : "Media metadata is up to date.",
   );
   return { ok: true, message: `${updated} updated` };
@@ -160,13 +159,13 @@ async function reprocessStamped(
   kickRescan(ids);
   const n = updated.length;
   if (n > 0) {
-    statusFeed.note(`Reprocessing ${n} ${plural(n, "item")} in the background`);
+    statusFeed.note(`Reprocessing ${formatPlural(n, ITEMS)} in the background`);
   }
   return {
     ok: true,
     message:
       n > 0
-        ? `Reprocessing ${n} ${plural(n, "item")} in the background`
+        ? `Reprocessing ${formatPlural(n, ITEMS)} in the background`
         : "Nothing to reprocess.",
   };
 }

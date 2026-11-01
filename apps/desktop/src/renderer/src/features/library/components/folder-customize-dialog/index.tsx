@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "@pond/ui";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { saveFolderPresentation } from "@/features/library/state/folder-presentation";
 import { folders } from "@/features/library/state/folders";
 import {
@@ -47,6 +47,8 @@ export function FolderCustomizeDialog({
   const [externalLink, setExternalLink] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [nameInvalid, setNameInvalid] = useState(false);
+  const nameField = useRef<HTMLInputElement>(null);
   const reduceMotion = useReducedMotion();
   const trimmedName = name.trim();
   const changed =
@@ -72,7 +74,12 @@ export function FolderCustomizeDialog({
   }, [folder.id]);
 
   async function submit(): Promise<void> {
-    if (!changed || !trimmedName) return;
+    if (busy || !changed) return;
+    if (!trimmedName) {
+      setNameInvalid(true);
+      nameField.current?.focus();
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -161,10 +168,11 @@ export function FolderCustomizeDialog({
                   />
                 </div>
               </div>
-              <Field.Root>
+              <Field.Root invalid={(nameInvalid && !trimmedName) || undefined}>
                 <Field.Label>Name</Field.Label>
                 <Input.Root>
                   <Field.Control
+                    ref={nameField}
                     render={<Input.Field />}
                     value={name}
                     onValueChange={setName}
@@ -172,6 +180,9 @@ export function FolderCustomizeDialog({
                     disabled={busy}
                   />
                 </Input.Root>
+                {nameInvalid && !trimmedName ? (
+                  <Field.Error match>Name the folder.</Field.Error>
+                ) : null}
               </Field.Root>
               <Field.Root>
                 <Field.Label>Description</Field.Label>
@@ -193,11 +204,7 @@ export function FolderCustomizeDialog({
             </Dialog.Content>
             <Dialog.Footer>
               <Dialog.Cancel disabled={busy} />
-              <Dialog.Confirm
-                type="submit"
-                loading={busy}
-                disabled={!changed || !trimmedName}
-              >
+              <Dialog.Confirm type="submit" loading={busy} disabled={!changed}>
                 Save
               </Dialog.Confirm>
             </Dialog.Footer>

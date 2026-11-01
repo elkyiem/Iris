@@ -1,7 +1,5 @@
-import {
-  MetaVerifiedIcon,
-  ThreadsWordmark,
-} from "@/features/captures/components/threads/card/icons";
+import { IconThreadsLogoFill } from "@pond/icons";
+import { MetaVerifiedIcon } from "@/features/captures/components/threads/card/icons";
 import { Avatar } from "@/features/captures/components/tweet/card/header";
 import type { TweetCardAuthor } from "@/features/captures/components/tweet/card/lib/data";
 import styles from "./styles.module.css";
@@ -23,7 +21,11 @@ export function Header({ author }: { author: TweetCardAuthor }) {
           ) : null}
         </span>
       </div>
-      <ThreadsWordmark className={styles.wordmark} width={18} height={18} />
+      <IconThreadsLogoFill
+        className={styles.wordmark}
+        size={18}
+        title="Threads"
+      />
     </div>
   );
 }

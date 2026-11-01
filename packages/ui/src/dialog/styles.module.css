@@ -17,8 +17,6 @@
 }
 
 .popup {
-  --page-ease: cubic-bezier(0.26, 0.08, 0.25, 1);
-
   position: fixed;
   top: 50%;
   left: 50%;
@@ -38,7 +36,7 @@
   transform-origin: top center;
   -webkit-app-region: no-drag;
   transition:
-    opacity 150ms ease-out,
+    opacity var(--ds-duration-snap) var(--ds-easing-standard),
     transform var(--ds-duration-bounce) var(--ds-easing-bounce);
 }
 
@@ -49,9 +47,9 @@
 
 .popup[data-sized] {
   transition:
-    width 200ms var(--page-ease),
-    height 200ms var(--page-ease),
-    opacity 150ms ease-out,
+    width var(--ds-duration-medium) var(--ds-easing-standard),
+    height var(--ds-duration-medium) var(--ds-easing-standard),
+    opacity var(--ds-duration-snap) var(--ds-easing-standard),
     transform var(--ds-duration-bounce) var(--ds-easing-bounce);
 }
 
@@ -64,8 +62,8 @@
   opacity: 0;
   transform: translate(-50%, var(--dialog-offset-y, -50%)) scale(0.97);
   transition:
-    opacity 150ms ease-out,
-    transform 150ms ease-out;
+    opacity var(--ds-duration-snap) var(--ds-easing-standard),
+    transform var(--ds-duration-snap) var(--ds-easing-standard);
 }
 
 .header {

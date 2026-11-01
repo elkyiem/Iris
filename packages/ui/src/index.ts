@@ -42,6 +42,7 @@ export {
 export { Popover } from "./popover";
 export { Rating } from "./rating";
 export { Reveal } from "./reveal";
+export { ScrollArea, type ScrollAreaOrientation } from "./scroll-area";
 export { Select, type SelectItemSpec } from "./select";
 export { Settings } from "./settings";
 export { pop } from "./shared/pop";

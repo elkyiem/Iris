@@ -181,6 +181,7 @@ function ArchiveFrame({
                 <Menu.Trigger
                   size="sm"
                   variant="ghost"
+                  rounding="full"
                   className={styles.trigger}
                   aria-label="Archived Pages"
                   title={page.url}

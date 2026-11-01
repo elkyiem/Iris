@@ -18,7 +18,7 @@ afterEach(async () => {
   host.remove();
   vi.unstubAllGlobals();
 });
-async function render(initial: SyncSchedule) {
+async function render(initial: SyncSchedule | null) {
   await act(async () =>
     root.render(<ScheduleEditor initial={initial} onSave={save} />),
   );
@@ -54,6 +54,19 @@ it("saves edits automatically without saving on mount", async () => {
   expect(host.textContent).not.toContain("Schedule saved.");
   expect(host.textContent).not.toContain("Next fetch:");
   expect(host.textContent).not.toContain("Save Schedule");
+});
+it("shows a disabled shell while preferences load, then the saved schedule", async () => {
+  await render(null);
+  const toggle = host.querySelector('[role="switch"]');
+  expect(toggle?.hasAttribute("data-disabled")).toBe(true);
+  expect(host.textContent).toContain("Use a Schedule");
+  await render({ enabled: true, intervalHours: 6 });
+  expect(toggle?.hasAttribute("data-disabled")).toBe(false);
+  expect(toggle?.getAttribute("aria-checked")).toBe("true");
+  expect(
+    host.querySelector('input[aria-label="Repeat interval"]'),
+  ).toHaveProperty("value", "6");
+  expect(save).not.toHaveBeenCalled();
 });
 it("loads a weekly schedule and prevents saving without weekdays", async () => {
   await render({

@@ -14,6 +14,7 @@ import {
   useSavedViews,
 } from "@/features/library/state/saved-views";
 import { useRetainedDialogPayload } from "@/shared/hooks/use-retained-dialog-payload";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 
 const TOKENS = [
@@ -107,7 +108,7 @@ function OrganizationRenameDialog({
         await (kind === "folders" ? folders.refresh() : savedViews.refresh());
         notify({
           id: "organization-rename",
-          title: `${result.renamed} ${result.renamed === 1 ? noun.one : noun.other} Renamed`,
+          title: `${formatPlural(result.renamed, noun)} Renamed`,
         });
         closeOrganizationRenameDialog();
       }}

@@ -23,7 +23,6 @@ describe("updateDialogCopy", () => {
       title: "Update Available",
       description: "Pond 1.0.2 is ready to download.",
       action: "Download",
-      busyLabel: "Downloading",
     });
   });
 
@@ -34,7 +33,6 @@ describe("updateDialogCopy", () => {
         description:
           "Restart to install Pond 1.0.2 now. Otherwise, it installs when you quit.",
         action: "Restart",
-        busyLabel: "Restarting",
       },
     );
   });

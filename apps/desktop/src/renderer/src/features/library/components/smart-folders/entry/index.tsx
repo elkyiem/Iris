@@ -101,7 +101,7 @@ export function SmartFolderEntry({
             <Button
               icon
               size="xs"
-              variant="text"
+              variant="bare"
               className={styles.disclosure}
               aria-label={`${open ? "Collapse" : "Expand"} ${view.name}`}
               aria-expanded={open}

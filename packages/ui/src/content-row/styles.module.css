@@ -17,39 +17,9 @@
   text-align: left;
   cursor: var(--ds-cursor-interactive, pointer);
   border-radius: var(--ds-radius-md);
-  transition: background var(--ds-duration-medium) var(--ds-easing-standard);
 }
 .trigger:hover {
   background: var(--ds-gray-a3);
-}
-/* The trigger's hit area stretches over the row; trailing controls sit above it. */
-.root[data-hover="row"] {
-  position: relative;
-  padding-inline: 8px 12px;
-  border-radius: var(--ds-radius-md);
-  transition: background var(--ds-duration-medium) var(--ds-easing-standard);
-
-  &:hover {
-    background: var(--ds-gray-a3);
-  }
-
-  & > .trigger {
-    position: static;
-    padding-inline: 0;
-    background: none;
-  }
-
-  & > .trigger::after {
-    position: absolute;
-    inset: 0;
-    content: "";
-    border-radius: inherit;
-  }
-
-  & > :not(.trigger) {
-    position: relative;
-    z-index: 1;
-  }
 }
 .media {
   display: flex;

@@ -37,6 +37,7 @@ export function MermaidPreview() {
         if (!host) {
           host = document.createElement("div");
           host.className = styles.diagram ?? "";
+          host.dataset.scrollFade = "horizontal";
           block.insertAdjacentElement("afterend", host);
           hosts.set(item.key, host);
         }

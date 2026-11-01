@@ -1,6 +1,6 @@
 import { IconCircleCheckFill, IconWindowDownloadFill } from "@pond/icons";
 import { Button, Empty } from "@pond/ui";
-import { getAppRouter } from "@/shared/lib/app-router";
+import { ButtonLink } from "@/shared/components/button-link";
 
 export function DownloadsEmpty() {
   return (
@@ -13,13 +13,9 @@ export function DownloadsEmpty() {
         Files appear here while Pond downloads them for your library.
       </Empty.Description>
       <Empty.Action>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => getAppRouter()?.history.push("/")}
-        >
+        <ButtonLink to="/" variant="primary" size="sm">
           Open Library
-        </Button>
+        </ButtonLink>
       </Empty.Action>
     </Empty.Root>
   );

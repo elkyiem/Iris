@@ -10,6 +10,7 @@ import type { FishMcpServerStatus } from "@shared/fish-mcp-contracts";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 import { ServerDialog } from "./server-dialog";
 import { ToolList } from "./tool-list";
@@ -20,7 +21,7 @@ type Editing = { kind: "new" } | { kind: "edit"; id: string };
 
 function statusLine({ state, error, tools }: FishMcpServerStatus) {
   if (state === "connected")
-    return `Connected, ${tools.length} ${tools.length === 1 ? "tool" : "tools"}`;
+    return `Connected, ${formatPlural(tools.length, { one: "tool", other: "tools" })}`;
   if (state === "idle") return "Connects when a fish needs it";
   if (state === "off") return "Off";
   return error ?? "Couldn't connect";

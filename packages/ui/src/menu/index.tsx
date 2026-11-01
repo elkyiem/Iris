@@ -16,12 +16,16 @@ function Root(props: Base.Root.Props) {
 }
 
 type TriggerProps = Base.Trigger.Props &
-  Pick<ButtonProps, "variant" | "size" | "icon" | "rounding" | "width">;
+  Pick<
+    ButtonProps,
+    "variant" | "size" | "density" | "icon" | "rounding" | "width"
+  >;
 
 function Trigger({
   className,
   variant,
   size,
+  density,
   icon,
   rounding,
   width,
@@ -35,6 +39,7 @@ function Trigger({
         ) : (
           <Button
             size={size}
+            density={density}
             icon={icon}
             rounding={rounding}
             width={width}
@@ -94,7 +99,7 @@ function Row({
 }
 
 function SectionLabel({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn(styles["group-label"], className)} {...props} />;
+  return <div className={cn(styles.heading, className)} {...props} />;
 }
 
 function Viewport({ className, ...props }: Base.Viewport.Props) {
@@ -105,14 +110,26 @@ function Viewport({ className, ...props }: Base.Viewport.Props) {
 
 const List = forwardRef<HTMLDivElement, React.ComponentPropsWithoutRef<"div">>(
   function List({ className, ...props }, ref) {
-    return <div ref={ref} className={cn(styles.list, className)} {...props} />;
+    return (
+      <div
+        ref={ref}
+        className={cn(styles.list, className)}
+        data-scroll-fade="vertical"
+        {...props}
+      />
+    );
   },
 );
 
 const FilterList = forwardRef<HTMLDivElement, Base.List.Props>(
   function FilterList({ className, ...props }, ref) {
     return (
-      <Base.List ref={ref} className={cn(styles.list, className)} {...props} />
+      <Base.List
+        ref={ref}
+        className={cn(styles.list, className)}
+        data-scroll-fade="vertical"
+        {...props}
+      />
     );
   },
 );
@@ -155,30 +172,22 @@ function LinkItem({ className, ...props }: Base.LinkItem.Props) {
 }
 
 function ItemIcon({ className, ...props }: React.ComponentProps<"span">) {
-  return (
-    <span
-      aria-hidden
-      className={cn(styles["item-icon"], className)}
-      {...props}
-    />
-  );
+  return <span aria-hidden className={cn(styles.icon, className)} {...props} />;
 }
 
 function ItemLabel({ className, ...props }: React.ComponentProps<"span">) {
-  return <span className={cn(styles["item-label"], className)} {...props} />;
+  return <span className={cn(styles.label, className)} {...props} />;
 }
 
 function ItemContent({ className, ...props }: React.ComponentProps<"span">) {
-  return <span className={cn(styles["item-content"], className)} {...props} />;
+  return <span className={cn(styles.content, className)} {...props} />;
 }
 
 function ItemDescription({
   className,
   ...props
 }: React.ComponentProps<"span">) {
-  return (
-    <span className={cn(styles["item-description"], className)} {...props} />
-  );
+  return <span className={cn(styles.description, className)} {...props} />;
 }
 
 function ItemKeyboard({
@@ -188,7 +197,7 @@ function ItemKeyboard({
   return (
     <Keyboard.Shortcut
       density="flat"
-      className={cn(styles["item-keyboard"], className)}
+      className={cn(styles.keyboard, className)}
       {...props}
     />
   );
@@ -200,10 +209,7 @@ function Group(props: Base.Group.Props) {
 
 function GroupLabel({ className, ...props }: Base.GroupLabel.Props) {
   return (
-    <Base.GroupLabel
-      className={cn(styles["group-label"], className)}
-      {...props}
-    />
+    <Base.GroupLabel className={cn(styles.heading, className)} {...props} />
   );
 }
 

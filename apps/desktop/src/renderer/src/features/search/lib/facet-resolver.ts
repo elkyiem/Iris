@@ -11,7 +11,7 @@ interface VocabEntry {
 }
 
 const MATCH_THRESHOLD = 0.55;
-// One embedding call pads every row to the longest value, so one long tag or creator name inflates the whole batch.
+/** One embedding call pads every row to the longest value, so one long tag or creator name inflates the whole batch. */
 const MAX_VALUE_LENGTH = 100;
 
 let vocabSignature = "";

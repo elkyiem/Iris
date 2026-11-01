@@ -106,7 +106,7 @@ export function BackupSettings() {
               loading={backup.isPending}
               onClick={() => backup.mutate()}
             >
-              {backup.isPending ? "Backing up" : "Backup"}
+              Backup
             </Button>
           </Settings.ItemControl>
         </Settings.Item>
@@ -126,7 +126,7 @@ export function BackupSettings() {
               loading={restore.isPending}
               onClick={() => restore.mutate()}
             >
-              {restore.isPending ? "Restoring" : "Restore"}
+              Restore
             </Button>
           </Settings.ItemControl>
         </Settings.Item>

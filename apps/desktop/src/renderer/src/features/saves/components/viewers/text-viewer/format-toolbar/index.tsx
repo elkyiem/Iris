@@ -178,6 +178,8 @@ export function FormatToolbar() {
   const [formats, setFormats] = useState<Formats>(EMPTY);
   const [linkMode, setLinkMode] = useState(false);
   const [draft, setDraft] = useState("");
+  const [styleMenuOpen, setStyleMenuOpen] = useState(false);
+  const [listMenuOpen, setListMenuOpen] = useState(false);
   const explicit = useRef(false);
   const skipBlur = useRef(false);
   const urlRef = useRef<HTMLInputElement>(null);
@@ -195,6 +197,8 @@ export function FormatToolbar() {
           if (urlRef.current === document.activeElement) return;
           explicit.current = false;
           setLinkMode(false);
+          setStyleMenuOpen(false);
+          setListMenuOpen(false);
           setOpen(false);
           return;
         }
@@ -369,7 +373,10 @@ export function FormatToolbar() {
                     className={styles.toolbar}
                     aria-label="Formatting"
                   >
-                    <Menu.Root>
+                    <Menu.Root
+                      open={styleMenuOpen}
+                      onOpenChange={setStyleMenuOpen}
+                    >
                       <Tooltip label="Text Style" side="top">
                         <Toolbar.Button
                           render={
@@ -378,7 +385,9 @@ export function FormatToolbar() {
                               variant="ghost"
                               aria-label="Text Style"
                               aria-pressed={heading}
-                              data-pressed={heading || undefined}
+                              data-pressed={
+                                heading || styleMenuOpen || undefined
+                              }
                               className={styles.aa}
                             />
                           }
@@ -496,7 +505,10 @@ export function FormatToolbar() {
                     >
                       <IconCode2 />
                     </FormatButton>
-                    <Menu.Root>
+                    <Menu.Root
+                      open={listMenuOpen}
+                      onOpenChange={setListMenuOpen}
+                    >
                       <Tooltip label="List" side="top">
                         <Toolbar.Button
                           render={
@@ -505,7 +517,7 @@ export function FormatToolbar() {
                               variant="ghost"
                               aria-label="List"
                               aria-pressed={listed}
-                              data-pressed={listed || undefined}
+                              data-pressed={listed || listMenuOpen || undefined}
                               className={styles.list}
                             />
                           }

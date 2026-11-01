@@ -327,7 +327,9 @@ export function SlashMenu() {
 function SlashSurface({ children }: { children: ReactNode }) {
   return (
     <Menu.Surface className={styles.slash} aria-label="Commands">
-      <div className={styles.commands}>{children}</div>
+      <div className={styles.commands} data-scroll-fade="vertical">
+        {children}
+      </div>
     </Menu.Surface>
   );
 }

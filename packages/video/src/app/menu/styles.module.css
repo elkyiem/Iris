@@ -16,9 +16,9 @@
 }
 
 .item-icon {
-  composes: item-icon from "../../../../ui/src/shared/styles/popup/styles.module.css";
+  composes: icon from "../../../../ui/src/shared/styles/popup/styles.module.css";
 }
 
 .item-label {
-  composes: item-label from "../../../../ui/src/shared/styles/popup/styles.module.css";
+  composes: label from "../../../../ui/src/shared/styles/popup/styles.module.css";
 }

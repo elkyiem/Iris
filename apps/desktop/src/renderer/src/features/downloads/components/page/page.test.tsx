@@ -1,6 +1,12 @@
 import "@/app/effects/save-library-bridge";
 import { Tooltip } from "@pond/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
@@ -125,15 +131,20 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 async function render() {
-  await act(async () =>
+  const router = createRouter({
+    routeTree: createRootRoute({ component: DownloadsPage }),
+    history: createMemoryHistory({ initialEntries: ["/downloads"] }),
+  });
+  await act(async () => {
+    await router.load();
     root.render(
       <QueryClientProvider client={client}>
         <Tooltip.Provider>
-          <DownloadsPage />
+          <RouterProvider router={router} />
         </Tooltip.Provider>
       </QueryClientProvider>,
-    ),
-  );
+    );
+  });
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });

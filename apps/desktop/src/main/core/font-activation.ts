@@ -46,7 +46,7 @@ export async function activateFont(
   } & FontPlatformDeps,
 ): Promise<OkResult<{ path: string; requiresSignIn?: boolean }>> {
   const { platform = process.platform, runRegistry: reg = runRegistry } = input;
-  // Per-user Windows fonts are only enumerated from the Fonts root.
+  /** Windows only enumerates per-user fonts in the Fonts root, not in subfolders. */
   const pondDir =
     platform === "win32" ? input.fontsDir : join(input.fontsDir, "Pond");
   const extension = extname(input.sourcePath) || ".ttf";
@@ -72,7 +72,7 @@ export async function activateFont(
         throw error;
       }
     }
-    // Windows loads per-user fonts at sign-in, so other apps see the font after that.
+    /** Windows loads per-user fonts at sign-in, so other apps see the font after that. */
     return platform === "win32"
       ? { ok: true, path: dest, requiresSignIn: true }
       : { ok: true, path: dest };
@@ -91,7 +91,7 @@ export async function deactivateFont(
   } & FontPlatformDeps,
 ): Promise<OkResult> {
   const { platform = process.platform, runRegistry: reg = runRegistry } = input;
-  // Windows paths are case-insensitive.
+  /** Windows paths are case-insensitive. */
   const normalize = (path: string) =>
     platform === "win32" ? path.toLowerCase() : path;
   const target = resolve(input.installedPath);
@@ -104,10 +104,10 @@ export async function deactivateFont(
       return { ok: false, error: "outside_pond_fonts" };
   }
   try {
-    // Remove the file first: if an app holds it, the registration stays intact.
+    /** Remove the file first so the registration stays intact when an app holds the file open. */
     await rm(target, { force: true });
     if (platform === "win32") {
-      // A missing value only means the font was never registered.
+      /** A missing value only means the font was never registered. */
       await reg([
         "delete",
         WINDOWS_FONTS_KEY,

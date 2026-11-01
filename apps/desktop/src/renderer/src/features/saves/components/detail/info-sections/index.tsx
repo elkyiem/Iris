@@ -21,7 +21,7 @@ const SKELETON_ROWS = ["first", "second", "third", "fourth"] as const;
 const MERGED_INTO_PROPERTIES = new Set(["Properties", "File", "Dates"]);
 
 function layoutFor(title: string): "list" | "tiles" | "grid" {
-  if (title === "Properties") return "grid";
+  if (title === "Properties" || title === "Activity") return "grid";
   return title === "Source" ? "list" : "tiles";
 }
 
@@ -264,7 +264,7 @@ function AuthorAvatar({
 
   return (
     <span
-      className={styles["row-avatar"]}
+      className={styles.avatar}
       style={{ background: pickAuthorColor(name) }}
       aria-hidden
     >
@@ -317,7 +317,7 @@ function PropertyRow({
       >
         <PropertyList.Label>{row.label}</PropertyList.Label>
         {row.kind === "author" || row.kind === "account" ? (
-          <span className={styles["row-inline"]}>
+          <span className={styles.inline}>
             <AuthorAvatar
               name={row.value}
               avatarUrl={
@@ -327,13 +327,13 @@ function PropertyRow({
             <PropertyList.Value>{row.value}</PropertyList.Value>
           </span>
         ) : row.kind === "platform" ? (
-          <span className={styles["row-inline"]}>
+          <span className={styles.inline}>
             {sourceLogo ? (
-              <span className={styles["row-source-icon"]} aria-hidden>
+              <span className={styles.icon} aria-hidden>
                 <img src={sourceLogo} alt="" width={16} height={16} />
               </span>
             ) : SourceIcon ? (
-              <span className={styles["row-source-icon"]} aria-hidden>
+              <span className={styles.icon} aria-hidden>
                 <SourceIcon width={16} height={16} />
               </span>
             ) : null}

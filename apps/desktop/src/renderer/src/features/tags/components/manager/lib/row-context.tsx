@@ -69,8 +69,7 @@ export function TagRowProvider({
     await tagOperations.rename(isGroup ? "group" : "tag", name, next);
   }
 
-  // A plain listener per row: useHotkey copies every registration on each render,
-  // which freezes the A-Z index once it holds thousands of tags.
+  /** A plain listener, since useHotkey copies every registration per render and freezes an index of thousands of tags. */
   useEffect(() => {
     const element = rowRef.current;
     if (!element || renaming) return;

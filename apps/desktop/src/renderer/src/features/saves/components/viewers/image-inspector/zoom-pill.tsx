@@ -40,7 +40,12 @@ export function ZoomPill({
         align="center"
         buildItems={() => buildZoomRatioItems(actual, onRatio)}
       >
-        <Menu.Trigger size="sm" variant="ghost" aria-label="Zoom Ratio">
+        <Menu.Trigger
+          size="sm"
+          variant="ghost"
+          rounding="full"
+          aria-label="Zoom Ratio"
+        >
           {Math.round(actual * 100)}%
         </Menu.Trigger>
       </SpecMenu>

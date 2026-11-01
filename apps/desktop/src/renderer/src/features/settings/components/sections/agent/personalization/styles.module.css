@@ -7,9 +7,6 @@
 .area {
   min-height: 160px;
   font-weight: var(--ds-weight-md);
-  resize: none;
-  background: transparent;
-  box-shadow: none;
 }
 
 .error {

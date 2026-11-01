@@ -177,8 +177,7 @@ export async function bulkMutation(
     }
     return result.changed;
   } catch (error) {
-    // Match single-upsert's reference no-op without changing rollback policy:
-    // all changed pre-operation Saves are restored, including intervening edits.
+    /** Skips Saves still identical to match single-upsert's no-op; every other one, intervening edits included, rolls back. */
     pool.bulkUpsert(before.filter((save) => pool.get(save.id) !== save));
     throw error;
   }

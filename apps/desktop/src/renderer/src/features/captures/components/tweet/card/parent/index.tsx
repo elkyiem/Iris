@@ -1,6 +1,6 @@
+import { IconTweetVerifiedFill } from "@pond/icons";
 import { Body } from "@/features/captures/components/tweet/card/body";
 import { Avatar } from "@/features/captures/components/tweet/card/header";
-import { VerifiedIcon } from "@/features/captures/components/tweet/card/icons";
 import type { TweetCardData } from "@/features/captures/components/tweet/card/lib/data";
 import { MediaGrid } from "@/features/captures/components/tweet/card/media-grid";
 import styles from "./styles.module.css";
@@ -18,10 +18,10 @@ export function ParentPost({ data }: { data: TweetCardData }) {
           <span className={styles.name}>
             {author.name}
             {author.verified ? (
-              <VerifiedIcon
+              <IconTweetVerifiedFill
                 className={styles.verified}
-                width={18}
-                height={18}
+                size={18}
+                title="Verified"
               />
             ) : null}
           </span>

@@ -3,6 +3,7 @@ import type {
   AssistantRoutine,
   AssistantRoutineEvent,
 } from "@shared/assistant";
+import { formatPlural } from "@/shared/lib/format";
 
 export function routineEventText(
   name: string,
@@ -16,7 +17,7 @@ export function routineEventText(
       ? `${name} ran ${titled}`
       : `${name} ran its scheduled routine`;
   const saves = routine.saves ?? 0;
-  return `${name} looked at ${saves} new ${saves === 1 ? "Save" : "Saves"}`;
+  return `${name} looked at ${formatPlural(saves, { one: "new Save", other: "new Saves" })}`;
 }
 
 export function routineChangeText(kind: AssistantRoutineEvent["kind"]): string {
@@ -27,7 +28,7 @@ export function routineChangeText(kind: AssistantRoutineEvent["kind"]): string {
 
 function counted(verb: string, count: number, unit = true): string {
   return unit
-    ? `${verb} ${count} ${count === 1 ? "change" : "changes"}`
+    ? `${verb} ${formatPlural(count, { one: "change", other: "changes" })}`
     : `${verb} ${count}`;
 }
 

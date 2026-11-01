@@ -1,7 +1,8 @@
+import { SOURCES } from "@pond/schema/source-ids";
 import { EXTERNAL_SOURCE_IDS, sourceLabel } from "@pond/schema/sources";
+import { isWatchableSource, watchSourceLabel } from "@pond/schema/watches";
 import type { BlankDocumentKind } from "../shared/blank-documents";
 import type { MenuActionId } from "../shared/constants";
-import { isWatchableSource } from "./core/watch/types";
 import {
   FILE_MENU_AUTO_IMPORT_LABELS,
   FILE_MENU_DUPLICATES_LABELS,
@@ -189,8 +190,8 @@ export function buildTrayTemplate(
         },
         {
           label: "New Watch",
-          submenu: EXTERNAL_SOURCE_IDS.filter(isWatchableSource).map((source) =>
-            run(sourceLabel(source), `library.watch-${source}`),
+          submenu: SOURCES.filter(isWatchableSource).map((source) =>
+            run(watchSourceLabel(source), `library.watch-${source}`),
           ),
         },
       ],

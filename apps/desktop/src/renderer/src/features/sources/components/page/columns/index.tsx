@@ -78,7 +78,7 @@ function StatusMark({ row }: { row: SourceTableRow }) {
       <span className={styles.mark} data-status={row.statusId}>
         <StatusGlyph status={row.statusId} />
       </span>
-      <span className={styles["status-label"]}>{row.statusLabel}</span>
+      <span className={styles.label}>{row.statusLabel}</span>
     </span>
   );
 }
@@ -106,7 +106,11 @@ export const sourcesColumns: TableColumn<SourceTableRow>[] = [
     accessor: (row) => row.name,
     width: "minmax(200px, 1fr)",
     reorderable: true,
-    cell: (row) => <span className={styles.name}>{row.name}</span>,
+    cell: (row) => (
+      <span className={styles.name} title={row.name}>
+        {row.name}
+      </span>
+    ),
   },
   {
     id: "items",

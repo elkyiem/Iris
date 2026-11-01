@@ -37,7 +37,6 @@ import type { ComposerEditorHandle } from "../composer";
 import { AgentMessage } from "./agent-message";
 import { ChatEvent } from "./chat-event";
 import { reviewOutcomeText, routineEventText } from "./chat-event/events";
-import { useOpenAtBottom } from "./chat-scroll";
 import { ComposeArea } from "./compose-area";
 import { RoutineEvents } from "./routine-events";
 import styles from "./styles.module.css";
@@ -73,7 +72,6 @@ function AgentPaneContent({
   const input = useRef<ComposerEditorHandle>(null);
   const chat = pondChatSession(state.chatId ?? "draft");
   const { messages, status, error: chatError } = useChat({ chat });
-  const viewportRef = useOpenAtBottom();
   const running =
     status === "submitted" || status === "streaming" || state.busy;
   /** Only messages that first render mid-run pop in, so loaded history and post-run rehydration stay still. */
@@ -164,15 +162,12 @@ function AgentPaneContent({
         data-reduced-motion={reduceMotion || undefined}
         aria-label={persona.name}
       >
-        <div className={styles["assistant-workspace"]}>
+        <div className={styles.workspace}>
           <Thread.Conversation
             key={state.chatId ?? "new"}
-            className={styles["assistant-body"]}
+            className={styles.body}
             marks={marks}
-            viewportProps={{
-              className: styles["chat-viewport"],
-              ref: viewportRef,
-            }}
+            viewportProps={{ className: styles.viewport }}
             empty={
               state.loading ? <p role="status">Loading conversation</p> : null
             }
@@ -232,6 +227,8 @@ function AgentPaneContent({
                 <Fragment key={message.id}>
                   {stamp}
                   <article
+                    className={styles.turn}
+                    data-role={message.role}
                     data-thread-mark={
                       message.role === "user" ? message.id : undefined
                     }

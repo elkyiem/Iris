@@ -1,6 +1,9 @@
 import type { Source } from "./db";
 import type { ListKind } from "./list-kinds";
 import type { ExternalSource } from "./sources/registry";
+import type { WatchKind } from "./watches";
+
+export type { WatchKind } from "./watches";
 
 export type VideoCodec = "h264" | "hevc" | "av1" | "vp9" | "any";
 export type AudioCodec = "aac" | "opus" | "any";
@@ -157,15 +160,6 @@ export interface ConnectedAccount {
 }
 
 export type SyncAccounts = Record<string, ConnectedAccount>;
-
-export type WatchKind =
-  | "channel"
-  | "user"
-  | "group"
-  | "playlist"
-  | "board"
-  | "cluster"
-  | "list";
 
 export interface WatchedAccount {
   id: string;

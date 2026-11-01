@@ -19,7 +19,7 @@
   height: 7px;
   background: currentColor;
   border-radius: var(--ds-radius-full);
-  animation: loader-dot 1.4s ease-in-out infinite;
+  animation: loader-dot 1.4s var(--ds-easing-in-out) infinite;
 }
 
 .dots > span:nth-child(2) {
@@ -55,7 +55,7 @@
 
 .arc {
   stroke-dasharray: 30 100;
-  animation: loader-breathe 1.3s ease-in-out infinite alternate;
+  animation: loader-breathe 1.3s var(--ds-easing-in-out) infinite alternate;
 }
 
 @keyframes loader-spin {

@@ -15,6 +15,7 @@
   overflow: auto;
 
   &[data-header] {
+    --scroll-fade-start-size: 0px;
     scroll-padding-top: var(--data-table-header-height, 40px);
   }
 
@@ -34,198 +35,12 @@
   width: 100%;
 }
 
-.header-scroll {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  width: 100%;
-  background: var(--data-table-header-bg, var(--ds-gray-1));
-}
-
-.header-row {
-  box-sizing: border-box;
-  display: grid;
-  align-items: center;
-  width: 100%;
-  height: var(--data-table-header-height, 40px);
-  padding-inline: calc(
-    var(--data-table-inset, 0px) +
-    var(--data-table-gutter, 8px)
-  );
-  border-bottom: var(--data-table-header-border, none);
-}
-
-.header {
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  height: var(--data-table-header-height, 40px);
-  padding: 0 var(--data-table-cell-padding, 8px);
-  background: var(--data-table-header-bg, var(--ds-gray-1));
-}
-
-@property --pin-bg {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: transparent;
-}
-
-@property --pin-tint {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: transparent;
-}
-
-.header[data-pinned] {
-  --pin-bg: var(--data-table-header-bg, var(--ds-gray-1));
-  --pin-tint: transparent;
-}
-
-.header[data-pinned],
-.cell[data-pinned] {
-  position: sticky;
-  left: calc(var(--data-table-gutter, 8px) + var(--data-table-inset, 0px));
-  z-index: 1;
-  background: linear-gradient(var(--pin-tint), var(--pin-tint)), var(--pin-bg);
-  transition:
-    --pin-bg var(--ds-duration-fast, 0.12s) ease,
-    --pin-tint var(--ds-duration-fast, 0.12s) ease;
-
-  &::before,
-  &::after {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    pointer-events: none;
-    content: "";
-    opacity: 0;
-  }
-
-  /* Covers the gutter so scrolled columns never show left of the pinned one. */
-  &::before {
-    right: 100%;
-    width: calc(var(--data-table-gutter, 8px) + var(--data-table-inset, 0px));
-    background: inherit;
-  }
-
-  &::after {
-    left: 100%;
-    width: 24px;
-    background:
-      linear-gradient(to right, var(--pin-tint), transparent),
-      linear-gradient(to right, var(--pin-bg), transparent);
-    transition: opacity var(--ds-duration-fast, 0.12s) ease;
-  }
-}
-
-.viewport[data-scrolled-x] :is(.header, .cell)[data-pinned] {
-  border-radius: 0;
-
-  &::before,
-  &::after {
-    opacity: 1;
-  }
-}
-
-.header[data-dragging] {
-  z-index: 2;
-  opacity: 0.45;
-}
-
-.header[data-overlay] {
-  width: 100%;
-  pointer-events: none;
-  background: var(--ds-gray-3);
-  border-radius: var(--ds-radius-sm);
-  box-shadow: var(--ds-shadow-md);
-}
-
-.resize-handle {
-  position: absolute;
-  top: 0;
-  right: -3px;
-  z-index: 1;
-  width: 6px;
-  height: 100%;
-  padding: 0;
-  touch-action: none;
-  cursor: col-resize;
-  background: transparent;
-  border: 0;
-}
-
-.resize-handle::after {
-  position: absolute;
-  top: 6px;
-  bottom: 6px;
-  left: 2px;
-  width: 2px;
-  content: "";
-  background: transparent;
-  border-radius: 1px;
-  transition: background var(--ds-duration-fast, 0.12s) ease;
-}
-
-.resize-handle:hover::after,
-.resize-handle:focus-visible::after {
-  background: var(--ds-gray-a6);
-}
-
-.resize-handle:focus-visible {
-  outline: 2px solid var(--ds-gray-a8);
-  outline-offset: -2px;
-}
-
-.header[data-align="end"] {
-  justify-content: flex-end;
-}
-
-.header[data-align="center"] {
-  justify-content: center;
-}
-
-.header-static {
-  font-size: var(--ds-text-sm);
-  font-weight: var(--data-table-header-weight, var(--ds-weight-md));
-  color: var(--ds-gray-11);
-}
-
 .select-header {
   display: flex;
   align-items: center;
   justify-content: center;
   height: var(--data-table-header-height, 40px);
   padding: 0;
-}
-
-.sort-button {
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
-  padding: 0;
-  font-size: var(--ds-text-sm);
-  font-weight: var(--data-table-header-weight, var(--ds-weight-md));
-  color: var(--ds-gray-11);
-  text-align: left;
-  cursor: var(--ds-cursor-interactive, pointer);
-  background: transparent;
-  border: 0;
-  transition: color var(--ds-duration-fast, 0.12s) ease;
-}
-
-.sort-button:hover,
-.sort-button[data-active] {
-  color: var(--ds-gray-12);
-}
-
-.sort-caret {
-  color: var(--ds-gray-9);
-  transform: rotate(180deg);
-}
-
-.sort-caret[data-desc] {
-  transform: none;
 }
 
 .body {
@@ -244,7 +59,7 @@
   padding-inline: var(--data-table-inset, 0px);
   cursor: var(--ds-cursor-interactive, pointer);
   border-radius: var(--ds-radius-md);
-  transition: background var(--ds-duration-fast, 0.12s) ease;
+  transition: background var(--ds-duration-fast) var(--ds-easing-standard);
 }
 
 .row:hover,
@@ -269,6 +84,7 @@
 }
 
 .cell {
+  composes: pinned from "./pinned/styles.module.css";
   display: flex;
   align-items: center;
   min-width: 0;
@@ -341,58 +157,11 @@
   cursor: var(--ds-cursor-interactive, pointer);
   background: transparent;
   border: 0;
-  transition: transform var(--ds-duration-fast, 0.12s) ease;
+  transition: transform var(--ds-duration-fast) var(--ds-easing-standard);
 }
 
 .caret[data-open] {
   transform: rotate(90deg);
-}
-
-.action-bar {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  z-index: 50;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 7px 8px 7px 14px;
-  background: var(--ds-gray-1);
-  border-radius: var(--ds-radius-full);
-  box-shadow: var(--ds-shadow-md);
-  transform: translateX(calc(-50% + var(--data-table-action-bar-offset, 0px)));
-  animation: data-table-action-bar-in var(--ds-duration-fast, 0.16s) ease;
-}
-
-.action-bar-divider {
-  width: 1px;
-  height: 18px;
-  margin: 0 2px;
-  background: var(--ds-gray-a5);
-}
-
-@keyframes data-table-action-bar-in {
-  from {
-    opacity: 0;
-    transform: translate(
-      calc(-50% + var(--data-table-action-bar-offset, 0px)),
-      8px
-    );
-  }
-
-  to {
-    opacity: 1;
-    transform: translate(
-      calc(-50% + var(--data-table-action-bar-offset, 0px)),
-      0
-    );
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .action-bar {
-    animation: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -400,11 +169,6 @@
   .row {
     box-sizing: border-box;
     padding-inline: var(--data-table-inset, 0px);
-    transition: none;
-  }
-
-  .header,
-  .cell[data-pinned] {
     transition: none;
   }
 }

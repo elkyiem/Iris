@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import { MEDIA_TYPES } from "@pond/schema/db";
 import type { JsonValue } from "@pond/schema/json";
 import log from "electron-log/main.js";
@@ -22,7 +23,6 @@ import {
   navigateWithTimeout,
 } from "./navigation";
 import { leaseWindow } from "./pool";
-import { sleep } from "./util";
 
 interface BookmarksHarvestProgress {
   phase: "hydrate" | "scroll";

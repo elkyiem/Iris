@@ -65,7 +65,7 @@
   font-weight: var(--ds-weight-xl);
   color: var(--ds-green-11);
   background: var(--ds-green-3);
-  border-radius: 4px;
+  border-radius: var(--ds-radius-xs);
 }
 
 .steps {

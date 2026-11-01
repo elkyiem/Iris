@@ -310,8 +310,7 @@ export async function coreEmbedVideoFrames(
   return embeddingProfiles.use("text-image", async ({ model, processor }) => {
     if (frames.length === 0) throw new Error("Video has no frames");
     const combined = new Float32Array(embeddingDimensions());
-    // Keep every sampled frame, bounding attention and vision scratch space
-    // instead of allocating one graph for the entire 32-frame sequence.
+    /** Batching bounds attention and vision scratch space instead of allocating one graph for all 32 frames. */
     const batchSize = 16;
     for (let start = 0; start < frames.length; start += batchSize) {
       const batch = frames.slice(start, start + batchSize);

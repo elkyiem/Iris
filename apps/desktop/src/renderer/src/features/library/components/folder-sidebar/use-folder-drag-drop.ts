@@ -9,6 +9,7 @@ import {
   saveDropIds,
 } from "@/features/saves";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 import { type FolderDropKind, planFolderSidebarDrop } from "./folder-drop";
 
@@ -47,7 +48,7 @@ export function useFolderDragDrop({
       await folders.refresh();
       notify({
         id: "add-saves-to-folder",
-        title: `Added ${count} ${count === 1 ? "Save" : "Saves"} to "${folder.name}"`,
+        title: `Added ${formatPlural(count, { one: "Save", other: "Saves" })} to "${folder.name}"`,
         action: {
           label: "Undo",
           onClick: () => {

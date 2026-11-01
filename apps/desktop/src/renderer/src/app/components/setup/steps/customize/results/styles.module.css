@@ -1,0 +1,138 @@
+.media {
+  display: flex;
+  flex: none;
+  width: 32px;
+  height: 24px;
+  overflow: hidden;
+  background: var(--ds-gray-a3);
+  border-radius: var(--ds-radius-xs);
+}
+
+.accent {
+  flex: none;
+  color: var(--ds-accent-9);
+}
+
+.palette {
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  width: min(300px, 100% - 40px);
+  overflow: hidden;
+  background: var(--ds-gray-1);
+  border-radius: var(--ds-radius-lg);
+  box-shadow:
+    var(--ds-shadow-md),
+    inset 0 0 0 var(--ds-border-width) var(--ds-gray-a3);
+  mask-image: linear-gradient(to bottom, black 72%, transparent);
+}
+
+.field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  font-size: var(--ds-text-sm);
+  white-space: nowrap;
+  border-bottom: var(--ds-border-width) solid var(--ds-gray-a3);
+
+  > svg {
+    flex: none;
+    color: var(--ds-gray-10);
+  }
+}
+
+.caret {
+  width: 1.5px;
+  height: 14px;
+  margin-left: -6px;
+  background: var(--ds-accent-9);
+  animation: blink 1s steps(1) infinite;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  padding: 6px;
+  border-radius: var(--ds-radius-md);
+
+  &[data-active] {
+    background: var(--ds-gray-a2);
+  }
+}
+
+.lines {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.name {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--ds-text-sm);
+  font-weight: var(--ds-weight-lg);
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.score {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  margin-left: auto;
+  font-size: var(--ds-text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-accent-11);
+  background: var(--ds-accent-a3);
+  border-radius: var(--ds-radius-full);
+
+  .row:not([data-active]) & {
+    color: var(--ds-gray-10);
+    background: none;
+  }
+}
+
+.filename {
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-text-xs);
+  line-height: 14px;
+  color: var(--ds-gray-10);
+  white-space: nowrap;
+  text-decoration: line-through;
+  text-decoration-color: var(--ds-gray-a6);
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+:global(html[data-reduce-motion="true"]) .caret {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    animation: none;
+  }
+}

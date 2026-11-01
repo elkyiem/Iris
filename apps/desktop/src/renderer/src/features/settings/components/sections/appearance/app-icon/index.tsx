@@ -1,4 +1,5 @@
 import { DEFAULT_PREFS } from "@pond/schema/db";
+import { Button } from "@pond/ui";
 import type { CSSProperties } from "react";
 import { z } from "zod";
 import type { Binding } from "@/features/settings/components/engine";
@@ -20,28 +21,27 @@ export function AppIconRow({ binding }: { binding: Binding }) {
     : DEFAULT_PREFS.window.appIcon;
 
   return (
-    <div className={styles.grid} role="listbox" aria-label="App icon">
+    <fieldset className={styles.grid} aria-label="App icon">
       {ICONS.map((icon) => {
         const isSelected = icon.id === selected;
         const tint: TintStyle | undefined = icon.tint
           ? { "--tint": icon.tint }
           : undefined;
         return (
-          <button
+          <Button
             key={icon.id}
-            type="button"
+            variant="bare"
             className={styles.cell}
             aria-label={icon.label}
-            aria-selected={isSelected}
+            aria-pressed={isSelected}
             data-selected={isSelected || undefined}
-            role="option"
             style={tint}
             onClick={() => binding.patch({ appIcon: icon.id })}
           >
             <img src={icon.preview} alt="" draggable={false} />
-          </button>
+          </Button>
         );
       })}
-    </div>
+    </fieldset>
   );
 }

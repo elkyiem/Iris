@@ -52,21 +52,20 @@ export function ColorFilter({
             width={150}
             height={150}
             className={styles.area}
-            thumbClassName={styles["area-thumb"]}
+            thumbClassName={styles.thumb}
           />
           <ColorField.Hue
             width={13}
             height={150}
             className={styles.hue}
-            thumbClassName={styles["hue-thumb"]}
+            thumbClassName={styles.thumb}
           />
         </div>
       </ColorField.PickerRoot>
       <fieldset className={styles.palette} aria-label="Preset Colors">
         <Button
           icon
-          size="xs"
-          variant="ghost"
+          variant="bare"
           className={styles.clear}
           aria-label="Clear Color Filter"
           title="Clear Color Filter"
@@ -80,8 +79,7 @@ export function ColorFilter({
           <Button
             key={preset}
             icon
-            size="xs"
-            variant="ghost"
+            variant="bare"
             aria-label={label}
             aria-pressed={!!match && preset === match.hex}
             title={label}
@@ -99,12 +97,13 @@ export function ColorFilter({
           if (next) apply(next.hex);
         }}
       >
-        <Input.Root size="sm" variant="borderless" className={styles.input}>
-          <span
-            className={styles.preview}
-            style={{ backgroundColor: match ? hex : "var(--ds-gray-9)" }}
-            aria-hidden="true"
-          />
+        <Input.Root size="sm" variant="secondary" className={styles.input}>
+          <Input.Icon>
+            <span
+              className={styles.preview}
+              style={{ backgroundColor: match ? hex : "var(--ds-gray-9)" }}
+            />
+          </Input.Icon>
           <Input.Field
             className={styles.value}
             aria-label="Color Hex"
@@ -123,7 +122,7 @@ export function ColorFilter({
               if (next) apply(next.hex);
             }}
           />
-          <span className={styles["native-picker"]}>
+          <Input.Action className={styles["native-picker"]}>
             <Chip.Swatch />
             <input
               type="color"
@@ -132,7 +131,7 @@ export function ColorFilter({
               value={hex}
               onChange={(event) => apply(event.target.value)}
             />
-          </span>
+          </Input.Action>
         </Input.Root>
       </form>
 
@@ -148,11 +147,11 @@ export function ColorFilter({
           if (next.success) apply(hex, 150 - next.data);
         }}
       >
-        <Slider.Label className={styles["range-label"]}>Accuracy</Slider.Label>
+        <Slider.Label className={styles.label}>Accuracy</Slider.Label>
         <Slider.Control className={styles.control}>
           <Slider.Track className={styles.track}>
             <Slider.Thumb
-              className={styles["range-thumb"]}
+              className={styles.thumb}
               aria-label="Color Accuracy"
             />
           </Slider.Track>

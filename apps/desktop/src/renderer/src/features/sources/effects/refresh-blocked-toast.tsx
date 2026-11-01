@@ -26,10 +26,10 @@ const liveDeps: RefreshBlockedDeps = {
   refreshSave: (id) => void window.pond.refreshSave(id),
   closeConnect: () => {
     const account = connectFlow.account();
-    // A new account still has to pick what to import; keep its step open.
+    /** A new account still has to pick what to import, so its step stays open. */
     if (account?.sync.importPending) return;
     setTimeout(() => {
-      // A connection started since then owns the dialog now.
+      /** A connection started during the delay owns the dialog. */
       if (connectFlow.account() !== account) return;
       connectFlow.clear();
       sourceFlow.close();
@@ -46,8 +46,7 @@ export function notifyRefreshBlocked(
   const saveId = action.modelId;
   const source = pool.get(saveId)?.source;
   if (!source) return;
-  // The connect dialog takes over, and the toast timer pauses while the
-  // app is in the background during sign-in, so close it here.
+  /** The toast timer pauses while the app is in the background during sign-in, so the toast must close here. */
   const signIn = () => {
     deps.closeToast(toastId);
     void deps.startConnect(source, () => {
@@ -58,7 +57,7 @@ export function notifyRefreshBlocked(
   const toastId = deps.notify({
     id: "refresh-blocked",
     title: `${sourceLabel(source)} needs a sign-in`,
-    action: { label: "Sign in", onClick: signIn },
+    action: { label: "Sign In", onClick: signIn },
     timeout: REFRESH_BLOCKED_TIMEOUT_MS,
   });
 }

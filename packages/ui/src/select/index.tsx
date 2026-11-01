@@ -1,5 +1,5 @@
 import { Select as Base } from "@base-ui/react/select";
-import { IconCheck as Check, IconChevronExpandY as Expand } from "@pond/icons";
+import { IconCheck as Check, IconChevronDown as Expand } from "@pond/icons";
 import { clsx as cn } from "clsx";
 import { Button, type ButtonProps } from "../button";
 import { renderSelectSpec, type SelectItemSpec } from "./items";
@@ -95,7 +95,13 @@ function Popup({ className, ...props }: Base.Popup.Props) {
 }
 
 function List({ className, ...props }: Base.List.Props) {
-  return <Base.List {...props} className={cn(styles.list, className)} />;
+  return (
+    <Base.List
+      data-scroll-fade="vertical"
+      {...props}
+      className={cn(styles.list, className)}
+    />
+  );
 }
 
 function Arrow({ className, ...props }: Base.Arrow.Props) {
@@ -107,9 +113,7 @@ function Item({ className, ...props }: Base.Item.Props) {
 }
 
 function ItemText({ className, ...props }: Base.ItemText.Props) {
-  return (
-    <Base.ItemText className={cn(styles["item-label"], className)} {...props} />
-  );
+  return <Base.ItemText className={cn(styles.text, className)} {...props} />;
 }
 
 function ItemIndicator({ className, ...props }: Base.ItemIndicator.Props) {
@@ -126,14 +130,7 @@ function Group(props: Base.Group.Props) {
 
 function GroupLabel({ className, ...props }: Base.GroupLabel.Props) {
   return (
-    <Base.GroupLabel
-      className={cn(
-        styles["group-label"],
-        styles["group-label-sticky"],
-        className,
-      )}
-      {...props}
-    />
+    <Base.GroupLabel className={cn(styles.heading, className)} {...props} />
   );
 }
 

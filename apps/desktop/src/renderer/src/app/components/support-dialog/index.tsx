@@ -47,7 +47,7 @@ export function SupportDialog() {
                 </Dialog.Description>
               </div>
               <div className={styles.details}>
-                <p className={styles["details-title"]}>Pond stays</p>
+                <p className={styles.heading}>Pond Stays</p>
                 <ul className={styles.checklist}>
                   {PROMISES.map((promise) => (
                     <li key={promise}>
@@ -58,7 +58,7 @@ export function SupportDialog() {
                 </ul>
               </div>
               <div className={styles.spread}>
-                <p className={styles["details-title"]}>Other ways to help</p>
+                <p className={styles.heading}>Other Ways to Help</p>
                 <p className={styles.text}>
                   Money is never expected. A star on GitHub or a follow on X
                   helps more people find Pond.

@@ -21,16 +21,16 @@ const render = (content: string, streaming = false) =>
     />,
   );
 
-it("wraps streaming prose by word without changing saved responses", () => {
+it("animates streaming prose by word without changing saved responses", () => {
   const streaming = render("A **clear** answer.", true);
-  expect(streaming.match(/data-streaming-word=""/g)).toHaveLength(3);
+  expect(streaming.match(/data-sd-animate="/g)).toHaveLength(3);
   expect(streaming).toMatch(
-    /<strong><span[^>]*data-streaming-word=""[^>]*>clear<\/span><\/strong>/,
+    /<strong[^>]*><span[^>]*data-sd-animate="[^>]*>clear<\/span><\/strong>/,
   );
-  expect(render("A **clear** answer.")).not.toContain("data-streaming-word");
+  expect(render("A **clear** answer.")).not.toContain("data-sd-animate");
 });
 
-it("keeps existing streaming word elements mounted as text is appended", async () => {
+it("does not replay words already on screen as text is appended", async () => {
   const host = document.createElement("div");
   const root = createRoot(host);
   const onOpenSave = vi.fn();
@@ -38,14 +38,16 @@ it("keeps existing streaming word elements mounted as text is appended", async (
     <AssistantResponse content={content} streaming onOpenSave={onOpenSave} />
   );
   await act(async () => root.render(response("A clear")));
-  const before = host.querySelectorAll("[data-streaming-word]");
-  const first = before[0];
-  const second = before[1];
   await act(async () => root.render(response("A clear answer")));
-  const after = host.querySelectorAll("[data-streaming-word]");
-  expect(after).toHaveLength(3);
-  expect(after[0]).toBe(first);
-  expect(after[1]).toBe(second);
+  const words = [...host.querySelectorAll<HTMLElement>("[data-sd-animate]")];
+  expect(words.map((word) => word.textContent?.trim())).toEqual([
+    "A",
+    "clear",
+    "answer",
+  ]);
+  expect(
+    words.map((word) => word.style.getPropertyValue("--sd-duration")),
+  ).toEqual(["0ms", "0ms", "350ms"]);
   await act(async () => root.unmount());
 });
 

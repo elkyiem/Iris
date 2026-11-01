@@ -22,6 +22,7 @@ export interface PromptOptions {
   inputType?: "text" | "password";
   autoComplete?: string;
   initialValue?: string;
+  emptyError?: string;
   onConfirm: (value: string) => void | Promise<void>;
 }
 
@@ -64,10 +65,16 @@ function PromptContent({
 }) {
   const titleId = useId();
   const descriptionId = useId();
+  const errorId = useId();
+  const field = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState(options.initialValue ?? "");
+  const [empty, setEmpty] = useState(false);
   const { busy, error, submit } = useDialogSubmit(pending, () =>
     handle.close(),
   );
+  const message = empty
+    ? (options.emptyError ?? "Enter a value to continue.")
+    : error;
   return (
     <Dialog.Portal>
       <Dialog.Backdrop />
@@ -76,7 +83,11 @@ function PromptContent({
           aria-busy={busy}
           onSubmit={(event) => {
             event.preventDefault();
-            if (!value.trim()) return;
+            if (!value.trim()) {
+              setEmpty(true);
+              field.current?.focus();
+              return;
+            }
             void submit(() => options.onConfirm(value));
           }}
         >
@@ -91,12 +102,22 @@ function PromptContent({
             ) : null}
             <Input.Root size="md">
               <Input.Field
+                ref={field}
                 aria-labelledby={titleId}
                 aria-describedby={
-                  options.description ? descriptionId : undefined
+                  [
+                    options.description ? descriptionId : null,
+                    message ? errorId : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" ") || undefined
                 }
+                aria-invalid={empty || undefined}
                 value={value}
-                onValueChange={setValue}
+                onValueChange={(next) => {
+                  setValue(next);
+                  if (next.trim()) setEmpty(false);
+                }}
                 type={options.inputType}
                 autoComplete={options.autoComplete}
                 placeholder={options.placeholder}
@@ -104,9 +125,9 @@ function PromptContent({
                 autoFocus
               />
             </Input.Root>
-            {error ? (
-              <Dialog.Description role="alert" data-error>
-                {error}
+            {message ? (
+              <Dialog.Description id={errorId} role="alert" data-error>
+                {message}
               </Dialog.Description>
             ) : null}
           </Dialog.Content>
@@ -115,7 +136,7 @@ function PromptContent({
             <Button
               type="submit"
               variant={options.confirmVariant ?? "primary"}
-              disabled={busy || !value.trim()}
+              disabled={busy}
               loading={busy}
             >
               {options.confirmLabel ?? "Confirm"}

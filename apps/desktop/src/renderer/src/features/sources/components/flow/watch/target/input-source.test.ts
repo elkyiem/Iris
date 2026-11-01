@@ -25,3 +25,18 @@ it.each([
 ])("rejects an unsupported link %s", (input) =>
   expect(watchInputSource(input)).toEqual({ type: "unsupported" }),
 );
+
+it("accepts a feed URL on a host without a source adapter", () => {
+  expect(watchInputSource("https://example.com/Feed?key=AbC", "web")).toEqual({
+    type: "link",
+    source: "web",
+  });
+});
+
+it.each([
+  "example.com/feed",
+  "file:///tmp/feed",
+  "https://user:pass@example.com/feed",
+])("rejects an invalid feed address %s", (input) => {
+  expect(watchInputSource(input, "web")).toEqual({ type: "unsupported" });
+});

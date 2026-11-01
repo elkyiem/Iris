@@ -1,10 +1,13 @@
 .model {
+  /* Models render on a fixed dark stage so materials read the same in both themes. */
+  --model-stage: #20252d;
+
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  color: rgb(226 232 240);
-  background: #20252d;
+  color: var(--ds-white-a12);
+  background: var(--model-stage);
   border-radius: var(--ds-radius-xs);
   box-shadow: var(--ds-shadow-save);
 }
@@ -20,7 +23,7 @@
   right: 8px;
   bottom: 8px;
   font-size: var(--ds-text-xxs);
-  color: rgb(226 232 240 / 70%);
+  color: var(--ds-white-a9);
 }
 
 .fallback {
@@ -31,8 +34,9 @@
   align-content: center;
   justify-items: center;
   background:
-    linear-gradient(rgb(255 255 255 / 6%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 6%) 1px, transparent 1px), #20252d;
+    linear-gradient(var(--ds-white-a2) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ds-white-a2) 1px, transparent 1px),
+    var(--model-stage);
   background-size: 22px 22px;
 }
 
@@ -42,7 +46,7 @@
 
 .fallback span {
   font-size: var(--ds-text-xxs);
-  color: rgb(226 232 240 / 65%);
+  color: var(--ds-white-a9);
 }
 
 .model[data-view="list"] {

@@ -134,7 +134,7 @@ export function AgentMessage({
           />
         ) : null
       }
-      actions={message.role === "user" ? actionBar : null}
+      actions={actionBar}
     >
       {message.role === "user" ? (
         <FileAttachments files={domain.metadata?.files ?? []} />
@@ -146,7 +146,6 @@ export function AgentMessage({
             <Message.Bubble
               // biome-ignore lint/suspicious/noArrayIndexKey: messages only ever append, so position is their identity.
               key={index}
-              trailing={index === bubbles.length - 1 ? actionBar : undefined}
             >
               <AssistantResponse
                 content={bubble}

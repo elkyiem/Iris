@@ -1,10 +1,6 @@
 import type { Source } from "@pond/schema/db";
 import type { WatchTarget } from "./resolve";
-
-export type FetchWatchPage = (
-  url: string,
-  init: RequestInit,
-) => Promise<Response>;
+import type { FetchWatchPage } from "./types";
 
 const CRAWLER_UA =
   "Mozilla/5.0 (compatible; Discordbot/2.0; +https://discordapp.com)";

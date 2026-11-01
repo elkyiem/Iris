@@ -109,7 +109,7 @@ function SortableDestination({
 
   return (
     <div
-      className={styles["destination-sortable"]}
+      className={styles.sortable}
       data-dragging={isDragging || undefined}
       data-sidebar-sortable={destination}
       ref={setNodeRef}
@@ -513,7 +513,7 @@ export function LibraryDestinations({
                 modifiers={VERTICAL_SORT_MODIFIERS}
               >
                 {activeSort?.group === group.label ? (
-                  <div className={styles["destination-overlay"]}>
+                  <div className={styles.overlay}>
                     <Row
                       label={SIDEBAR_DESTINATION_LABELS[activeSort.destination]}
                       icon={

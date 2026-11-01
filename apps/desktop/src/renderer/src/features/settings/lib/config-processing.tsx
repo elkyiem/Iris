@@ -19,9 +19,9 @@ function MediaModelIdControl({ binding }: { binding: Binding }) {
   return (
     <>
       <Settings.ItemDetails>
-        <Settings.ItemTitle id={titleId}>Local Model ID</Settings.ItemTitle>
+        <Settings.ItemTitle id={titleId}>Local Model</Settings.ItemTitle>
         <Settings.ItemDescription id={descriptionId}>
-          The exact ID from Ollama or LM Studio.
+          Paste the model name as Ollama or LM Studio lists it.
         </Settings.ItemDescription>
       </Settings.ItemDetails>
       <Settings.ItemControl>
@@ -31,7 +31,6 @@ function MediaModelIdControl({ binding }: { binding: Binding }) {
             aria-describedby={descriptionId}
             disabled={!binding.loaded}
             value={draft}
-            placeholder="gemma4:e2b"
             onValueChange={setDraft}
             onBlur={() => {
               const value = draft.trim();
@@ -104,18 +103,10 @@ export const processingSection = defineSection("ai", {
         {
           control: "custom",
           key: "media-understanding-model-id",
-          title: "Local Model ID",
-          keywords: ["gemma", "model", "installed", "e2b", "e4b"],
+          title: "Local Model",
+          keywords: ["gemma", "model", "name", "id", "installed", "e2b", "e4b"],
           visible: (v) => v.mediaUnderstandingMode !== "florence",
           render: (binding) => <MediaModelIdControl binding={binding} />,
-        },
-        {
-          control: "switch",
-          key: "mediaUnderstandingFallbackToFlorence",
-          title: "Image Processing Fallback",
-          description: "Uses the built-in model if this one fails.",
-          keywords: ["gemma", "florence", "fallback", "vision"],
-          visible: (v) => v.mediaUnderstandingMode === "gemma4",
         },
       ],
     },
@@ -126,14 +117,14 @@ export const processingSection = defineSection("ai", {
           control: "switch",
           key: "enableCaption",
           title: "Image Captions",
-          description: "Describe images. Large first download.",
+          description: "Describe images after a large one-time download.",
           keywords: ["florence", "vision", "describe"],
         },
         {
           control: "switch",
           key: "enableOcr",
           title: "Text in Images",
-          description: "Read text in images.",
+          description: "Make text in screenshots and photos searchable.",
           keywords: ["ocr", "recognition", "florence"],
         },
         {
@@ -156,7 +147,7 @@ export const processingSection = defineSection("ai", {
           title: "Style Labels",
           description: "Label styles like minimalist or vintage.",
           keywords: ["style", "aesthetic", "labels", "clip"],
-          visible: (v) => v.enableClip === true,
+          disabled: (v) => v.enableClip !== true,
         },
         {
           control: "switch",
@@ -177,17 +168,17 @@ export const processingSection = defineSection("ai", {
           control: "switch",
           key: "enableAutoTitle",
           title: "Generated Titles",
-          description: "Fill empty titles. Never overwrites edits.",
+          description: "Fill empty titles without overwriting your edits.",
           keywords: ["title", "automatic", "naming"],
-          visible: (v) => v.enableCaption === true || v.enableOcr === true,
+          disabled: (v) => v.enableCaption !== true && v.enableOcr !== true,
         },
         {
           control: "switch",
           key: "enableSuggestedTags",
           title: "Suggested Tags",
-          description: "Suggest tags from your library. You apply them.",
+          description: "Suggest tags from your library for you to apply.",
           keywords: ["tags", "suggestions", "auto-tag"],
-          visible: (v) => v.semanticSearch === true,
+          disabled: (v) => v.semanticSearch !== true,
         },
       ],
     },

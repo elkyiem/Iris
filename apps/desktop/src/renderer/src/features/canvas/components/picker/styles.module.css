@@ -15,8 +15,10 @@
     box-shadow var(--ds-duration-fast) var(--ds-easing-standard),
     scale var(--ds-duration-fast) var(--ds-easing-standard);
 
-  :hover > & {
-    scale: 1.1;
+  @media (hover: hover) and (pointer: fine) {
+    :hover > & {
+      scale: 1.1;
+    }
   }
 
   &[data-mixed] {

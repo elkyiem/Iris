@@ -2,6 +2,22 @@ import { Checkbox, Field, Input, Select } from "@pond/ui";
 import { useId } from "react";
 import styles from "./styles.module.css";
 
+function numberInRange(
+  value: number | null,
+  { min, max, integer, required }: NumberRule,
+): boolean {
+  if (value === null) return !required;
+  if (Number.isNaN(value) || value < min || value > max) return false;
+  return !integer || Number.isInteger(value);
+}
+
+interface NumberRule {
+  min: number;
+  max: number;
+  integer?: boolean;
+  required?: boolean;
+}
+
 function NumberField({
   label,
   suffix,
@@ -9,18 +25,22 @@ function NumberField({
   min,
   max,
   step,
+  integer = false,
+  required = true,
+  showError = false,
   onChange,
-}: {
+}: NumberRule & {
   label: string;
   suffix?: string;
   value: number | null;
-  min: number;
-  max: number;
   step?: number;
+  showError?: boolean;
   onChange: (value: number | null) => void;
 }) {
+  const invalid =
+    showError && !numberInRange(value, { min, max, integer, required });
   return (
-    <Field.Root className={styles.field}>
+    <Field.Root className={styles.field} invalid={invalid || undefined}>
       <Field.Label>{label}</Field.Label>
       <Input.Root>
         <Input.Field
@@ -35,6 +55,11 @@ function NumberField({
         />
         {suffix ? <Input.Suffix>{suffix}</Input.Suffix> : null}
       </Input.Root>
+      {invalid ? (
+        <Field.Error
+          match
+        >{`Enter a number from ${min} to ${max}.`}</Field.Error>
+      ) : null}
     </Field.Root>
   );
 }

@@ -5,7 +5,6 @@
   font-size: calc(var(--wordmark-size) * 0.9167);
   font-weight: var(--ds-weight-xxxl);
   line-height: var(--wordmark-size);
-  letter-spacing: -0.035em;
 }
 
 .mark {

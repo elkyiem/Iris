@@ -1,14 +1,88 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
   padding: 4px;
-  border: var(--ds-border-width) solid var(--ds-border-subtle);
-  border-radius: var(--ds-radius-lg);
+  margin: 0;
+  list-style: none;
+  border-radius: var(--ds-radius-xl);
+  box-shadow: var(--ds-shadow-xs);
 }
 
 .row {
-  border-bottom: none;
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: var(--ds-radius-md);
+  isolation: isolate;
+
+  &::before {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+    border-radius: inherit;
+    transition: background-color var(--ds-duration-fast)
+      var(--ds-easing-standard);
+  }
+
+  &:hover::before {
+    background: var(--ds-gray-a3);
+  }
+}
+
+/* The button's hit area stretches over the row; the switch sits above it. */
+.open {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  align-items: flex-start;
+  min-width: 0;
+
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    border-radius: inherit;
+  }
+
+  &:active {
+    scale: none;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible::after {
+    outline: var(--ds-focus-width) solid var(--ds-focus-outline);
+  }
+}
+
+.name,
+.schedule {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--ds-text-md);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.name {
+  color: var(--ds-gray-12);
+}
+
+.schedule {
+  color: var(--ds-gray-10);
+}
+
+.switch {
+  position: relative;
+  z-index: 1;
 }
 
 .empty {

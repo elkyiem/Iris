@@ -5,7 +5,7 @@
   align-items: center;
   min-height: 28px;
   padding-inline: 0;
-  color: var(--ds-gray-10);
+  color: var(--ds-gray-9);
 }
 
 .preview {
@@ -24,7 +24,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: var(--ds-text-xs);
-  color: var(--ds-gray-10);
   text-align: left;
   white-space: nowrap;
 }

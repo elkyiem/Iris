@@ -6,8 +6,8 @@
  *
  * The appex is signed here ad hoc with its own entitlements; `sign-mac.cjs` re-signs it
  * with the release identity, because electron-builder never signs Contents/PlugIns.
- * It also builds `safari-settings.node`, which electron-builder copies to
- * Contents/Resources and signs with the rest of the app.
+ * It also builds `safari-settings.node` and `app-group.node`, which electron-builder
+ * copies to Contents/Resources and signs with the rest of the app.
  *
  * Skipped outside macOS. Without Xcode it skips locally and fails in CI, so a release
  * cannot ship without Safari.
@@ -139,37 +139,48 @@ run("codesign", [
 ]);
 
 /**
- * The settings module: Safari has no URL scheme for its Extensions pane, and it answers
- * SFSafariApplication only for the main process of the app that holds the extension, so
- * Electron loads this Node-API module instead of spawning a helper. Node-API is ABI-stable,
- * so Node's headers build a module Electron can load.
+ * Compiles `safari/<name>.m` into a Node-API module that Electron's main process loads.
+ * Node-API is ABI-stable, so Node's headers build a module Electron can load.
  */
-const settings = join(outDir, "safari-settings.node");
-run("xcrun", [
-  "--sdk",
-  "macosx",
-  "clang",
-  "-O2",
-  "-fobjc-arc",
-  "-bundle",
-  "-undefined",
-  "dynamic_lookup",
-  "-arch",
-  "arm64",
-  "-arch",
-  "x86_64",
-  `-mmacosx-version-min=${DEPLOYMENT_TARGET}`,
-  "-I",
-  nodeApiHeaders.include_dir,
-  "-framework",
+function buildModule(name, frameworks) {
+  const out = join(outDir, `${name}.node`);
+  run("xcrun", [
+    "--sdk",
+    "macosx",
+    "clang",
+    "-O2",
+    "-fobjc-arc",
+    "-bundle",
+    "-undefined",
+    "dynamic_lookup",
+    "-arch",
+    "arm64",
+    "-arch",
+    "x86_64",
+    `-mmacosx-version-min=${DEPLOYMENT_TARGET}`,
+    "-I",
+    nodeApiHeaders.include_dir,
+    ...frameworks.flatMap((framework) => ["-framework", framework]),
+    "-o",
+    out,
+    resolve(extensionRoot, `safari/${name}.m`),
+  ]);
+  run("codesign", ["--force", "--sign", "-", out]);
+  return out;
+}
+
+/**
+ * Safari has no URL scheme for its Extensions pane, and it answers SFSafariApplication only
+ * for the main process of the app that holds the extension, so Electron loads this module
+ * instead of spawning a helper.
+ */
+const settings = buildModule("safari-settings", [
   "Foundation",
-  "-framework",
   "SafariServices",
-  "-o",
-  settings,
-  resolve(extensionRoot, "safari/safari-settings.m"),
 ]);
-run("codesign", ["--force", "--sign", "-", settings]);
+/** macOS only lets Pond into its app group container once Pond asks containermanagerd. */
+const appGroup = buildModule("app-group", ["Foundation"]);
 
 console.log(`[pond safari] extension bundled at ${appex}`);
 console.log(`[pond safari] settings module at ${settings}`);
+console.log(`[pond safari] app group module at ${appGroup}`);

@@ -40,7 +40,11 @@ export function ContextPicker({
           }}
         />
       </Input.Root>
-      <fieldset className={styles.list} aria-label="Context">
+      <fieldset
+        className={styles.list}
+        aria-label="Context"
+        data-scroll-fade="vertical"
+      >
         {visible.length ? (
           visible.map((item) => (
             <Button
@@ -57,12 +61,10 @@ export function ContextPicker({
                 )
               }
             >
-              <span className={styles["reference-media"]}>
-                {item.media ?? <IconFile />}
-              </span>
-              <span className={styles["model-content"]}>
-                <span className={styles["model-name"]}>{item.title}</span>
-                <span className={styles["row-description"]}>{item.meta}</span>
+              <span className={styles.media}>{item.media ?? <IconFile />}</span>
+              <span className={styles.content}>
+                <span className={styles.title}>{item.title}</span>
+                <span className={styles.meta}>{item.meta}</span>
               </span>
               <span className={styles["selection-mark"]}>
                 {selectedIds.includes(item.id) && <IconCheck />}

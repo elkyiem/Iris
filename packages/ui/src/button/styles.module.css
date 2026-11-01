@@ -27,6 +27,19 @@
     --button-radius-lg: var(--ds-radius-full);
     --button-radius-xl: var(--ds-radius-full);
   }
+
+  &:where([data-density="compact"]) {
+    --button-height-xs: calc(var(--ds-size-xs) - 4px);
+    --button-padding-xs: 0 4px;
+    --button-height-sm: var(--ds-size-xs);
+    --button-padding-sm: 0 5px;
+    --button-height-md: var(--ds-size-sm);
+    --button-padding-md: 0 6px;
+    --button-height-lg: var(--ds-size-md);
+    --button-padding-lg: 0 7px;
+    --button-height-xl: var(--ds-size-lg);
+    --button-padding-xl: 0 8px;
+  }
 }
 
 .root {
@@ -40,7 +53,8 @@
   text-wrap: nowrap;
   user-select: none;
   transition:
-    all var(--ds-duration-medium) var(--ds-easing-standard),
+    box-shadow var(--ds-duration-medium) var(--ds-easing-standard),
+    opacity var(--ds-duration-medium) var(--ds-easing-standard),
     scale var(--ds-duration-bounce) var(--ds-easing-bounce);
 
   &:where([data-width="full"]) {
@@ -61,7 +75,8 @@
   &:active {
     scale: 0.96;
     transition:
-      all var(--ds-duration-medium) var(--ds-easing-standard),
+      box-shadow var(--ds-duration-medium) var(--ds-easing-standard),
+      opacity var(--ds-duration-medium) var(--ds-easing-standard),
       scale var(--ds-duration-fast) var(--ds-easing-decelerate);
   }
 
@@ -115,10 +130,31 @@
     border-radius: var(--button-radius-xl);
   }
 
-  & > :where(svg) {
+  &:where(:not([data-variant="bare"])) > :where(svg) {
     flex-shrink: 0;
     width: var(--button-icon-size);
     height: var(--button-icon-size);
+  }
+
+  & > .spinner {
+    width: var(--button-icon-size);
+    height: var(--button-icon-size);
+  }
+
+  /* The spinner takes the icon's slot so the button keeps its width. */
+  & > .spinner + :where(svg) {
+    display: none;
+  }
+
+  /* With no icon to replace, the spinner covers the label, which still sets the width and name. */
+  &:where([data-loading]):not(:has(> .spinner + svg)) {
+    -webkit-text-fill-color: transparent;
+
+    & > .spinner {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+    }
   }
 
   &:where([data-icon]) {
@@ -262,6 +298,25 @@
       &::after {
         opacity: 1;
       }
+    }
+
+    &:active {
+      scale: none;
+    }
+  }
+
+  /* A pressable surface (card, row, tile): behavior and focus only, the caller lays out the content. */
+  &:where([data-variant="bare"]) {
+    height: auto;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-align: inherit;
+    text-wrap: inherit;
+    background: none;
+
+    &:where([data-icon][data-width="auto"]) {
+      width: auto;
     }
 
     &:active {

@@ -7,9 +7,17 @@ import type {
 } from "@shared/fish-contracts";
 import { clsx as cn } from "clsx";
 import { useEffect, useId, useRef, useState } from "react";
-import { EYE_PATHS, type FishFace, HEART_PATH, SPECIES_ART } from "./art";
-import { watchOffscreen } from "./offscreen";
+import { SPECIES_ART, type SpeciesArt } from "./art";
+import {
+  type Avatar,
+  createAvatar,
+  faceFor,
+  type Pose,
+  restingEyes,
+  type Task,
+} from "./face";
 import styles from "./styles.module.css";
+import { animate, type Rig, reducedMotion } from "./ticker";
 
 export { SPECIES_LABELS } from "./art";
 
@@ -27,31 +35,157 @@ export function fishColorCss(color: FishColor): string {
   return `var(--ds-${color}-9)`;
 }
 
-function faceOf(activity: FishPresence, mood: FishMood): FishFace {
-  if (mood === "worried") return "sad";
-  if (mood === "pleased") return "happy";
-  if (activity === "thinking") return "think";
-  if (activity === "writing" || !activity) return "neutral";
-  return "scan";
+function taskOf(activity: FishPresence, mood: FishMood): Task | null {
+  if (mood === "worried" || mood === "pleased") return mood;
+  if (activity === "searching") return "reading";
+  return activity;
 }
 
-/** Sibling `useId`s differ by one character, so the final mix spreads them across the whole range. */
-function hash(text: string): number {
-  let value = 0x811c9dc5;
-  for (const char of text)
-    value = Math.imul(value ^ char.charCodeAt(0), 0x01000193);
-  value = Math.imul(value ^ (value >>> 16), 0x85ebca6b);
-  value = Math.imul(value ^ (value >>> 13), 0xc2b2ae35);
-  return (value ^ (value >>> 16)) >>> 0;
+/** The control a fish sits in; hovering it excites the fish and pressing it makes the fish hop. */
+const HOST =
+  "a, button, [role='button'], [role='menuitem'], [role='option'], [role='tab']";
+
+function partTransform(
+  [x, y]: readonly [number, number],
+  angle: number,
+  scale = 1,
+): string {
+  return `rotate(${angle} ${x} ${y}) translate(${x} ${y}) scale(${scale} 1) translate(${-x} ${-y})`;
 }
 
-const AXIS = 12;
-/** Eyes ride a sphere this wide as the fish turns, so they slide and foreshorten instead of flattening. */
-const SPHERE = 6;
+function Stage({ art, task }: { art: SpeciesArt; task: Task | null }) {
+  const id = useId();
+  const clipId = `fish-${id.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const [rest] = useState(() => restingEyes(art.head, faceFor(task)));
+  const svgRef = useRef<SVGSVGElement>(null);
+  const bodyRef = useRef<SVGGElement>(null);
+  const tailRef = useRef<SVGPathElement>(null);
+  const lureRef = useRef<SVGGElement>(null);
+  const backEyeRef = useRef<SVGPathElement>(null);
+  const frontEyeRef = useRef<SVGPathElement>(null);
+  const avatarRef = useRef<Avatar | null>(null);
+  const rigRef = useRef<Rig | null>(null);
+  const taskRef = useRef(task);
 
-function longitude(x: number): number {
-  const offset = Math.max(-0.9, Math.min(0.9, (x - AXIS) / SPHERE));
-  return Number(((Math.asin(offset) * 180) / Math.PI).toFixed(2));
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const avatar = createAvatar({ head: art.head, pivot: art.pivot });
+    avatar.task(taskRef.current);
+    const writeEyes = (eyes: Pose["eyes"]) => {
+      [backEyeRef.current, frontEyeRef.current].forEach((node, index) => {
+        const eye = eyes[index];
+        if (!node || !eye) return;
+        node.setAttribute("d", eye.d);
+        node.setAttribute("transform", eye.transform);
+        node.setAttribute("opacity", String(eye.opacity));
+      });
+    };
+    const rig: Rig = {
+      element: svg,
+      avatar,
+      write(pose) {
+        bodyRef.current?.setAttribute("transform", pose.transform);
+        tailRef.current?.setAttribute(
+          "transform",
+          partTransform(art.tail.root, pose.tail.angle, pose.tail.scale),
+        );
+        if (art.lure) {
+          lureRef.current?.setAttribute(
+            "transform",
+            partTransform(
+              art.lure.root,
+              pose.tail.angle * 0.5 + pose.trail * 140,
+            ),
+          );
+        }
+        writeEyes(pose.eyes);
+      },
+      rest() {
+        bodyRef.current?.removeAttribute("transform");
+        tailRef.current?.removeAttribute("transform");
+        lureRef.current?.removeAttribute("transform");
+        writeEyes(restingEyes(art.head, faceFor(taskRef.current)));
+      },
+    };
+    avatarRef.current = avatar;
+    rigRef.current = rig;
+
+    const host = svg.closest(HOST) ?? svg;
+    const enter = () => avatar.hover(true);
+    const leave = () => avatar.hover(false);
+    const press = (event: Event) => {
+      if ("button" in event && event.button === 0) avatar.press();
+    };
+    host.addEventListener("pointerenter", enter);
+    host.addEventListener("pointerleave", leave);
+    host.addEventListener("pointerdown", press);
+    const stop = animate(rig);
+    return () => {
+      stop();
+      host.removeEventListener("pointerenter", enter);
+      host.removeEventListener("pointerleave", leave);
+      host.removeEventListener("pointerdown", press);
+      avatarRef.current = null;
+      rigRef.current = null;
+    };
+  }, [art]);
+
+  useEffect(() => {
+    taskRef.current = task;
+    avatarRef.current?.task(task);
+    if (reducedMotion()) rigRef.current?.rest();
+  }, [task]);
+
+  const [back, front] = rest;
+  return (
+    <svg
+      ref={svgRef}
+      className={styles.stage}
+      viewBox={art.viewBox}
+      aria-hidden="true"
+    >
+      <defs>
+        <clipPath id={clipId}>
+          {art.body.map((d) => (
+            <path key={d} d={d} />
+          ))}
+        </clipPath>
+      </defs>
+      <g ref={bodyRef} fill="var(--avatar-body)">
+        <path ref={tailRef} d={art.tail.d} />
+        {art.lure ? (
+          <g ref={lureRef}>
+            <path
+              d={art.lure.stalk}
+              fill="none"
+              stroke="var(--avatar-body)"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+            <circle cx={art.lure.bulb[0]} cy={art.lure.bulb[1]} r="1.6" />
+          </g>
+        ) : null}
+        {art.body.map((d) => (
+          <path key={d} d={d} />
+        ))}
+        <g clipPath={`url(#${clipId})`} fill="var(--avatar-eyes)">
+          <path
+            ref={backEyeRef}
+            d={back.d}
+            transform={back.transform}
+            opacity={back.opacity}
+          />
+          <path
+            ref={frontEyeRef}
+            d={front.d}
+            transform={front.transform}
+            opacity={front.opacity}
+          />
+        </g>
+      </g>
+    </svg>
+  );
 }
 
 interface FishMarkProps extends React.ComponentPropsWithoutRef<"span"> {
@@ -72,132 +206,24 @@ export function FishMark({
   style,
   ...props
 }: FishMarkProps) {
-  const markRef = useRef<HTMLSpanElement>(null);
-  const [offscreen, setOffscreen] = useState(false);
-  const id = useId();
-  useEffect(() => {
-    const node = markRef.current;
-    if (!node) return;
-    return watchOffscreen(node, setOffscreen);
-  }, []);
-  const clipId = `fish-${id.replace(/[^a-zA-Z0-9_-]/g, "")}`;
-  const shadeId = `${clipId}-shade`;
-  const art = SPECIES_ART[species];
-  const face = faceOf(activity, mood);
-  const seed = hash(id);
-  const lobes = art.lobes.map(([cx, cy, r], index) => (
-    <circle
-      key={`${cx}-${cy}`}
-      className={styles.lobe}
-      cx={cx}
-      cy={cy}
-      r={r}
-      style={cssVars({ "--lobe": index, "--x": cx - AXIS })}
-    />
-  ));
-
   return (
     <span
-      ref={markRef}
       className={cn(styles.mark, className)}
-      data-offscreen={offscreen || undefined}
-      data-species={species}
-      data-activity={activity ?? undefined}
-      data-mood={mood}
-      data-face={face}
-      data-compact={size < 24 || undefined}
       style={{
         ...cssVars({
           "--fish-color": fishColorCss(color),
           "--fish-size": `${size}px`,
-          "--fish-sphere": SPHERE,
-          "--fish-eye": `path("${EYE_PATHS[face]}")`,
-          "--fish-blink-delay": `${-(seed % 9600)}ms`,
-          "--fish-drift-delay": `${-(seed % 10000)}ms`,
         }),
         ...style,
       }}
       aria-hidden="true"
       {...props}
     >
-      <svg
-        className={styles.stage}
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-      >
-        <defs>
-          <clipPath id={clipId}>{lobes}</clipPath>
-          <radialGradient id={shadeId} cx="0.42" cy="0.34" r="0.62">
-            <stop className={styles.highlight} offset="0" />
-            <stop className={styles.midtone} offset="0.55" />
-            <stop className={styles.rim} offset="1" />
-          </radialGradient>
-        </defs>
-        <g className={styles.fish}>
-          <g className={styles.squash}>
-            <g className={styles.body} fill="currentColor">
-              {lobes}
-              {"fins" in art ? (
-                <path className={styles.plane} d={art.fins} />
-              ) : null}
-            </g>
-            <g clipPath={`url(#${clipId})`}>
-              <rect width="24" height="24" fill={`url(#${shadeId})`} />
-            </g>
-            {"strokes" in art ? (
-              <path
-                className={styles.plane}
-                d={art.strokes}
-                stroke="currentColor"
-                strokeWidth="0.9"
-                strokeLinecap="round"
-              />
-            ) : null}
-            {"bulb" in art ? (
-              <circle
-                className={styles.bulb}
-                cx={art.bulb[0]}
-                cy={art.bulb[1]}
-                r="1.3"
-                fill="currentColor"
-                style={{
-                  ...cssVars({ "--x": art.bulb[0] - AXIS }),
-                  transformOrigin: `${art.bulb[0]}px ${art.bulb[1]}px`,
-                }}
-              />
-            ) : null}
-            <g className={styles.face}>
-              {art.eyes.map(([x, y], index) => (
-                <g
-                  key={`${x}-${y}`}
-                  className={styles.orbit}
-                  style={cssVars({ "--lon": `${longitude(x)}deg` })}
-                >
-                  <g transform={`translate(${x} ${y}) scale(${art.eyeScale})`}>
-                    <g className={styles.lid}>
-                      <path
-                        className={styles.eye}
-                        data-side={index === 0 ? "back" : "front"}
-                        d={EYE_PATHS.neutral}
-                        fill="#fff"
-                      />
-                    </g>
-                  </g>
-                </g>
-              ))}
-            </g>
-          </g>
-        </g>
-        <circle className={styles.bubble} cx="22.6" cy="4.4" r="0.9" />
-        <circle className={styles.bubble} cx="23.8" cy="1.8" r="0.6" />
-        <g transform="translate(19.6 4.2)">
-          <path className={styles.heart} d={HEART_PATH} />
-        </g>
-        <g transform="translate(22.4 7.4) scale(0.75)">
-          <path className={styles.heart} d={HEART_PATH} data-trailing />
-        </g>
-      </svg>
+      <Stage
+        key={species}
+        art={SPECIES_ART[species]}
+        task={taskOf(activity, mood)}
+      />
     </span>
   );
 }

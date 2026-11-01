@@ -162,7 +162,7 @@ export class CollapsibleTitleNode extends ElementNode {
 
   createDOM(): HTMLElement {
     const summary = document.createElement("summary");
-    summary.className = styles["collapse-title"] ?? "";
+    summary.className = styles.title ?? "";
     return summary;
   }
 
@@ -218,7 +218,7 @@ export class CollapsibleContentNode extends ElementNode {
 
   createDOM(): HTMLElement {
     const content = document.createElement("div");
-    content.className = styles["collapse-content"] ?? "";
+    content.className = styles.content ?? "";
     return content;
   }
 

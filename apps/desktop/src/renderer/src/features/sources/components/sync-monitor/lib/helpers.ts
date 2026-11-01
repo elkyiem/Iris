@@ -32,7 +32,7 @@ export function cardModel(status: SyncSourceStatus | undefined): CardModel {
       tone: "paused",
       statusText: "Expired",
       connected,
-      meta: "Re-auth needed",
+      meta: "Sign in again",
       lastText,
     };
   }
@@ -50,7 +50,7 @@ export function cardModel(status: SyncSourceStatus | undefined): CardModel {
       tone: "err",
       statusText: "Failed",
       connected,
-      meta: status?.lastError ?? "error",
+      meta: status?.lastError ?? "Sync failed. Try again.",
       lastText,
     };
   }

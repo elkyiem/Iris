@@ -3,6 +3,7 @@ import { Button, Dialog, Field, Input } from "@pond/ui";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { combineQueries } from "@/features/library/lib/smart-folders";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import {
   compileRuleQuery,
   editableQuery,
@@ -33,6 +34,16 @@ type PreviewState = {
   count: number | null;
 };
 
+function firstIncomplete(editor: HTMLElement | null): HTMLElement | null {
+  if (!editor) return null;
+  const empty = [...editor.querySelectorAll("input")].find(
+    (input) => !input.value.trim(),
+  );
+  return (
+    empty ?? editor.querySelector<HTMLElement>("input, button, [tabindex='0']")
+  );
+}
+
 export function RuleDialog(props: RuleDialogProps) {
   const {
     kind,
@@ -49,7 +60,13 @@ export function RuleDialog(props: RuleDialogProps) {
   const [query, setQuery] = useState(() => editableQuery(props.query));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [invalid, setInvalid] = useState<{ name: boolean; rules: boolean }>({
+    name: false,
+    rules: false,
+  });
   const pending = useRef(false);
+  const nameField = useRef<HTMLInputElement>(null);
+  const editor = useRef<HTMLFieldSetElement>(null);
   const [open, setOpen] = useState(false);
   useLayoutEffect(() => {
     setOpen(true);
@@ -121,13 +138,23 @@ export function RuleDialog(props: RuleDialogProps) {
   const countText = !ready
     ? "Complete the rules to preview matches."
     : preview.key === queryKey && preview.count != null
-      ? `Found ${preview.count.toLocaleString()} ${preview.count === 1 ? "save" : "saves"}`
+      ? `Found ${formatPlural(preview.count, { one: "save", other: "saves" })}`
       : preview.key === queryKey && preview.status === "failed"
         ? "Couldn't count matches. Your rules can still be saved."
         : "Counting matches";
 
   const submit = async () => {
-    if (!ready || !name.trim() || pending.current) return;
+    if (pending.current) return;
+    const next = { name: !name.trim(), rules: !ready };
+    setInvalid(next);
+    if (next.name) {
+      nameField.current?.focus();
+      return;
+    }
+    if (next.rules) {
+      firstIncomplete(editor.current)?.focus();
+      return;
+    }
     pending.current = true;
     setBusy(true);
     setError(null);
@@ -169,17 +196,30 @@ export function RuleDialog(props: RuleDialogProps) {
                 {editing ? "Edit" : "New"} {label}
               </Dialog.Title>
             </Dialog.Header>
-            <div className={styles.body}>
-              <Field.Root className={styles.name}>
+            <div className={styles.body} data-scroll-fade="vertical">
+              <Field.Root
+                className={styles.name}
+                invalid={invalid.name || undefined}
+              >
                 <Field.Label>{label} Name</Field.Label>
                 <Input.Root size="sm">
                   <Field.Control
+                    ref={nameField}
                     render={<Input.Field autoFocus />}
                     value={name}
-                    onValueChange={setName}
+                    onValueChange={(value) => {
+                      setName(value);
+                      if (value.trim())
+                        setInvalid((current) => ({ ...current, name: false }));
+                    }}
                     disabled={busy}
                   />
                 </Input.Root>
+                {invalid.name ? (
+                  <Field.Error match>
+                    Name the {label.toLowerCase()}.
+                  </Field.Error>
+                ) : null}
               </Field.Root>
               <Dialog.Description className={styles.description}>
                 {kind === "group"
@@ -191,7 +231,7 @@ export function RuleDialog(props: RuleDialogProps) {
                   Also matches the rules in {parentName}.
                 </p>
               ) : null}
-              <fieldset className={styles.editor} disabled={busy}>
+              <fieldset ref={editor} className={styles.editor} disabled={busy}>
                 <legend className={styles.hidden}>Matching Rules</legend>
                 <RuleEditor
                   query={query}
@@ -199,6 +239,11 @@ export function RuleDialog(props: RuleDialogProps) {
                   onChange={setQuery}
                 />
               </fieldset>
+              {invalid.rules && !ready ? (
+                <p role="alert" className={styles.error}>
+                  Complete every rule to save.
+                </p>
+              ) : null}
               {error ? (
                 <p role="alert" className={styles.error}>
                   {error}
@@ -216,10 +261,10 @@ export function RuleDialog(props: RuleDialogProps) {
               <Button
                 type="submit"
                 variant="primary"
-                disabled={busy || !ready || !name.trim()}
+                disabled={busy}
                 loading={busy}
               >
-                {busy ? "Saving" : editing ? "Save" : "Create"}
+                {editing ? "Save" : "Create"}
               </Button>
             </Dialog.Footer>
           </form>

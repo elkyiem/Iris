@@ -1,0 +1,47 @@
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--ds-gray-2);
+  border-radius: var(--ds-radius-xl);
+  box-shadow: inset 0 0 0 var(--ds-border-width) var(--ds-gray-a4);
+  transition: opacity var(--ds-duration-medium) var(--ds-easing-standard);
+
+  &[data-disabled] {
+    opacity: 0.5;
+  }
+}
+
+.visual {
+  position: relative;
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--ds-gray-12);
+}
+
+.footer {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 12px 14px;
+}
+
+.title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-xl);
+  line-height: 18px;
+  color: var(--ds-gray-12);
+  white-space: nowrap;
+}

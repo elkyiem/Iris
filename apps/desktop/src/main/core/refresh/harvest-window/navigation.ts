@@ -1,6 +1,6 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { BrowserWindow } from "electron";
 import log from "electron-log/main.js";
-import { sleep } from "./util";
 
 export function looksLikeAuthWall(currentUrl: string): boolean {
   try {

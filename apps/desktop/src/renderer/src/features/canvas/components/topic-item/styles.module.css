@@ -10,7 +10,7 @@
   height: 100%;
   background: var(--topic-fill);
   border: 1.5px solid var(--topic-edge);
-  border-radius: 999px;
+  border-radius: var(--ds-radius-full);
 
   &[data-selected] {
     outline: var(--canvas-selection);

@@ -109,7 +109,11 @@ function Picker({ onCanvas, onAdd }: PickerProps) {
           <Empty.Title>No results found</Empty.Title>
         </Empty.Root>
       ) : (
-        <ul className={styles.grid} data-loading={ids ? undefined : true}>
+        <ul
+          className={styles.grid}
+          data-loading={ids ? undefined : true}
+          data-scroll-fade="vertical"
+        >
           {ids?.map((id) => (
             <Choice
               key={id}

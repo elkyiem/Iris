@@ -39,25 +39,17 @@
   font-weight: var(--ds-weight-lg);
   color: var(--ds-gray-12);
   background: transparent;
+  border-radius: var(--ds-radius-full);
   box-shadow: none;
 
   &::placeholder {
     color: var(--ds-gray-8);
-  }
-
-  &:focus {
-    outline: none;
   }
 }
 
 .aa,
 .list {
   gap: 2px;
-
-  &[data-popup-open] {
-    color: var(--ds-gray-12);
-    background-color: var(--ds-gray-a3);
-  }
 }
 
 .aa {

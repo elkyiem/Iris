@@ -1,4 +1,4 @@
-import { ContentRow, Switch } from "@pond/ui";
+import { Button, Switch } from "@pond/ui";
 import type { FishSummary } from "@shared/fish-contracts";
 import { describeWhen } from "@shared/fish-routine";
 import { setRoutinePaused } from "../../../lib/menu";
@@ -9,28 +9,29 @@ export function RoutineList({ fish }: { fish: FishSummary }) {
   if (!fish.routines.length)
     return <p className={styles.empty}>Ask in chat to set a routine.</p>;
   return (
-    <div className={styles.list}>
+    <ul className={styles.list}>
       {fish.routines.map((routine) => (
-        <ContentRow.Root key={routine.id} hover="row" className={styles.row}>
-          <ContentRow.Trigger
+        <li key={routine.id} className={styles.row}>
+          <Button
+            variant="bare"
+            className={styles.open}
             onClick={() => fishStore.openRoutine(fish.id, routine.id)}
           >
-            <ContentRow.Content>
-              <ContentRow.Title>{routine.name}</ContentRow.Title>
-              <ContentRow.Description>
-                {routine.paused ? "Paused" : describeWhen(routine.when)}
-              </ContentRow.Description>
-            </ContentRow.Content>
-          </ContentRow.Trigger>
+            <span className={styles.name}>{routine.name}</span>
+            <span className={styles.schedule}>
+              {routine.paused ? "Paused" : describeWhen(routine.when)}
+            </span>
+          </Button>
           <Switch.Root
+            className={styles.switch}
             checked={!routine.paused}
             aria-label={`${routine.paused ? "Resume" : "Pause"} ${routine.name}`}
             onCheckedChange={(checked) =>
               setRoutinePaused(fish, routine, !checked)
             }
           />
-        </ContentRow.Root>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

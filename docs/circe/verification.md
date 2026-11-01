@@ -1,5 +1,94 @@
 # Circé verification record
 
+## Pond 2.2.0 upgrade — 2026-11-01
+
+The integration advances the upstream base from `a1f7cdd0` to `60b40a9a`
+(97 commits, including Pond 2.1.0 and 2.2.0). `main` remains an upstream
+mirror; Circé's browser adapters, Library identity, branding and host actions
+are retained on `web`. The three new `web-upgrade-*-cases.cjs` modules run
+through `smoke-web-browser.cjs --upgrade-220` and are included in the existing
+isolated browser CI runner.
+
+The browser acceptance uses actual Chromium pointer/keyboard input and the
+authenticated HTTP bridge to a rebuilt Electron host. Its disposable Library
+is separate from the user's Twitter Library. Fixtures replace external feed
+and model services; they do not replace the renderer, transport, persistence,
+Markdown renderer or host execution pipeline.
+
+| New behavior | Verification |
+| --- | --- |
+| RSS feed Watch | Actual New menu, Watch dialog, ingestion, stored files, ownership and reload; repeat sync deduplicates. |
+| Atom and invalid feeds | Authenticated HTTP checks of relative URLs, invalid schemes and non-feed HTML. |
+| Re-save from Trash | Actual browser Trash and Import from Links actions restore the original Save ID and saved date. |
+| Marked Source | Actual New Source connection UI reaches extension pairing. Live authentication/library sync is unverified. |
+| Fish faces | Actual picker controls cover all 15 species and 15 colors at phone width; reload agrees with host persistence. SVG frame sampling verifies idle/hover movement and reduced-motion stability. |
+| Routine list | A weekly paused routine is seeded only in the fixture Fish. Actual phone-width Resume, Pause, reload and detail controls persist correctly. Routine creation and timed execution are not claimed by this case. |
+| Reply rendering and scrolling | A loopback OpenAI-compatible fixture uses the real validated host stream and read-only search tool. Trusted wheel input moves the conversation up; later chunks preserve position; Read Latest Response resumes following. Code, tables, unsafe-link/HTML filtering, persistence and phone layout are checked. |
+| Automatic startup asks | The real 20-second startup toast appears without a modal; its visible Not Now control dismisses it and records the dismissal. |
+
+An initial chat-scroll test could send the wheel over the overlapping Fish
+details panel. It now checks the target's actual hit-test ancestry, focuses
+the test window, starts from the bottom with no follow button, and requires
+measured upward scrolling before accepting the released-follow state. No
+production scroll behavior or assertion was disabled to pass this check.
+Screenshot review also caught that a persisted table's DOM presence alone
+did not prove phone visibility. The phone case now closes the details panel,
+uses Read Latest Response when needed after resizing, and requires the table
+to fit onscreen and pass an unobstructed hit test before capturing evidence.
+
+Existing regressions also passed: authenticated core/media/network/parity,
+imports and package round trips, Canvas exports, browser Save editing,
+physical folder drag and Undo, image mouse navigation, imported-from filters,
+stable bulk pagination, and browser side-button history under `Win32` and
+`MacIntel` platform emulation. These runs use macOS Chromium; physical Windows
+and iPad acceptance and live Source/provider credentials remain separate.
+Library identity checks also pass actual browser file selection, invalid-image
+handling, favicon updates, icon/emoji reset, name and combined identity edits,
+reload and supervised host-restart reconnection, then restore the fixture
+Library's original identity.
+
+The cancelled desktop smoke was restarted. Its first attempt blocked inside
+macOS Keychain access, confirmed by a native process sample. The isolated
+`smoke:desktop` command now passes Electron's `--use-mock-keychain` flag, as
+the other fixture runners already do. Visible startup and preload checks pass;
+production Keychain behavior and security settings are unchanged.
+
+Repository gates passed:
+
+- Frozen-lockfile installation, typecheck, full production build, separate
+  browser build and Circé extension build. Both extension manifests report
+  2.2.0 and retain their respective Pond/Circé names. All bundle budgets pass
+  within the limits carried by the upstream release.
+- `pnpm check`: 28/28 tasks passed, 730 desktop files passed/five skipped;
+  5,156 desktop tests passed/47 skipped, with zero failures. Duration 4m54s.
+  Existing non-failing React `act()` warnings remain. Lint, Oxlint,
+  architecture, unused-code, generated-file and type checks passed.
+- Electron ABI database/vector checks: two files/eight tests passed.
+- React Doctor 0.9.21, upgrade changes against the pre-merge `HEAD`: 70/100,
+  33 non-blocking advisories, no errors. Most concern upstream shared-component
+  exports, component complexity and animation imports. Its RAF-cleanup warning
+  was checked against `useGlow`'s actual `cancelAnimationFrame` cleanup. The
+  broader scan against the old `origin/main` also reports existing Circé
+  archive-frame ref warnings; that file is unchanged by this upgrade. Neither
+  score establishes browser acceptance or an improvement over a differently
+  scoped/versioned scan. No rule suppression was added.
+
+The installed Dock launcher was reused without reinstalling it or changing
+macOS permissions, certificates, DNS or Tailscale configuration. The rebuilt
+host reports 2.2.0 and authenticated trusted-HTTPS health verifies the original
+Twitter Library ID/path. The probe revokes its own session. Nono's trusted HTTPS
+also returns 200.
+
+Activation exposed background video-sampling warnings for some existing media:
+FFmpeg can exit successfully without producing every requested sampled frame,
+and the sampler then rejects the batch. The sampler and its callers are
+unchanged by this upgrade; this remains a known limitation rather than a
+passing acceptance claim for every personal video.
+
+Logs and screenshots are private under
+`.artifacts/web-verification/pond-220-20261101` and the `upgrade220-*` files
+in its parent directory.
+
 ## Recorded browser workflow — 2026-10-31
 
 `smoke-web-browser.cjs --workflow` exercises one complete UI journey against a

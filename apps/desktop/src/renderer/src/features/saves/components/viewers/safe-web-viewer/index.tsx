@@ -144,7 +144,9 @@ export function SafeWebViewer({
         />
       ) : null}
       {source !== null && mode === "source" ? (
-        <pre className={styles.source}>{source}</pre>
+        <pre className={styles.source} data-scroll-fade="vertical">
+          {source}
+        </pre>
       ) : null}
     </div>
   );

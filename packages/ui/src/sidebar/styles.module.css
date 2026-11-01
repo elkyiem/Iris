@@ -65,9 +65,6 @@
   text-decoration: none;
 
   border-radius: var(--ds-radius-md);
-  transition:
-    color var(--ds-duration-medium) var(--ds-easing-standard),
-    background var(--ds-duration-medium) var(--ds-easing-standard);
 
   &:hover {
     color: var(--ds-gray-12);
@@ -117,9 +114,6 @@
   font-weight: var(--ds-weight-lg);
   color: var(--ds-gray-9);
   border-radius: var(--ds-radius-md);
-  transition:
-    color var(--ds-duration-medium) var(--ds-easing-standard),
-    background var(--ds-duration-medium) var(--ds-easing-standard);
 
   &[data-panel-open] .caret {
     transform: rotate(90deg);
@@ -144,7 +138,7 @@ button.label:hover {
   background: var(--ds-gray-a3);
 }
 
-.group-header {
+.heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -266,7 +260,7 @@ button.label:hover {
   }
 }
 
-.item-label {
+.text {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -274,7 +268,7 @@ button.label:hover {
   white-space: nowrap;
 }
 
-.item-detail {
+.detail {
   display: block;
   min-width: 0;
   overflow: hidden;

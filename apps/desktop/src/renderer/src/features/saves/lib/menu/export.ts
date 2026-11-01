@@ -19,6 +19,7 @@ import {
   exportSelectionCsv,
   exportSelectionFiles,
 } from "@/features/saves/lib/selection";
+import { formatPlural } from "@/shared/lib/format";
 import { shortcutGlyphs } from "@/shared/lib/shortcuts";
 import { notify } from "@/shared/lib/toast";
 import { glyph } from "./shared";
@@ -127,7 +128,7 @@ async function pollCompression(
     setTimeout(() => void pollCompression(id, copy), 500);
     return;
   }
-  const count = `${job.changed} ${job.changed === 1 ? "image" : "images"}`;
+  const count = formatPlural(job.changed, { one: "image", other: "images" });
   notify({
     id: `image-compression-${id}`,
     title:

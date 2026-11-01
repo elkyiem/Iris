@@ -60,7 +60,7 @@ export function videoDownloadGroups(source?: ExternalSource): GroupConfig[] {
           key: "maxFps",
           disabled: followsGlobal,
           title: "Maximum Frame Rate",
-          description: "Cap the frame rate.",
+          description: "Download videos at or below this frame rate.",
           options: [
             { value: null, label: "Unlimited" },
             { value: 60, label: "60\u00A0fps" },

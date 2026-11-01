@@ -62,17 +62,11 @@ function LinkItem({ className, ...props }: Base.LinkItem.Props) {
 }
 
 function ItemIcon({ className, ...props }: React.ComponentProps<"span">) {
-  return (
-    <span
-      aria-hidden
-      className={cn(styles["item-icon"], className)}
-      {...props}
-    />
-  );
+  return <span aria-hidden className={cn(styles.icon, className)} {...props} />;
 }
 
 function ItemLabel({ className, ...props }: React.ComponentProps<"span">) {
-  return <span className={cn(styles["item-label"], className)} {...props} />;
+  return <span className={cn(styles.label, className)} {...props} />;
 }
 
 function ItemKeyboard({
@@ -82,7 +76,7 @@ function ItemKeyboard({
   return (
     <Keyboard.Shortcut
       density="flat"
-      className={cn(styles["item-keyboard"], className)}
+      className={cn(styles.keyboard, className)}
       {...props}
     />
   );
@@ -94,10 +88,7 @@ function Group(props: Base.Group.Props) {
 
 function GroupLabel({ className, ...props }: Base.GroupLabel.Props) {
   return (
-    <Base.GroupLabel
-      className={cn(styles["group-label"], className)}
-      {...props}
-    />
+    <Base.GroupLabel className={cn(styles.heading, className)} {...props} />
   );
 }
 

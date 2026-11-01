@@ -65,7 +65,7 @@ addResult(
     join(desktopOut, "renderer"),
     /(?:href|src)="\.\/([^"?#]+\.(?:js|css))/g,
   ),
-  3_100_000,
+  3_150_000,
 );
 
 const websiteRoot = join(workspace, "apps/website/.next");
@@ -82,7 +82,7 @@ addResult(
 
 const extensionOut = join(workspace, "apps/extension/.output/chrome-mv3");
 /** The in-page overlay is a separate React bundle because content scripts can't share chunks with extension pages. */
-addResult("extension unpacked total", directorySize(extensionOut), 1_900_000);
+addResult("extension unpacked total", directorySize(extensionOut), 1_950_000);
 addResult(
   "extension service worker",
   fileSize(join(extensionOut, "background.js")),

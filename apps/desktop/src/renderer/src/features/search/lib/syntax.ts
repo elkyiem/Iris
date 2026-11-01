@@ -23,11 +23,11 @@ interface DatePreset {
 
 export const DATE_PRESETS: readonly DatePreset[] = [
   { slug: "today", label: "Today", iso: "today" },
-  { slug: "past-3-days", label: "Past 3 days", iso: "-P3D" },
-  { slug: "past-week", label: "Past week", iso: "-P1W" },
-  { slug: "past-month", label: "Past month", iso: "-P1M" },
-  { slug: "past-3-months", label: "Past 3 months", iso: "-P3M" },
-  { slug: "past-year", label: "Past year", iso: "-P1Y" },
+  { slug: "past-3-days", label: "Past 3 Days", iso: "-P3D" },
+  { slug: "past-week", label: "Past Week", iso: "-P1W" },
+  { slug: "past-month", label: "Past Month", iso: "-P1M" },
+  { slug: "past-3-months", label: "Past 3 Months", iso: "-P3M" },
+  { slug: "past-year", label: "Past Year", iso: "-P1Y" },
 ];
 
 interface TokenFieldSpec {

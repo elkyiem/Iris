@@ -1,7 +1,7 @@
 import { Combobox as Base } from "@base-ui/react/combobox";
 import {
   IconCheck as Check,
-  IconChevronExpandY as Expand,
+  IconChevronDown as Expand,
   IconXmark,
 } from "@pond/icons";
 import { clsx as cn } from "clsx";
@@ -103,10 +103,7 @@ function Chip({ className, children, ...props }: Base.Chip.Props) {
 
 function ChipRemove({ className, children, ...props }: Base.ChipRemove.Props) {
   return (
-    <Base.ChipRemove
-      className={cn(styles["chip-remove"], className)}
-      {...props}
-    >
+    <Base.ChipRemove className={cn(styles.remove, className)} {...props}>
       {children ?? <IconXmark size={12} />}
     </Base.ChipRemove>
   );
@@ -116,7 +113,7 @@ function ChipsInput({ className, onKeyDown, ...props }: Base.Input.Props) {
   return (
     <Base.Input
       {...props}
-      className={cn(styles["chips-input"], className)}
+      className={cn(styles.query, className)}
       onKeyDown={(event) => {
         onKeyDown?.(event);
         stopPageHotkeys(event);
@@ -159,7 +156,13 @@ function Arrow({ className, ...props }: Base.Arrow.Props) {
 }
 
 function List({ className, ...props }: Base.List.Props) {
-  return <Base.List className={cn(styles.list, className)} {...props} />;
+  return (
+    <Base.List
+      className={cn(styles.list, className)}
+      data-scroll-fade="vertical"
+      {...props}
+    />
+  );
 }
 
 function Empty({ className, ...props }: Base.Empty.Props) {
@@ -171,15 +174,15 @@ function Item({ className, ...props }: Base.Item.Props) {
 }
 
 function ItemLabel({ className, ...props }: React.ComponentProps<"span">) {
-  return <span className={cn(styles["item-label"], className)} {...props} />;
+  return <span className={cn(styles.text, className)} {...props} />;
 }
 
 function ItemEnd({ className, ...props }: React.ComponentProps<"span">) {
-  return <span className={cn(styles["item-end"], className)} {...props} />;
+  return <span className={cn(styles.end, className)} {...props} />;
 }
 
 function ItemMeta({ className, ...props }: React.ComponentProps<"span">) {
-  return <span className={cn(styles["item-meta"], className)} {...props} />;
+  return <span className={cn(styles.meta, className)} {...props} />;
 }
 
 function ItemIndicator({ className, ...props }: Base.ItemIndicator.Props) {
@@ -196,10 +199,7 @@ function Group({ className, ...props }: Base.Group.Props) {
 
 function GroupLabel({ className, ...props }: Base.GroupLabel.Props) {
   return (
-    <Base.GroupLabel
-      className={cn(styles["group-label"], className)}
-      {...props}
-    />
+    <Base.GroupLabel className={cn(styles.heading, className)} {...props} />
   );
 }
 

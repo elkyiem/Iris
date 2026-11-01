@@ -79,7 +79,7 @@ function RootIcon({ path }: { path: string }) {
         : path.startsWith("/canvas/")
           ? IconCanvas
           : IconAlbum2);
-  return <Icon aria-hidden="true" />;
+  return <Icon size={16} aria-hidden="true" />;
 }
 
 function Breadcrumbs() {
@@ -255,7 +255,7 @@ function Breadcrumbs() {
           ) : (
             <Button
               variant="ghost"
-              size="sm"
+              density="compact"
               className={styles.crumb}
               title={crumb.label}
               onClick={() => navigate(crumb)}

@@ -48,7 +48,6 @@ const preferences = z.object({
   darkPresetId: z.string().catch(DEFAULT_DARK_PRESET_ID),
   light: lightThemeDefSchema.catch(DEFAULT_LIGHT_THEME),
   dark: darkThemeDefSchema.catch(DEFAULT_DARK_THEME),
-  pointerCursors: z.boolean().catch(false),
   reduceMotion: z.enum(["system", "always", "never"]).catch("system"),
   tweetCover: z.enum(["media", "screenshot"]).catch("media"),
   soundsEnabled: z.boolean().catch(true),
@@ -225,7 +224,6 @@ export const WindowPrefsSchema = z.object({
 const system = z.object({
   proxyMode: z.enum(["system", "direct", "manual"]).catch("system"),
   proxyUrl: z.string().catch(""),
-  displayColorSpace: z.enum(["auto", "srgb", "display-p3"]).catch("auto"),
   hardwareAcceleration: z.boolean().catch(true),
   dockVisibility: z.enum(["automatic", "always"]).catch("automatic"),
 });
@@ -438,7 +436,6 @@ const ai = z.object({
   mediaUnderstandingMode: z.enum(["florence", "gemma4"]).catch("florence"),
   mediaUnderstandingProvider: z.enum(["ollama", "lmstudio"]).catch("ollama"),
   mediaUnderstandingModelId: z.string().catch("gemma4:e2b"),
-  mediaUnderstandingFallbackToFlorence: z.boolean().catch(false),
   captionModelId: z.string().catch(""),
   clipModelId: z.string().catch(""),
   whisperModelId: z.string().catch(""),

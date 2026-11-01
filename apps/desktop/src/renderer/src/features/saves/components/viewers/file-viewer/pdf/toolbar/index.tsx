@@ -95,7 +95,7 @@ export function PdfToolbar({
               onChange={(event) => setSearchQuery(event.target.value)}
             />
           </Input.Root>
-          <span className={styles["search-count"]} aria-live="polite">
+          <span className={styles.count} aria-live="polite">
             {searching
               ? "Searching"
               : searchResults.length

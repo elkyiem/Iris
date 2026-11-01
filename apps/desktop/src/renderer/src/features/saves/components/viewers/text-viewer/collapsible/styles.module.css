@@ -6,7 +6,7 @@
   }
 }
 
-.collapse-title {
+.title {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -29,11 +29,11 @@
   }
 }
 
-.collapse[open] > .collapse-title::before {
+.collapse[open] > .title::before {
   transform: rotate(90deg);
 }
 
-.collapse-content {
+.content {
   padding-left: 18px;
   margin-top: var(--note-space-small);
 }

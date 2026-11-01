@@ -1,0 +1,127 @@
+.scroll {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  width: 100%;
+  background: var(--data-table-header-bg, var(--ds-gray-1));
+}
+
+.row {
+  box-sizing: border-box;
+  display: grid;
+  align-items: center;
+  width: 100%;
+  height: var(--data-table-header-height, 40px);
+  padding-inline: calc(
+    var(--data-table-inset, 0px) +
+    var(--data-table-gutter, 8px)
+  );
+  border-bottom: var(--data-table-header-border, none);
+}
+
+.cell {
+  composes: pinned from "../pinned/styles.module.css";
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: var(--data-table-header-height, 40px);
+  padding: 0 var(--data-table-cell-padding, 8px);
+  background: var(--data-table-header-bg, var(--ds-gray-1));
+}
+
+.cell[data-pinned] {
+  --pin-bg: var(--data-table-header-bg, var(--ds-gray-1));
+  --pin-tint: transparent;
+}
+
+.cell[data-dragging] {
+  z-index: 2;
+  opacity: 0.45;
+}
+
+.cell[data-overlay] {
+  width: 100%;
+  pointer-events: none;
+  background: var(--ds-gray-3);
+  border-radius: var(--ds-radius-sm);
+  box-shadow: var(--ds-shadow-md);
+}
+
+.resize-handle {
+  position: absolute;
+  top: 0;
+  right: -3px;
+  z-index: 1;
+  width: 6px;
+  height: 100%;
+  padding: 0;
+  touch-action: none;
+  cursor: col-resize;
+  background: transparent;
+  border: 0;
+}
+
+.resize-handle::after {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 2px;
+  width: 2px;
+  content: "";
+  background: transparent;
+  border-radius: var(--ds-radius-full);
+}
+
+.resize-handle:hover::after,
+.resize-handle:focus-visible::after {
+  background: var(--ds-gray-a6);
+}
+
+.resize-handle:focus-visible {
+  outline: 2px solid var(--ds-gray-a8);
+  outline-offset: -2px;
+}
+
+.cell[data-align="end"] {
+  justify-content: flex-end;
+}
+
+.cell[data-align="center"] {
+  justify-content: center;
+}
+
+.static {
+  font-size: var(--ds-text-sm);
+  font-weight: var(--data-table-header-weight, var(--ds-weight-md));
+  color: var(--ds-gray-11);
+}
+
+.sort-button {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  padding: 0;
+  font-size: var(--ds-text-sm);
+  font-weight: var(--data-table-header-weight, var(--ds-weight-md));
+  color: var(--ds-gray-11);
+  text-align: left;
+  cursor: var(--ds-cursor-interactive, pointer);
+  background: transparent;
+  border: 0;
+  transition: color var(--ds-duration-fast) var(--ds-easing-standard);
+}
+
+.sort-button:hover,
+.sort-button[data-active] {
+  color: var(--ds-gray-12);
+}
+
+.sort-caret {
+  color: var(--ds-gray-9);
+  transform: rotate(180deg);
+}
+
+.sort-caret[data-desc] {
+  transform: none;
+}

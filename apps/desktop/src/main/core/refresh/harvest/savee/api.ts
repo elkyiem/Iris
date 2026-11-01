@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { Capture } from "@pond/schema/raw";
 import { session } from "electron";
 import log from "electron-log/main.js";
@@ -266,8 +267,4 @@ export async function fetchSaveeCapture(args: {
     args.sourceId,
     sessionPost(await partitionForIngest("savee", args.accountId)),
   );
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -28,15 +28,13 @@ describe("SearchChrome.Input", () => {
     expect(markup).toContain(styles.input);
     expect(markup).toContain(styles.field);
     expect(markup).toContain('data-variant="borderless"');
+    expect(markup).toContain('data-appearance="bare"');
     expect(markup).not.toContain("<svg");
     expect(declarations(".root")).toContain(
       "--search-chrome-inline-start: 20px;",
     );
     expect(declarations(".bar")).toContain("padding: 8px;");
     expect(declarations(".search")).toContain("padding-left: 8px;");
-    expect(
-      declarations('.input[data-variant="borderless"] > .field'),
-    ).toContain("padding-inline: 0;");
   });
 
   it("uses the primary field for Harvester", () => {
@@ -44,13 +42,12 @@ describe("SearchChrome.Input", () => {
       <SearchChrome.Input aria-label="Search" variant="primary" />,
     );
     expect(markup).toContain('data-variant="primary"');
+    expect(markup).not.toContain('data-appearance="bare"');
   });
 
   it("matches the Library search placeholder emphasis", () => {
-    const field = declarations('.input[data-variant="borderless"] > .field');
-    expect(field).toContain("font-weight: 400;");
-    expect(
-      declarations('.input[data-variant="borderless"] > .field::placeholder'),
-    ).toContain("color: var(--ds-gray-9);");
+    expect(declarations("&::placeholder")).toContain(
+      "color: var(--ds-gray-9);",
+    );
   });
 });

@@ -322,7 +322,7 @@ export function scrubbedEnvironment(
   const fold = (name: string) =>
     platform === "win32" ? name.toUpperCase() : name;
   const inherited = new Set<string>(INHERITED_PROVIDER_ENV.map(fold));
-  // Subscription connections must never silently use inherited API billing.
+  /** Subscription connections must never silently use inherited API billing. */
   for (const key of Object.keys(env)) {
     const name = fold(key);
     if (
@@ -618,11 +618,10 @@ export async function prepareCodexRuntime(
       join(codexHome, "auth.json"),
     );
   } catch (error) {
-    // Provider credentials are never copied: a copy would outlive a crash in
-    // the temp directory and swallow token rotation. A hard link is rejected
-    // too: it cannot cross volumes (temp and profile may differ) and, like the
-    // symlink, loses a rotated token when Codex replaces the file by rename.
-    // Windows refuses symlinks without Developer Mode, so Codex is gated there.
+    /**
+     * Windows refuses symlinks without Developer Mode, so Codex is gated there.
+     * @remarks A copy or hard link would outlive a crash, miss token rotation, or fail across volumes.
+     */
     if (
       deps.platform === "win32" &&
       error instanceof Error &&

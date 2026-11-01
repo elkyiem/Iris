@@ -31,6 +31,7 @@ import {
   SIDEBAR_SORTABLE_SCREEN_READER_INSTRUCTIONS,
   SORTABLE_DROP_ANIMATION,
 } from "@/shared/lib/dnd-kit";
+import { formatNumber, formatPlural } from "@/shared/lib/format";
 import { usePrefs } from "@/shared/state/prefs";
 import { useOrganizationTree } from "../../../hooks/use-organization-tree";
 import { useSidebarCounts } from "../../../hooks/use-sidebar-counts";
@@ -215,7 +216,7 @@ export function FolderTree({ folderRows, libraryPage, nav }: FolderTreeProps) {
               </Sidebar.CollapsibleGroupLabel>
               {organization.selected.length > 1 ? (
                 <Sidebar.Count aria-live="polite">
-                  {organization.selected.length} selected
+                  {`${formatNumber(organization.selected.length)} selected`}
                 </Sidebar.Count>
               ) : null}
               <Button
@@ -366,7 +367,10 @@ export function FolderTree({ folderRows, libraryPage, nav }: FolderTreeProps) {
                     status={
                       organization.selected.includes(activeFolder.id) &&
                       organization.selected.length > 1
-                        ? `${organization.selected.length} folders`
+                        ? formatPlural(organization.selected.length, {
+                            one: "folder",
+                            other: "folders",
+                          })
                         : undefined
                     }
                     active={

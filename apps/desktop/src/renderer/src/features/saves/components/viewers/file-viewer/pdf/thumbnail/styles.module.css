@@ -1,24 +1,18 @@
 .thumbnail {
+  --ds-focus-offset: -2px;
+
   display: grid;
   gap: 6px;
   justify-items: center;
   width: 112px;
   padding: 7px;
-  font: inherit;
   color: var(--ds-gray-10);
-  cursor: pointer;
-  background: transparent;
   border: var(--ds-border-width) solid transparent;
   border-radius: var(--ds-radius-md);
 }
 
 .thumbnail:hover {
   background: var(--ds-gray-a3);
-}
-
-.thumbnail:focus-visible {
-  outline: 2px solid var(--ds-focus-ring);
-  outline-offset: -2px;
 }
 
 .thumbnail[data-active] {

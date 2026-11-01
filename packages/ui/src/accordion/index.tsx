@@ -14,8 +14,19 @@ function Header({ className, ...props }: Base.Header.Props) {
   return <Base.Header className={cn(styles.header, className)} {...props} />;
 }
 
-function Trigger({ className, ...props }: Base.Trigger.Props) {
-  return <Base.Trigger className={cn(styles.trigger, className)} {...props} />;
+interface TriggerProps extends Base.Trigger.Props {
+  /** `bare` keeps behavior and focus only, for headers that lay out their own title. */
+  variant?: "default" | "bare";
+}
+
+function Trigger({ className, variant = "default", ...props }: TriggerProps) {
+  return (
+    <Base.Trigger
+      data-variant={variant === "bare" ? variant : undefined}
+      className={cn(styles.trigger, className)}
+      {...props}
+    />
+  );
 }
 
 function Panel({ className, ...props }: Base.Panel.Props) {

@@ -36,11 +36,9 @@ export function ReferenceList({
             onClick={() => onOpen(item)}
           >
             <span className={styles.media}>{item.media ?? <IconLink2 />}</span>
-            <span className={styles["model-content"]}>
-              <span className={styles["model-name"]}>{item.title}</span>
-              {item.meta && (
-                <span className={styles["row-description"]}>{item.meta}</span>
-              )}
+            <span className={styles.content}>
+              <span className={styles.title}>{item.title}</span>
+              {item.meta && <span className={styles.meta}>{item.meta}</span>}
               {item.description && (
                 <span className={styles.description}>{item.description}</span>
               )}

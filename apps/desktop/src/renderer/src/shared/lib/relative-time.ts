@@ -1,4 +1,5 @@
-const MINUTE = 60_000;
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 const MONTH = 30 * DAY;
@@ -7,7 +8,8 @@ const YEAR = 365 * DAY;
 const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "always" });
 
 function ago(diff: number): string {
-  if (diff < MINUTE) return "just now";
+  if (diff < MINUTE)
+    return rtf.format(-Math.max(1, Math.floor(diff / SECOND)), "second");
   if (diff < HOUR) return rtf.format(-Math.floor(diff / MINUTE), "minute");
   if (diff < DAY) return rtf.format(-Math.floor(diff / HOUR), "hour");
   if (diff < MONTH) return rtf.format(-Math.floor(diff / DAY), "day");

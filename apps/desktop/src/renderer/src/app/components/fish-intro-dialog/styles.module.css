@@ -49,7 +49,7 @@
   color: var(--ds-gray-10);
 }
 
-.fact-title {
+.heading {
   margin: 0 0 2px;
   font-size: var(--ds-text-sm);
   font-weight: var(--ds-weight-lg);

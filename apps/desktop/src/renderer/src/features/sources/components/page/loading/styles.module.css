@@ -1,0 +1,12 @@
+/* Held back so fast loads finish before the status shows. */
+.root {
+  animation: appear var(--ds-duration-medium) var(--ds-easing-decelerate) 200ms
+    both;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}

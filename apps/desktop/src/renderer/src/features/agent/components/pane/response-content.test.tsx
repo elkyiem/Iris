@@ -361,14 +361,17 @@ it("keeps a numbered single reply in one bubble", async () => {
   expect(host.querySelectorAll("li")).toHaveLength(3);
 });
 
-it("copies the whole reply through Pond and sits beside the last bubble", async () => {
+it("copies the whole reply through Pond from below the last bubble", async () => {
   const query = vi.fn(async () => ({ ok: true }));
   vi.stubGlobal("pond", { query });
   const messages = ["Hey!", "Here's the second."];
   await renderReply(messages.join("\n\n"), messages);
   const copy = host.querySelector<HTMLButtonElement>('[aria-label="Copy"]');
   const bubbles = host.querySelectorAll('[data-slot="message-bubble"]');
-  expect(copy?.parentElement?.parentElement).toBe(bubbles[1]?.parentElement);
+  const last = bubbles[bubbles.length - 1];
+  expect(copy && last?.compareDocumentPosition(copy)).toBe(
+    Node.DOCUMENT_POSITION_FOLLOWING,
+  );
   await act(async () => copy?.click());
   expect(query).toHaveBeenCalledWith("clipboard.writeText", {
     text: "Hey!\n\nHere's the second.",

@@ -30,6 +30,7 @@ export function SaveIdentity({
           multiline
           disabled={!save}
           variant="secondary"
+          padding="compact"
           placeholder="Untitled"
           mixedPlaceholder="Multiple titles"
           commit={async (value) => {
@@ -45,40 +46,39 @@ export function SaveIdentity({
       {save ? (
         <div className={styles.field}>
           <span className={styles.label}>URL</span>
-          <div className={styles.url}>
-            <InspectorTextField
-              className={styles.input}
-              drafts={drafts}
-              cacheKey={`${cacheKey}:url`}
-              label="Source URL"
-              value={url}
-              placeholder="No source URL"
-              maxLength={8192}
-              variant="secondary"
-              commit={async (value) => {
-                await mutateSave(
-                  save.id,
-                  { url: value.trim() },
-                  { actorReason: "user:edit-source-url", throwOnError: true },
-                );
-              }}
-            />
-            {url ? (
-              <Tooltip label="Open in Browser">
-                <Button
-                  type="button"
-                  icon
-                  size="xs"
-                  variant="ghost"
-                  className={styles.open}
-                  aria-label="Open Source URL"
-                  onClick={() => void window.pond.openExternal(url)}
-                >
-                  <IconExternalLink size={12} />
-                </Button>
-              </Tooltip>
-            ) : null}
-          </div>
+          <InspectorTextField
+            drafts={drafts}
+            cacheKey={`${cacheKey}:url`}
+            label="Source URL"
+            value={url}
+            placeholder="No source URL"
+            maxLength={8192}
+            variant="secondary"
+            suffix={
+              url ? (
+                <Tooltip label="Open in Browser">
+                  <Button
+                    type="button"
+                    icon
+                    size="xs"
+                    variant="ghost"
+                    className={styles.open}
+                    aria-label="Open Source URL"
+                    onClick={() => void window.pond.openExternal(url)}
+                  >
+                    <IconExternalLink size={12} />
+                  </Button>
+                </Tooltip>
+              ) : null
+            }
+            commit={async (value) => {
+              await mutateSave(
+                save.id,
+                { url: value.trim() },
+                { actorReason: "user:edit-source-url", throwOnError: true },
+              );
+            }}
+          />
         </div>
       ) : null}
     </div>

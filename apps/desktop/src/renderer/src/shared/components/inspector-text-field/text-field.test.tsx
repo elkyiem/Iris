@@ -55,6 +55,15 @@ async function blur() {
   });
 }
 
+it("grows multiline inspector fields with their content", async () => {
+  await render(
+    "a",
+    "Notes",
+    vi.fn(async (_value: string) => {}),
+  );
+  expect(field().dataset.sizing).toBe("content");
+});
+
 it("does not replace mixed notes until edited, then commits only the bound targets", async () => {
   const first = vi.fn(async (_value: string) => {});
   const second = vi.fn(async (_value: string) => {});

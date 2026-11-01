@@ -11,6 +11,7 @@ import { enterFolder } from "@/features/library/operations/enter-folder";
 import { folders } from "@/features/library/state/folders";
 import type { LibraryNav } from "@/features/library/state/library-chrome";
 import { type FolderIconId, folderColorCss } from "@/shared/lib/folder-icons";
+import { formatPlural } from "@/shared/lib/format";
 import { FolderCover } from "../cover";
 import { buildFolderRowMenuItems } from "../folder-row-menu";
 import { FolderNameEditor } from "../name-editor";
@@ -81,7 +82,7 @@ export function FolderTreeRow(props: FolderTreeRowProps) {
   const saveDropCount =
     props.folderDrop?.id === folder.id ? props.folderDrop.saveCount : undefined;
   const saveDropLabel = saveDropCount
-    ? `Add ${saveDropCount} ${saveDropCount === 1 ? "Save" : "Saves"}`
+    ? `Add ${formatPlural(saveDropCount, { one: "Save", other: "Saves" })}`
     : undefined;
   return (
     <FolderContextMenu
@@ -131,7 +132,7 @@ export function FolderTreeRow(props: FolderTreeRowProps) {
           <Button
             icon
             size="xs"
-            variant="text"
+            variant="bare"
             className={styles.disclosure}
             aria-label={`${props.collapsed ? "Expand" : "Collapse"} ${folder.name}`}
             aria-expanded={!props.collapsed}

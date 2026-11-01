@@ -9,7 +9,7 @@
   padding: 8%;
   container-type: inline-size;
   overflow: hidden;
-  color: light-dark(#171717, #f5f5f5);
+  color: var(--ds-gray-12);
   text-align: center;
   background:
     radial-gradient(circle at 50% 25%, var(--ds-gray-1), transparent 55%),

@@ -1,4 +1,4 @@
-.list-body {
+.body {
   display: flex;
   flex-direction: column;
 }
@@ -25,7 +25,7 @@
   display: block;
   flex: none;
   background: var(--ds-gray-4);
-  animation: pending 1.2s ease-in-out infinite;
+  animation: pending 1.2s var(--ds-easing-in-out) infinite;
 
   &[data-part="logo"] {
     width: 20px;

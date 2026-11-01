@@ -12,7 +12,7 @@ body {
   position: relative;
   overflow: hidden;
   color: var(--ds-gray-12);
-  background: #000;
+  background: black;
 }
 
 #preview-ui {
@@ -23,9 +23,8 @@ body {
 }
 
 .preview-window-chrome button {
-  background: color-mix(in oklab, var(--ds-gray-1) 88%, transparent);
+  background: var(--ds-gray-1);
   box-shadow: var(--ds-shadow-sm);
-  backdrop-filter: blur(16px) saturate(1.2);
 }
 
 #preview-ui button,
@@ -38,7 +37,7 @@ body {
   display: grid;
   place-items: center;
   overflow: auto;
-  background: #000;
+  background: black;
 }
 
 #image {
@@ -61,7 +60,7 @@ body {
   height: 100%;
   min-height: 0;
   object-fit: contain;
-  background: #000;
+  background: black;
 }
 
 #video[data-size="fill"] {
@@ -81,17 +80,10 @@ body {
   width: max-content;
   max-width: calc(100vw - 32px);
   padding: 4px;
-  background: color-mix(in oklab, var(--ds-gray-1) 88%, transparent);
+  background: var(--ds-gray-1);
   border-radius: var(--ds-radius-lg);
   box-shadow: var(--ds-shadow-tooltip);
-  backdrop-filter: blur(18px) saturate(1.2);
   transform: translateX(-50%);
-  transition: background-color var(--ds-duration-fast) var(--ds-easing-standard);
-}
-
-.preview-controls:hover,
-.preview-controls:focus-within {
-  background: color-mix(in oklab, var(--ds-gray-1) 96%, transparent);
 }
 
 :where(body[data-media-type="video"]) .preview-controls {
@@ -175,13 +167,11 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body:not([data-reduce-motion="never"]) #image,
-  body:not([data-reduce-motion="never"]) .preview-controls {
+  body:not([data-reduce-motion="never"]) #image {
     transition: none;
   }
 }
 
-body[data-reduce-motion="always"] #image,
-body[data-reduce-motion="always"] .preview-controls {
+body[data-reduce-motion="always"] #image {
   transition: none;
 }

@@ -130,7 +130,7 @@ function ArticleBody({
   }, []);
 
   return (
-    <div className={styles.scroll} ref={scrollRef}>
+    <div className={styles.scroll} ref={scrollRef} data-scroll-fade="vertical">
       <article className={styles.column}>
         <header className={styles.header}>
           {meta.title ? <h1 className={styles.title}>{meta.title}</h1> : null}

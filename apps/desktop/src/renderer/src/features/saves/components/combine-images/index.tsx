@@ -11,6 +11,7 @@ import { type DragEvent, useEffect, useMemo, useState } from "react";
 import { ensureSaves } from "@/features/saves/lib/ensure-saves";
 import { savesStore } from "@/features/saves/state/pool";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 import { type Highlight, readStoredOptions, storeOptions } from "./options";
 import { type CombineImage, Preview } from "./preview";
@@ -94,7 +95,7 @@ export function CombineImages({
     if (added.length === 0) {
       notify({
         id: "combine-images-drop",
-        title: "Couldn't Add Files",
+        title: "Couldn't add files",
         description: "Drag images from your library into this window.",
       });
       return;
@@ -118,7 +119,7 @@ export function CombineImages({
         if (result.reason !== "cancelled")
           notify({
             id: "combine-images",
-            title: "Couldn't Combine Images",
+            title: "Couldn't combine images",
             description: result.error ?? "Try again.",
           });
         return;
@@ -128,14 +129,14 @@ export function CombineImages({
         title: exporting ? "Combined Image Exported" : "Combined Image Created",
         description:
           result.skipped && result.skipped > 0
-            ? `${result.skipped} files were skipped.`
+            ? `${formatPlural(result.skipped, { one: "file was", other: "files were" })} skipped.`
             : undefined,
       });
       if (!exporting && options.deleteOriginals) setOrder([]);
     } catch (error) {
       notify({
         id: "combine-images",
-        title: "Couldn't Combine Images",
+        title: "Couldn't combine images",
         description: errorCopy(error, "Try again."),
       });
     } finally {

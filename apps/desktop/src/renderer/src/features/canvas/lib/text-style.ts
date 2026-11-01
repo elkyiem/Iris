@@ -14,7 +14,7 @@ export const TEXT_SIZE_LABELS = {
 } satisfies Record<CanvasTextSize, string>;
 
 export const FONT_LABELS = {
-  simple: "Simple",
+  simple: "Plain",
   bookish: "Bookish",
   technical: "Technical",
 } satisfies Record<CanvasFont, string>;

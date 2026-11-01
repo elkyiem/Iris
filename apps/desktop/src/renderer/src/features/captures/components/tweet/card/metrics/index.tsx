@@ -1,10 +1,11 @@
 import {
-  BookmarkIcon,
-  LikeIcon,
-  ReplyIcon,
-  RetweetIcon,
-  ViewsIcon,
-} from "@/features/captures/components/tweet/card/icons";
+  IconTweetBookmarkFill,
+  IconTweetLikeFill,
+  IconTweetReplyFill,
+  IconTweetRepostFill,
+  IconTweetViewsFill,
+} from "@pond/icons";
+import type { IconComponent } from "@pond/icons/types";
 import type { TweetCardMetrics } from "@/features/captures/components/tweet/card/lib/data";
 import { formatCount } from "@/shared/lib/format";
 import styles from "./styles.module.css";
@@ -12,14 +13,40 @@ import styles from "./styles.module.css";
 export function Metrics({ metrics }: { metrics: TweetCardMetrics }) {
   const items: Array<{
     key: string;
-    Icon: typeof ReplyIcon;
+    label: string;
+    Icon: IconComponent;
     value: number | undefined;
   }> = [
-    { key: "replies", Icon: ReplyIcon, value: metrics.replies },
-    { key: "retweets", Icon: RetweetIcon, value: metrics.retweets },
-    { key: "likes", Icon: LikeIcon, value: metrics.likes },
-    { key: "views", Icon: ViewsIcon, value: metrics.views },
-    { key: "bookmarks", Icon: BookmarkIcon, value: metrics.bookmarks },
+    {
+      key: "replies",
+      label: "Replies",
+      Icon: IconTweetReplyFill,
+      value: metrics.replies,
+    },
+    {
+      key: "retweets",
+      label: "Retweets",
+      Icon: IconTweetRepostFill,
+      value: metrics.retweets,
+    },
+    {
+      key: "likes",
+      label: "Likes",
+      Icon: IconTweetLikeFill,
+      value: metrics.likes,
+    },
+    {
+      key: "views",
+      label: "Views",
+      Icon: IconTweetViewsFill,
+      value: metrics.views,
+    },
+    {
+      key: "bookmarks",
+      label: "Bookmarks",
+      Icon: IconTweetBookmarkFill,
+      value: metrics.bookmarks,
+    },
   ];
 
   const shown = items.filter((i) => i.value !== undefined);
@@ -27,12 +54,10 @@ export function Metrics({ metrics }: { metrics: TweetCardMetrics }) {
 
   return (
     <div className={styles.metrics}>
-      {shown.map(({ key, Icon, value }) => (
+      {shown.map(({ key, label, Icon, value }) => (
         <span key={key} className={styles.metric}>
-          <Icon className={styles["metric-icon"]} width={18} height={18} />
-          <span className={styles["metric-value"]}>
-            {formatCount(value ?? 0)}
-          </span>
+          <Icon className={styles.icon} size={18} title={label} />
+          <span className={styles.value}>{formatCount(value ?? 0)}</span>
         </span>
       ))}
     </div>

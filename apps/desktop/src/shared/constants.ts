@@ -93,7 +93,7 @@ export type BlankDocumentMenuActionId =
   `library.new-blank-${BlankDocumentKind}`;
 
 export type ConnectSourceMenuActionId = `library.connect-${ExternalSource}`;
-export type WatchSourceMenuActionId = `library.watch-${ExternalSource}`;
+export type WatchSourceMenuActionId = `library.watch-${ExternalSource | "web"}`;
 
 export type FindFilterMenuActionId = `find.filter.${string}`;
 

@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { ConnectedAccount, Source } from "@pond/schema/db";
 import { connectsByHandle } from "@pond/schema/sources";
 import { type Cookie, session, shell } from "electron";
@@ -12,7 +13,6 @@ import { homeUrlForSource } from "../sources";
 import { HARVEST_TIMEOUT_MS, NAV_TIMEOUT_MS, PARTITION } from "./constants";
 import { looksLikeAuthWall, navigateWithTimeout } from "./navigation";
 import { leaseWindow } from "./pool";
-import { sleep } from "./util";
 
 type SignInMode = "external";
 
@@ -201,6 +201,7 @@ function probeUrlForSource(source: Source): string {
   if (source === "vimeo") return "https://vimeo.com/";
   if (source === "dribbble") return "https://dribbble.com/";
   if (source === "unsplash") return "https://unsplash.com/";
+  if (source === "marked") return "https://marked.dev/explore";
   return homeUrlForSource(source);
 }
 

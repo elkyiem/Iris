@@ -12,6 +12,7 @@ import { getDb } from "../db";
 import { saveDir } from "../paths";
 import { createManualSave, importedFilesComplete } from "./manual-import";
 import { writePartitionCookies } from "./refresh/harvest-window/session";
+import { restoreSave } from "./restore-save";
 
 export async function captureAsset(input: {
   url: string;
@@ -23,15 +24,22 @@ export async function captureAsset(input: {
   const sourceId = `asset:${createHash("sha256").update(input.url).digest("hex")}`;
   const db = await getDb();
   const existing = db
-    .select({ id: saves.id, files: saves.files, status: saves.status })
+    .select({
+      id: saves.id,
+      files: saves.files,
+      status: saves.status,
+      deletedAt: saves.deletedAt,
+    })
     .from(saves)
     .where(and(eq(saves.source, "web"), eq(saves.sourceId, sourceId)))
     .get();
+  const restored = existing?.deletedAt != null;
+  if (existing && restored) await restoreSave(existing.id, "capture:restore");
   if (
     existing &&
     (await importedFilesComplete(existing, saveDir(existing.id), 1))
   )
-    return { id: existing.id, duplicate: true };
+    return { id: existing.id, duplicate: !restored };
   const directory = await mkdtemp(join(tmpdir(), "pond-asset-"));
   const partition = `pond-asset-${crypto.randomUUID()}`;
   const isolated = session.fromPartition(partition, { cache: false });

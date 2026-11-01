@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { Source } from "@pond/schema/db";
 import type { Capture } from "@pond/schema/raw";
 import { sourceLabel } from "@pond/schema/sources";
@@ -12,7 +13,6 @@ import {
   waitPastInterstitial,
 } from "./navigation";
 import { leaseWindow } from "./pool";
-import { sleep } from "./util";
 
 export {
   harvestTwitterBookmarkFolder,

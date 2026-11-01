@@ -72,8 +72,8 @@
   justify-content: center;
   width: 44px;
   height: 44px;
-  color: #fff;
-  background: rgb(0 0 0 / 0.5);
+  color: white;
+  background: var(--ds-black-a8);
   border-radius: var(--ds-radius-full);
   transform: translate(-50%, -50%);
 }
@@ -85,7 +85,7 @@
   padding: 1px 6px;
   font-size: var(--ds-text-sm);
   font-weight: 600;
-  color: #fff;
-  background: rgb(0 0 0 / 0.65);
+  color: white;
+  background: var(--ds-black-a10);
   border-radius: var(--ds-radius-xs);
 }

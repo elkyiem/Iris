@@ -15,6 +15,7 @@ import {
 } from "@shared/rename-template";
 import { type ReactNode, useId, useMemo, useRef, useState } from "react";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import styles from "./styles.module.css";
 
 export interface BatchRenameItem {
@@ -88,6 +89,7 @@ export function BatchRenameDialog({
 }) {
   const id = useId();
   const patternRef = useRef<HTMLInputElement>(null);
+  const findRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<Mode>("format");
   const [pattern, setPattern] = useState(defaultPattern);
   const [start, setStart] = useState("1");
@@ -96,6 +98,8 @@ export function BatchRenameDialog({
   const [textCase, setTextCase] = useState<CaseChoice>("keep");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [missing, setMissing] = useState(false);
+  const [triedUnchanged, setTriedUnchanged] = useState(false);
 
   const numbered = mode === "format" && NUMBER_TOKEN.test(pattern);
   const startAt = Math.max(0, Number.parseInt(start, 10) || 0);
@@ -144,10 +148,8 @@ export function BatchRenameDialog({
     (row) => row.status === "changed" || row.status === "repeated",
   ).length;
   const previews = items.some((item) => item.preview);
-  const ready =
-    !busy &&
-    changed > 0 &&
-    (mode === "replace" ? find.length > 0 : request.pattern.length > 0);
+  const filled =
+    mode === "replace" ? find.length > 0 : request.pattern.length > 0;
 
   function insertToken(token: string) {
     const input = patternRef.current;
@@ -164,7 +166,16 @@ export function BatchRenameDialog({
   }
 
   async function submit() {
-    if (!ready) return;
+    if (busy) return;
+    if (!filled) {
+      setMissing(true);
+      (mode === "replace" ? findRef : patternRef).current?.focus();
+      return;
+    }
+    if (changed === 0) {
+      setTriedUnchanged(true);
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -202,7 +213,7 @@ export function BatchRenameDialog({
             }}
           >
             <Dialog.Header>
-              <Dialog.Title>{`Rename ${items.length.toLocaleString()} ${items.length === 1 ? noun.one : noun.other}`}</Dialog.Title>
+              <Dialog.Title>{`Rename ${formatPlural(items.length, noun)}`}</Dialog.Title>
             </Dialog.Header>
             <div className={styles.body}>
               <fieldset className={styles.options} disabled={busy}>
@@ -225,7 +236,10 @@ export function BatchRenameDialog({
                 </ToggleGroup>
                 {mode === "format" ? (
                   <>
-                    <Field.Root className={styles.field}>
+                    <Field.Root
+                      className={styles.field}
+                      invalid={(missing && !filled) || undefined}
+                    >
                       <Field.Label>Name</Field.Label>
                       <Input.Root size="sm">
                         <Field.Control
@@ -240,6 +254,9 @@ export function BatchRenameDialog({
                           onValueChange={setPattern}
                         />
                       </Input.Root>
+                      {missing && !filled ? (
+                        <Field.Error match>Enter a name format.</Field.Error>
+                      ) : null}
                       <fieldset className={styles.tokens}>
                         <legend className={styles.hidden}>
                           Insert into Name
@@ -283,12 +300,16 @@ export function BatchRenameDialog({
                   </>
                 ) : (
                   <>
-                    <Field.Root className={styles.field}>
+                    <Field.Root
+                      className={styles.field}
+                      invalid={(missing && !filled) || undefined}
+                    >
                       <Field.Label>Find</Field.Label>
                       <Input.Root size="sm">
                         <Field.Control
                           render={
                             <Input.Field
+                              ref={findRef}
                               autoFocus
                               maxLength={200}
                               spellCheck={false}
@@ -298,6 +319,9 @@ export function BatchRenameDialog({
                           onValueChange={setFind}
                         />
                       </Input.Root>
+                      {missing && !filled ? (
+                        <Field.Error match>Enter the text to find.</Field.Error>
+                      ) : null}
                     </Field.Root>
                     <Field.Root className={styles.field}>
                       <Field.Label>Replace With</Field.Label>
@@ -343,7 +367,7 @@ export function BatchRenameDialog({
                   </ToggleGroup>
                 </div>
               </fieldset>
-              <div className={styles.preview}>
+              <div className={styles.preview} data-scroll-fade="vertical">
                 <Table.Root
                   className={styles.table}
                   containerClassName={styles.container}
@@ -391,16 +415,16 @@ export function BatchRenameDialog({
             </div>
             <Dialog.Footer
               leading={
-                error ? (
+                error || (triedUnchanged && changed === 0) ? (
                   <p className={styles.error} role="alert">
-                    {error}
+                    {error ?? "No names change with these settings."}
                   </p>
                 ) : undefined
               }
             >
               <Dialog.Cancel disabled={busy} />
-              <Button type="submit" disabled={!ready} loading={busy}>
-                {busy ? "Renaming" : "Rename"}
+              <Button type="submit" loading={busy}>
+                Rename
               </Button>
             </Dialog.Footer>
           </form>

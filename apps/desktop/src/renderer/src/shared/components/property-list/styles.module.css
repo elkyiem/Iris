@@ -54,16 +54,11 @@
 
   & .row[data-interactive] {
     cursor: var(--ds-cursor-interactive, pointer);
-    outline: none;
     transition: background var(--ds-duration-fast) var(--ds-easing-standard);
 
     &:hover,
     &[data-popup-open] {
       background: var(--ds-gray-a3);
-    }
-
-    &:focus-visible {
-      box-shadow: 0 0 0 2px var(--ds-focus-ring);
     }
   }
 

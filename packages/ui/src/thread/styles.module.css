@@ -1,9 +1,3 @@
-@property --thread-fade-top {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
 .thread {
   position: relative;
   display: flex;
@@ -18,6 +12,10 @@
 }
 
 .viewport {
+  /* The sticky footer paints its own fade over the end edge. */
+  --scroll-fade-size: 48px;
+  --scroll-fade-end-size: 0px;
+
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -25,25 +23,6 @@
   padding: 16px 20px 12px;
   overflow: auto;
   scrollbar-gutter: stable;
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 var(--thread-fade-top)
-  );
-  /* Without overflow the scroll timeline is inactive, so the fade stays at 0. */
-  animation: thread-fade-top linear both;
-  animation-timeline: scroll(self);
-  animation-range: 0 48px;
-}
-
-@keyframes thread-fade-top {
-  from {
-    --thread-fade-top: 0px;
-  }
-
-  to {
-    --thread-fade-top: 48px;
-  }
 }
 
 .viewport > * {
@@ -51,6 +30,15 @@
   width: 100%;
   max-width: 712px;
   margin-inline: auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.content > * {
+  flex-shrink: 0;
 }
 
 .footer {
@@ -149,7 +137,7 @@
   text-align: left;
 }
 
-.preview-title {
+.title {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: var(--ds-text-sm);
@@ -158,7 +146,7 @@
   white-space: nowrap;
 }
 
-.preview-description {
+.description {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;

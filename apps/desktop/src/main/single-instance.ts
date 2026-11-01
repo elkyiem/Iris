@@ -1,5 +1,6 @@
 import { readlinkSync } from "node:fs";
 import { join } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 
 const PREDECESSOR_WAIT_MS = 20_000;
 const PREDECESSOR_POLL_MS = 100;
@@ -24,7 +25,7 @@ export async function acquireSingleInstanceLock({
   holder,
   isAlive,
   pid = process.pid,
-  sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  sleep = delay,
   now = Date.now,
 }: SingleInstanceLockPort): Promise<boolean> {
   if (waitForPredecessor) {

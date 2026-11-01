@@ -30,7 +30,7 @@
   min-width: 0;
 }
 
-.source-label {
+.source > .label {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: var(--ds-text-sm);
@@ -71,7 +71,7 @@
   display: block;
 }
 
-.status-label {
+.status > .label {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: var(--ds-text-md);
@@ -80,7 +80,7 @@
   white-space: nowrap;
 }
 
-.row[data-stalled] .status-label {
+.row[data-stalled] .status > .label {
   color: var(--ds-orange-11);
 }
 
@@ -111,22 +111,22 @@
   color: var(--ds-accent-10);
 }
 
-.progress-ring-track {
+.track {
   stroke: var(--ds-gray-a5);
 }
 
-.progress-ring-value {
+.value {
   stroke: currentColor;
   transition: stroke-dasharray var(--ds-duration-medium)
     var(--ds-easing-standard);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .progress-ring-value {
+  .value {
     transition: none;
   }
 }
 
-:global([data-reduce-motion="true"]) .progress-ring-value {
+:global([data-reduce-motion="true"]) .value {
   transition: none;
 }

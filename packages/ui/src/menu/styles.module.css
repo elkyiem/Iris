@@ -3,21 +3,21 @@
   z-index: 1100;
 }
 
-.item-icon {
-  composes: item-icon from "../shared/styles/popup/styles.module.css";
+.icon {
+  composes: icon from "../shared/styles/popup/styles.module.css";
 }
 
 .item {
   composes: item from "../shared/styles/popup/styles.module.css";
 
-  &:has(.item-description) {
+  &:has(.description) {
     align-items: flex-start;
     height: auto;
     min-height: 44px;
     padding-block: 6px;
   }
 
-  &:has(.item-description) .item-icon {
+  &:has(.description) .icon {
     margin-top: 1px;
   }
 
@@ -39,8 +39,8 @@
   }
 }
 
-.group-label {
-  composes: group-label from "../shared/styles/popup/styles.module.css";
+.heading {
+  composes: heading from "../shared/styles/popup/styles.module.css";
 }
 
 .popup {
@@ -78,11 +78,11 @@
   composes: arrow from "../shared/styles/popup/styles.module.css";
 }
 
-.item-label {
-  composes: item-label from "../shared/styles/popup/styles.module.css";
+.label {
+  composes: label from "../shared/styles/popup/styles.module.css";
 }
 
-.item-content {
+.content {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -90,14 +90,14 @@
   min-width: 0;
 }
 
-.item-content .item-label {
+.content .label {
   flex: none;
   padding-inline-end: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.item-description {
+.description {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: var(--ds-text-xs);
@@ -106,8 +106,8 @@
   white-space: nowrap;
 }
 
-.item-keyboard {
-  composes: item-keyboard from "../shared/styles/popup/styles.module.css";
+.keyboard {
+  composes: keyboard from "../shared/styles/popup/styles.module.css";
 }
 
 .indicator {

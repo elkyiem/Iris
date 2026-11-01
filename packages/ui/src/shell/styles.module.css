@@ -12,6 +12,10 @@
   padding: var(--ds-mac-inset);
   padding-inline: 24px;
   overflow-y: auto;
+
+  &:has(> .header) {
+    --scroll-fade-start-size: 0px;
+  }
 }
 
 .main[data-restoring-scroll] {

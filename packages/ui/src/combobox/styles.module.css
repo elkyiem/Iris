@@ -74,8 +74,8 @@
   gap: 8px;
 }
 
-.item-label {
-  composes: item-label from "../shared/styles/popup/styles.module.css";
+.text {
+  composes: label from "../shared/styles/popup/styles.module.css";
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -83,7 +83,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-.item-end {
+.end {
   display: inline-flex;
   flex-shrink: 0;
   gap: 6px;
@@ -92,7 +92,7 @@
   color: var(--ds-gray-9);
 }
 
-.item-meta {
+.meta {
   font-size: var(--ds-text-sm);
   font-variant-numeric: tabular-nums;
   color: var(--ds-gray-9);
@@ -107,8 +107,8 @@
   flex-direction: column;
 }
 
-.group-label {
-  composes: group-label from "../shared/styles/popup/styles.module.css";
+.heading {
+  composes: heading from "../shared/styles/popup/styles.module.css";
 }
 
 .separator {
@@ -172,7 +172,7 @@
   }
 }
 
-.chip-remove {
+.remove {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -192,7 +192,7 @@
   }
 }
 
-.chips-input {
+.query {
   flex: 1;
   min-width: 48px;
   height: 22px;

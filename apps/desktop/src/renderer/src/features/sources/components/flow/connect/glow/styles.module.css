@@ -6,7 +6,7 @@
   height: 320px;
   pointer-events: none;
   mask-image: linear-gradient(to bottom, black 35%, transparent);
-  animation: fade 500ms var(--ds-easing-standard) both;
+  animation: fade var(--ds-duration-slow) var(--ds-easing-standard) both;
 }
 
 @keyframes fade {

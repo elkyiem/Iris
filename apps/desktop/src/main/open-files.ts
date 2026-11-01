@@ -21,7 +21,7 @@ export async function flushOpenFiles(deps: {
   openLibraryWindow: () => Promise<void>;
   getMainWindow: () => OpenFilesWindow | null;
 }): Promise<void> {
-  // shortcut: a .pond Library is skipped instead of opened, until the Dock can switch Libraries.
+  /** @todo Open a .pond Library instead of skipping it once the Dock can switch Libraries. */
   const paths = pendingPaths.filter(
     (path) => extname(path).toLowerCase() !== ".pond",
   );
@@ -31,7 +31,7 @@ export async function flushOpenFiles(deps: {
   const win = deps.getMainWindow();
   if (!win || win.isDestroyed()) return;
   const send = () => win.webContents.send(IPC.openFiles, paths);
-  // A window that is still loading cannot receive IPC.
+  /** A window that is still loading cannot receive IPC. */
   if (win.webContents.isLoading())
     win.webContents.once("did-finish-load", send);
   else send();

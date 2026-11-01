@@ -158,7 +158,7 @@ function ConnectPromises({
   return (
     <>
       <div className={styles.details}>
-        <p className={styles["details-title"]}>Pond will</p>
+        <p className={styles.heading}>Pond will</p>
         <ul className={styles.checklist}>
           {(byHandle ? HANDLE_PROMISES : SESSION_PROMISES).map((promise) => (
             <li key={promise}>

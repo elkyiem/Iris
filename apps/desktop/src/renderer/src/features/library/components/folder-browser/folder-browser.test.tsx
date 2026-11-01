@@ -1,4 +1,10 @@
 import { DEFAULT_PREFS } from "@pond/schema";
+import {
+  createMemoryHistory,
+  createRootRoute,
+  createRouter,
+  RouterProvider,
+} from "@tanstack/react-router";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -243,10 +249,18 @@ describe("folder browser", () => {
       return null;
     });
     await folders.refresh();
+    const rootRoute = createRootRoute({
+      component: () => (
+        <FolderBrowser parentId="root" contentCount={0} downloading={12} />
+      ),
+    });
+    const router = createRouter({
+      routeTree: rootRoute,
+      history: createMemoryHistory({ initialEntries: ["/"] }),
+    });
     await act(async () => {
-      root.render(
-        <FolderBrowser parentId="root" contentCount={0} downloading={12} />,
-      );
+      await router.load();
+      root.render(<RouterProvider router={router} />);
     });
     const button = await vi.waitFor(() => {
       const candidate = host.querySelector<HTMLButtonElement>(
@@ -258,7 +272,9 @@ describe("folder browser", () => {
     expect(button?.textContent).not.toContain("0 items");
     const status = host.querySelector('[role="status"]');
     expect(status?.textContent).toContain("Downloading 12 saves");
-    expect(status?.textContent).toContain("Open Downloads");
+    expect(status?.querySelector('a[role="link"]')?.getAttribute("href")).toBe(
+      "/downloads",
+    );
     expect(host.textContent).toContain("Contents (0)");
   });
 

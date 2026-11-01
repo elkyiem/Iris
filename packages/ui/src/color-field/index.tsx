@@ -239,7 +239,7 @@ function Area({
     >
       <div
         {...thumbProps}
-        className={cn(styles["saturation-handle"], thumbClassName)}
+        className={cn(styles.handle, thumbClassName)}
         data-focus={isFocusVisible || undefined}
         style={thumbProps.style}
       >
@@ -302,7 +302,7 @@ function Hue({
       </VisuallyHidden>
       <div
         {...thumbProps}
-        className={cn(styles["hue-handle"], thumbClassName)}
+        className={cn(styles.handle, thumbClassName)}
         data-focus={isFocusVisible || undefined}
         style={{
           ...thumbProps.style,

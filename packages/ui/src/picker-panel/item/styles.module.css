@@ -1,0 +1,130 @@
+.item {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 28px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-md);
+  color: var(--ds-gray-11);
+  text-align: start;
+  cursor: default;
+  user-select: none;
+  outline: none;
+  background: transparent;
+  border: 0;
+  isolation: isolate;
+}
+
+.item::before {
+  position: absolute;
+  inset: 0 6px;
+  z-index: -1;
+  content: "";
+  background: var(--ds-gray-a3);
+  border-radius: var(--ds-radius-sm);
+  opacity: 0;
+  transition: opacity var(--ds-duration-fast) var(--ds-easing-standard);
+}
+
+.item:not([data-highlight="active"]):hover::before,
+.item[data-active]::before {
+  opacity: 1;
+}
+
+.item[data-selection="checked"],
+.item[data-selection="mixed"] {
+  color: var(--ds-gray-12);
+}
+
+.selection-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-inline-start: auto;
+  color: var(--ds-accent-9);
+
+  &[data-selection="mixed"]::after {
+    width: 8px;
+    height: 1.5px;
+    content: "";
+    background: var(--ds-gray-9);
+    border-radius: var(--ds-radius-full);
+  }
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--ds-gray-9);
+}
+
+.label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.label[data-path] {
+  display: flex;
+  align-items: center;
+}
+
+/* Parents give up space first so the matched name stays readable. */
+.trail {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.crumb {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ds-gray-10);
+  white-space: nowrap;
+}
+
+.separator {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin-inline: 4px;
+  color: var(--ds-gray-9);
+}
+
+.name {
+  flex: none;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--ds-text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-gray-10);
+  white-space: nowrap;
+}

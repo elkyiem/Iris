@@ -19,8 +19,7 @@ export function createEmbeddingProfileCache<T extends LoadedEmbeddingProfile>(
   return {
     use(profile, run) {
       const operation = transition.then(async () => {
-        // One bundle includes both encoders and the shared text weights.
-        // Modality changes must not repeatedly reconstruct that backbone.
+        /** One bundle holds both encoders and the shared text weights, so modality changes must not rebuild it. */
         if (!loaded) {
           loaded = await load(profile);
         }

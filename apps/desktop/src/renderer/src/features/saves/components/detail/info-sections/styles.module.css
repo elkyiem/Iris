@@ -1,4 +1,4 @@
-.row-inline {
+.inline {
   display: flex;
   gap: 6px;
   align-items: center;
@@ -6,7 +6,7 @@
   min-width: 0;
 }
 
-.row-avatar {
+.avatar {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
@@ -27,15 +27,15 @@
   }
 }
 
-.row-source-icon {
+.icon {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   color: var(--ds-gray-12);
 }
 
-.row-source-icon img,
-.row-source-icon svg {
+.icon img,
+.icon svg {
   display: block;
   border-radius: var(--ds-radius-source);
   corner-shape: var(--ds-corner-icon);
@@ -87,7 +87,7 @@
   clip: rect(0, 0, 0, 0);
 }
 
-:is([data-layout="tiles"], [data-layout="grid"]) :is(.row-inline, .colors) {
+:is([data-layout="tiles"], [data-layout="grid"]) :is(.inline, .colors) {
   justify-content: flex-start;
 }
 :is([data-layout="tiles"], [data-layout="grid"]) .skeleton-value {

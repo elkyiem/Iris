@@ -110,6 +110,10 @@ Application composition mounts one `Dialog.Host` inside `Dialog.PortalProvider`.
 
 Controlled flows must retain their last popup content while `open` becomes false. Base UI completes portal cleanup from the popup exit lifecycle; removing only Popup immediately can leave an invisible backdrop intercepting clicks. SourceFlowHost retains its last page and depth for this exit. Connect and Watch setup stay in that paged dialog. Account and Watch details open as a full page at `/sources/<kind>/<id>`.
 
+RSS and Atom Watches use Source `web` and Watch kind `feed`. The Watch handle stores the feed URL, including its path and query. The main process checks the XML before it creates the Watch. Feed links use the normal enqueue rules, so each Save keeps the Source of its URL. Watch checks compare both Source and Source ID to find new Saves. Feed Watches use the existing schedule and incoming Save controls.
+
+The schema package owns Watch kinds, supported Sources, session requirements, labels, and feed URL rules in `watches.ts`. Main and renderer code use these shared rules. The Watch feed reader also reads Pinterest RSS feeds. The Pinterest adapter owns its feed address and request header. The response size limit helper belongs to `main/lib`; the feed reader and WARC recorder use it.
+
 Queue V2 is a main-owned durable scheduler backed by the active Library's
 SQLite index. Task claims use short immediate transactions, source and
 operation lanes are admitted before a lease is created, and completion uses

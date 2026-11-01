@@ -170,7 +170,11 @@ export function DuplicateReview({
           <Dialog.Header>
             <Dialog.Title>Review Duplicates</Dialog.Title>
           </Dialog.Header>
-          <div className={styles.list} ref={listRef}>
+          <div
+            className={styles.list}
+            ref={listRef}
+            data-scroll-fade="vertical"
+          >
             {loading ? (
               <Empty.Root>
                 <Empty.Title role="status">Finding duplicates</Empty.Title>

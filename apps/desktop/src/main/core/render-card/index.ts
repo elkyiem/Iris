@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { Capture } from "@pond/schema/raw";
 import { buildTextCardData, type TextCardData } from "@shared/text-card";
 import { buildTweetCardData, type TweetCardData } from "@shared/tweet-card";
@@ -46,10 +47,6 @@ function scheduleIdleDispose(): void {
     disposeRenderCardWindow();
   }, IDLE_DISPOSE_MS);
   idleTimer.unref?.();
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
 }
 
 function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {

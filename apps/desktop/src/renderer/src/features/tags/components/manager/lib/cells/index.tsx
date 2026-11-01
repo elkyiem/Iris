@@ -26,7 +26,9 @@ export function NameCell({ index = false }: { index?: boolean }) {
           onFinish={finishRename}
         />
       ) : (
-        <span className={styles.text}>{name}</span>
+        <span className={styles.text} title={name}>
+          {name}
+        </span>
       )}
       {!renaming && saves > 0 ? (
         <span className={styles.meta}>{index ? `(${saves})` : saves}</span>

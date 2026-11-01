@@ -25,7 +25,7 @@ export function FolderDragPreview({
   depth,
 }: FolderDragPreviewProps) {
   return (
-    <div className={styles["folder-overlay"]}>
+    <div className={styles.overlay}>
       <Row
         label={folder.name}
         icon={

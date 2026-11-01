@@ -24,7 +24,7 @@ describe("sidebar scroll viewport", () => {
 
 describe("sidebar item labels", () => {
   it("truncates labels without shrinking icons or counts", () => {
-    const label = declarations(".item-label");
+    const label = declarations(".text");
     expect(label).toContain("flex: 1;");
     expect(label).toContain("min-width: 0;");
     expect(label).toContain("overflow: hidden;");

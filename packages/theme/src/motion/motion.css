@@ -10,6 +10,8 @@
   --ds-easing-snap: cubic-bezier(0.22, 1, 0.36, 1);
   --ds-easing-decelerate: cubic-bezier(0.165, 0.84, 0.44, 1);
   --ds-easing-emphasized: var(--ds-easing-decelerate);
+  /* Symmetric curve for looping pulses that ease both ways. */
+  --ds-easing-in-out: cubic-bezier(0.42, 0, 0.58, 1);
   --ds-easing-spring: linear(
     0,
     0.0381,

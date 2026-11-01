@@ -1,10 +1,9 @@
+import { DataTableActionBar, DataTableActionBarDivider } from "./action-bar";
 import { DataTableBody } from "./body";
 import { useDataTable } from "./context";
 import { DataTableHeader } from "./header";
 import { DataTableHotkeys } from "./hotkeys";
 import {
-  DataTableActionBar,
-  DataTableActionBarDivider,
   DataTableEmpty,
   DataTableExtraRow,
   DataTableRoot,

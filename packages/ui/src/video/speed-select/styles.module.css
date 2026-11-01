@@ -1,0 +1,44 @@
+.root {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 8px;
+  font-size: var(--ds-text-md);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-white-a12);
+  text-align: center;
+  appearance: none;
+  cursor: var(--ds-cursor-interactive, pointer);
+  background: transparent;
+  border: 0;
+  border-radius: var(--ds-radius-md);
+}
+
+.root:hover {
+  background: var(--ds-white-a3);
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--ds-white-a10);
+  outline-offset: 0;
+}
+
+.root[data-chrome] {
+  width: var(--ds-size-sm);
+  height: var(--ds-size-sm);
+  padding: 0;
+  font-size: var(--ds-text-xs);
+  color: var(--ds-gray-12);
+  border-radius: var(--ds-radius-sm);
+
+  &:hover {
+    background: var(--ds-gray-a3);
+  }
+
+  &:focus-visible {
+    outline-color: var(--ds-gray-12);
+  }
+}

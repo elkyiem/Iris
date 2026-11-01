@@ -36,14 +36,14 @@ describe("download activity presentation", () => {
     const current = activity();
     expect(describeDownloadActivity(current, 2_000)).toMatchObject({
       progress: 0.32,
-      speed: "4.2 MB/s",
+      speed: "4.01 MiB/s",
       detail: "File 1 of 3",
       stalled: false,
     });
     expect(describeDownloadActivity(current, 18_000)).toMatchObject({
       progress: 0.32,
       speed: null,
-      detail: "No data received for 16s",
+      detail: "No data received for 0:16",
       stalled: true,
     });
   });
@@ -80,7 +80,7 @@ describe("download activity presentation", () => {
     });
     expect(describeDownloadActivity(current, 17_000)).toMatchObject({
       progress: null,
-      detail: "No response for 16s",
+      detail: "No response for 0:16",
       speed: null,
     });
     current.phase = "receiving";

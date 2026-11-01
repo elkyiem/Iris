@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { Capture, CaptureMedia, CaptureMetrics } from "@pond/schema/raw";
 import { session } from "electron";
 import log from "electron-log/main.js";
@@ -238,8 +239,4 @@ export async function fetchRedditPostCapture(
   if (Object.keys(metrics).length > 0) capture.metrics = metrics;
   if (Object.keys(extras).length > 0) capture.extras = extras;
   return capture;
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
 }

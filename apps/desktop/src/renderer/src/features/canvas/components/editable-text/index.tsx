@@ -4,7 +4,7 @@ import {
   IconTextItalic,
   IconTextUnderline,
 } from "@pond/icons";
-import { Button } from "@pond/ui";
+import { Button, Input } from "@pond/ui";
 import { clsx as cn } from "clsx";
 import { useEffect, useRef } from "react";
 import { isRichNote, richNote } from "../../lib/rich-text";
@@ -68,8 +68,9 @@ export function EditableText({
     );
   if (editing)
     return (
-      <textarea
+      <Input.Textarea
         ref={field}
+        appearance="bare"
         className={cn(styles.field, "nodrag", "nowheel", "nopan")}
         data-variant={variant}
         {...looksOf(style)}

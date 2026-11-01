@@ -22,6 +22,7 @@ interface ExportSettingsProps {
   presets: readonly ConversionPreset[];
   capabilities: readonly ConversionCapability[];
   disabled: boolean;
+  showErrors: boolean;
 }
 
 export function ExportSettings({
@@ -32,6 +33,7 @@ export function ExportSettings({
   presets,
   capabilities,
   disabled,
+  showErrors,
 }: ExportSettingsProps) {
   const selectedCapability = capabilities.find(
     (capability) => capability.format === preset.format,
@@ -135,6 +137,8 @@ export function ExportSettings({
         <ExportField.Number
           label="Max Width"
           suffix="px"
+          integer
+          showError={showErrors}
           min={1}
           max={8192}
           value={preset.width}
@@ -145,6 +149,9 @@ export function ExportSettings({
         <ExportField.Number
           label="Max Height"
           suffix="px"
+          integer
+          required={sizeMode === "height"}
+          showError={showErrors}
           min={1}
           max={8192}
           value={preset.height}
@@ -155,6 +162,8 @@ export function ExportSettings({
         <ExportField.Number
           label="Max Long Edge"
           suffix="px"
+          integer
+          showError={showErrors}
           min={1}
           max={8192}
           value={preset.width}
@@ -166,6 +175,7 @@ export function ExportSettings({
           <ExportField.Number
             label="Start"
             suffix="sec"
+            showError={showErrors}
             min={0}
             max={86400}
             value={preset.start}
@@ -179,6 +189,7 @@ export function ExportSettings({
           <ExportField.Number
             label="Duration"
             suffix="sec"
+            showError={showErrors}
             min={0.1}
             max={3600}
             step={0.1}
@@ -192,6 +203,8 @@ export function ExportSettings({
           />
           <ExportField.Number
             label="Frames per Second"
+            integer
+            showError={showErrors}
             min={1}
             max={120}
             value={preset.fps}

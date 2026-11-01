@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync } from "node:fs";
 import type { Server as NetServer } from "node:net";
 import { join, resolve as resolvePath } from "node:path";
+import { SAFARI_APP_GROUP } from "@pond/schema/native";
 import { app, globalShortcut, ipcMain, powerMonitor } from "electron";
 import log from "electron-log/main.js";
 import { DEFAULT_APP_ICON } from "../shared/app-icons";
@@ -78,6 +79,7 @@ import {
 } from "./lifecycle";
 import { resolveLogFile } from "./logging";
 import { installAppMenu, setMenuRecents } from "./menu";
+import { openAppGroupContainer } from "./native/app-group";
 import { writeNativeHostManifests } from "./native/manifests";
 import { safariSocketPath } from "./native/paths";
 import { startNativeServer, stopNativeServer } from "./native/server";
@@ -235,7 +237,7 @@ app.on("second-instance", (_event, argv) => {
   /** Showing a window while quitting cancels the quit, and this instance would keep the lock. */
   if (quitPreparing) return;
   if (!launched) {
-    // Too early to open a window; the initial window picks up the stored link.
+    /** Too early to open a window; the initial window picks up the stored link. */
     const url = deepLinkArg(argv);
     if (url) handleDeepLink(url, null);
     return;
@@ -408,6 +410,10 @@ async function postLaunchInit(): Promise<void> {
     app.isPackaged &&
     !process.env.POND_SANDBOX
   ) {
+    /** macOS refuses the socket (EPERM) until Pond has asked for the container. */
+    if (!openAppGroupContainer(SAFARI_APP_GROUP)) {
+      log.warn("[pond] app group container unavailable", SAFARI_APP_GROUP);
+    }
     try {
       safariServer = await startNativeServer({ path: safariSocketPath() });
     } catch (err) {
@@ -574,7 +580,7 @@ function withDeadline(work: Promise<void>, ms: number): Promise<void> {
 }
 
 if (process.platform === "win32") {
-  // Windows ends the session without emitting before-quit, so flush what cannot be rebuilt.
+  /** Windows ends the session without emitting before-quit, so flush what cannot be rebuilt. */
   app.on("browser-window-created", (_event, win) => {
     win.once("session-end", () => {
       beginQuit();

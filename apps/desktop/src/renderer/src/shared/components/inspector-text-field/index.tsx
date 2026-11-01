@@ -1,7 +1,7 @@
 import { IconChevronDown } from "@pond/icons";
 import { Button, Input } from "@pond/ui";
 import { clsx as cn } from "clsx";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useLayoutEffect, useRef, useState } from "react";
 import { errorCopy } from "@/shared/lib/error-copy";
 import styles from "./styles.module.css";
@@ -27,6 +27,9 @@ export function InspectorTextField({
   disabled,
   size = "sm",
   variant = "secondary",
+  appearance,
+  padding,
+  suffix,
   placeholder,
   mixedPlaceholder,
   maxLength,
@@ -43,6 +46,9 @@ export function InspectorTextField({
   disabled?: boolean;
   size?: React.ComponentProps<typeof Input.Root>["size"];
   variant?: React.ComponentProps<typeof Input.Root>["variant"];
+  appearance?: React.ComponentProps<typeof Input.Field>["appearance"];
+  padding?: React.ComponentProps<typeof Input.Textarea>["padding"];
+  suffix?: ReactNode;
   placeholder?: string;
   mixedPlaceholder?: string;
   maxLength?: number;
@@ -142,10 +148,23 @@ export function InspectorTextField({
     >
       <Input.Root size={size} variant={variant} className={styles.field}>
         {multiline ? (
-          <Input.Textarea {...props} rows={2} maxLength={maxLength ?? 8192} />
+          <Input.Textarea
+            {...props}
+            className={styles.area}
+            appearance={appearance}
+            padding={padding}
+            sizing="content"
+            rows={2}
+            maxLength={maxLength ?? 8192}
+          />
         ) : (
-          <Input.Field {...props} maxLength={maxLength ?? 255} />
+          <Input.Field
+            {...props}
+            appearance={appearance}
+            maxLength={maxLength ?? 255}
+          />
         )}
+        {suffix ? <Input.Suffix>{suffix}</Input.Suffix> : null}
       </Input.Root>
       {overflowing ? (
         <Button

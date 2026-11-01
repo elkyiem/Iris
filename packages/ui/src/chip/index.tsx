@@ -8,64 +8,15 @@ import type {
 import { Button, type ButtonProps } from "../button";
 import { cssVars } from "../css-vars";
 import { Menu } from "../menu";
+import { Action, Clear, Item, Link } from "./item";
 import styles from "./styles.module.css";
 
-export type ChipTone =
-  | "mention"
-  | "tag"
-  | "added"
-  | "removed"
-  | "applied"
-  | "suggested"
-  | "file";
+export type { ChipTone } from "./item";
 
 interface RootProps extends ComponentPropsWithoutRef<"div"> {}
 
 function Root({ className, ...props }: RootProps) {
   return <div className={cn(styles.root, className)} {...props} />;
-}
-
-interface ItemProps extends ComponentPropsWithoutRef<"div"> {
-  kind?: "field" | "value";
-  tone?: ChipTone;
-  selected?: boolean;
-}
-
-function Item({ className, kind, tone, selected, ...props }: ItemProps) {
-  return (
-    <div
-      className={cn(styles.item, className)}
-      data-kind={kind === "value" ? "value" : undefined}
-      data-tone={tone}
-      data-selected={selected || undefined}
-      {...props}
-    />
-  );
-}
-
-interface ActionProps extends ComponentPropsWithoutRef<"button"> {
-  tone: Extract<ChipTone, "applied" | "suggested" | "mention">;
-}
-
-function Action({ className, tone, type = "button", ...props }: ActionProps) {
-  return (
-    <button
-      type={type}
-      className={cn(styles.action, className)}
-      data-tone={tone}
-      {...props}
-    />
-  );
-}
-
-interface LinkProps extends ComponentPropsWithoutRef<"a"> {
-  tone?: Extract<ChipTone, "file">;
-}
-
-function Link({ className, tone = "file", ...props }: LinkProps) {
-  return (
-    <a className={cn(styles.link, className)} data-tone={tone} {...props} />
-  );
 }
 
 interface IconProps extends ComponentPropsWithoutRef<"span"> {}
@@ -109,20 +60,6 @@ function Trigger({
       className={cn(styles.trigger, className)}
       {...props}
     />
-  );
-}
-
-function Clear({ className, children, ...props }: ButtonProps) {
-  return (
-    <Button
-      icon
-      size="xs"
-      variant="ghost"
-      className={cn(styles.clear, className)}
-      {...props}
-    >
-      {children ?? <IconXmark size={12} />}
-    </Button>
   );
 }
 

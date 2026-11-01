@@ -119,8 +119,7 @@ export function SetupDialog({
     void next();
   };
 
-  const busyLabel = id === "assistant" ? "Connecting" : "Saving";
-  const label = busy ? busyLabel : step.primary[profile];
+  const label = step.primary[profile];
   const props = { profile, library, choices, update };
   const { Lead, Aside, Body, Extras } = step;
   const header = (
@@ -164,6 +163,7 @@ export function SetupDialog({
                 key={id}
                 className={styles.step}
                 data-layout={step.layout}
+                data-scroll-fade="vertical"
                 aria-labelledby={headingId}
                 custom={direction}
                 variants={variants}
@@ -239,7 +239,7 @@ export function SetupDialog({
                   loading={opening}
                   onClick={() => void openExisting()}
                 >
-                  {opening ? "Opening" : "Open Existing Library"}
+                  Open Existing Library
                 </Button>
               ) : null}
               <Button

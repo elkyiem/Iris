@@ -6,6 +6,8 @@ import styles from "./styles.module.css";
 
 type InputSize = "xs" | "sm" | "md" | "lg" | "xl";
 type InputVariant = "primary" | "secondary" | "borderless";
+/** `bare` drops the field chrome for inline editors that must match the text they replace. */
+type FieldAppearance = "default" | "bare";
 
 function Root({
   className,
@@ -65,15 +67,16 @@ function Suffix({ className, ...props }: React.ComponentProps<"div">) {
   );
 }
 
-const Field = forwardRef<HTMLInputElement, Base.Props>(function Field(
-  { className, onKeyDown, ...props },
-  ref,
-) {
+const Field = forwardRef<
+  HTMLInputElement,
+  Base.Props & { appearance?: FieldAppearance }
+>(function Field({ className, appearance, onKeyDown, ...props }, ref) {
   return (
     <Base
       {...props}
       ref={ref}
       data-slot="field"
+      data-appearance={appearance === "bare" ? appearance : undefined}
       className={cn(styles.field, className)}
       onKeyDown={(event) => {
         onKeyDown?.(event);
@@ -87,16 +90,22 @@ const Textarea = forwardRef<
   HTMLTextAreaElement,
   React.ComponentProps<"textarea"> & {
     onValueChange?: (value: string) => void;
-    padding?: "default" | "comfortable";
+    /** `compact` sizes one line to the single-line field height of the same `size`. */
+    padding?: "default" | "comfortable" | "compact";
+    /** `content` grows the field with its text instead of holding `rows`. */
+    sizing?: "rows" | "content";
+    appearance?: FieldAppearance;
   }
 >(function Textarea(
   {
     className,
+    appearance,
     rows = 5,
     onChange,
     onValueChange,
     onKeyDown,
     padding,
+    sizing,
     ...props
   },
   ref,
@@ -107,7 +116,9 @@ const Textarea = forwardRef<
       ref={ref}
       data-slot="field"
       data-multiline
-      data-padding={padding === "comfortable" ? padding : undefined}
+      data-padding={padding === "default" ? undefined : padding}
+      data-sizing={sizing === "content" ? sizing : undefined}
+      data-appearance={appearance === "bare" ? appearance : undefined}
       rows={rows}
       className={cn(styles.field, className)}
       onChange={(event) => {

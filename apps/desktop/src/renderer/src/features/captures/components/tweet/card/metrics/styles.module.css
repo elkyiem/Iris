@@ -15,10 +15,10 @@
   color: var(--tw-secondary);
 }
 
-.metric-icon {
+.icon {
   flex-shrink: 0;
 }
 
-.metric-value {
+.value {
   font-weight: 500;
 }

@@ -80,8 +80,6 @@ function destinationCrumbs(
       return [{ label: "Downloads", path: base, nav: { kind: "downloads" } }];
     case "/trash":
       return [{ label: "Trash", path: base, nav: { kind: "trash" } }];
-    case "/gallery":
-      return [{ label: "Gallery", path: base }];
     default:
       break;
   }

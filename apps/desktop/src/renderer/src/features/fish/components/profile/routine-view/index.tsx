@@ -35,13 +35,7 @@ export function RoutineView({
       <Pane.Header
         className={styles.header}
         title={
-          <Button
-            type="button"
-            size="sm"
-            variant="ghost"
-            className={styles.back}
-            onClick={onBack}
-          >
+          <Button type="button" size="sm" variant="ghost" onClick={onBack}>
             <IconChevronLeft size={14} />
             {fish.name}
           </Button>
@@ -58,7 +52,7 @@ export function RoutineView({
           <IconXmark />
         </Button>
       </Pane.Header>
-      <Pane.Body className={styles.scroll}>
+      <Pane.Body className={styles.scroll} data-scroll-fade="vertical">
         <h2 className={styles.title}>{routine.name}</h2>
         <Section title="Instruction" collapsible={false}>
           <p className={styles.text}>{routine.instruction}</p>

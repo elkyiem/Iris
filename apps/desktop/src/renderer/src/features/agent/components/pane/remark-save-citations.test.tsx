@@ -1,16 +1,25 @@
 import { renderToStaticMarkup } from "react-dom/server";
-import Markdown from "react-markdown";
+import { Streamdown } from "streamdown";
 import { expect, it } from "vitest";
 import { AssistantResponse } from "./assistant-response";
 import { remarkSaveCitations } from "./remark-save-citations";
 
 function render(content: string, count = 6) {
   return renderToStaticMarkup(
-    <Markdown
+    <Streamdown
+      mode="static"
       remarkPlugins={[[remarkSaveCitations, { count, source: content }]]}
+      rehypePlugins={[]}
+      components={{
+        a: "a",
+        code: "code",
+        p: "p",
+        pre: "pre",
+        strong: "strong",
+      }}
     >
       {content}
-    </Markdown>,
+    </Streamdown>,
   );
 }
 

@@ -118,7 +118,7 @@ function queryOrder(
     randomSeed: request.randomSeed,
     orderKey,
   });
-  // savedAt is non-null; leave nullable, manual, random and pinned sorts general.
+  /** Only savedAt is non-null; nullable, manual, random and pinned sorts keep the general path. */
   const unpinnedRecency =
     pinnedIds.length === 0 &&
     (request.sortKey === undefined || request.sortKey === "savedAt");

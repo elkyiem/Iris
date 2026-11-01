@@ -18,7 +18,7 @@ function WorkspaceHeader() {
   return (
     <Sidebar.Header className={styles.workspace}>
       <WorkspaceMenu />
-      <div className={styles["workspace-actions"]}>
+      <div className={styles.actions}>
         <NewMenu />
       </div>
     </Sidebar.Header>

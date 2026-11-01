@@ -17,9 +17,7 @@ export function AgentHeader({
       title={
         <>
           {title}
-          {subtitle && (
-            <span className={styles["row-description"]}>{subtitle}</span>
-          )}
+          {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
         </>
       }
     >

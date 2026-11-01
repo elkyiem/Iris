@@ -48,7 +48,7 @@ function Root({ code, language, className, ...props }: RootProps) {
   return (
     <div className={cn(styles.root, className)} {...props}>
       <Header code={code} language={language} />
-      <pre className={styles.pre}>
+      <pre className={styles.pre} data-scroll-fade="horizontal">
         <code className={styles.code}>{code}</code>
       </pre>
     </div>

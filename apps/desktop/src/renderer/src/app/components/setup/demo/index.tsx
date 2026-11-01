@@ -121,7 +121,7 @@ export function Demo({
             <IconArrowLeft />
             <IconArrowRight />
           </span>
-          <span className={styles["viewer-title"]}>Sunset over the bay</span>
+          <span className={styles.title}>Sunset over the bay</span>
           <IconDots />
         </div>
       </div>

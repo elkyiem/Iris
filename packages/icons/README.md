@@ -46,6 +46,10 @@ Google Chrome paths come from [Simple Icons](https://simpleicons.org/) (CC0).
 Provider logos are documented in `social-media/custom/provider-logos.md`. The
 marks remain their owners' trademarks.
 
+The `tweet-*` and `threads-*` fills in `svg/fill/` redraw the X and Threads
+post controls on the 18×18 grid so capture cards match the original post. They
+remain their owners' marks.
+
 The Pond mark lives in `brand/`: `icon.svg` is the vector source, and `tints/`
 holds Icon Composer colorways. The desktop app defaults to `tints/aqua` for the
 Dock icon.
@@ -53,4 +57,4 @@ Dock icon.
 ## License
 
 The glyphs in `svg/` are original Pond artwork under the repository's MIT
-license.
+license, except the `tweet-*` and `threads-*` redraws noted above.

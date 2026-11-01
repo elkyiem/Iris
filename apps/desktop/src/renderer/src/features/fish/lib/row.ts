@@ -1,5 +1,6 @@
 import { ASSISTANT_ACTIVITY_LABELS } from "@shared/assistant";
 import type { FishSummary } from "@shared/fish-contracts";
+import { formatPlural } from "@/shared/lib/format";
 
 export interface RowPreview {
   text: string;
@@ -17,7 +18,7 @@ export function rowPreview(
       return { text: run.error ?? "Routine failed", tone: "alert" };
     if (run.changes)
       return {
-        text: `${run.changes} ${run.changes === 1 ? "change" : "changes"} to review`,
+        text: `${formatPlural(run.changes, { one: "change", other: "changes" })} to review`,
         tone: undefined,
       };
   }

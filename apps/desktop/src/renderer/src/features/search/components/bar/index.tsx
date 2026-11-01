@@ -300,7 +300,7 @@ function SearchField({
               <Button
                 icon
                 size="xs"
-                variant="ghost"
+                variant="text"
                 className={styles.clear}
                 aria-label="Clear Search"
                 onMouseDown={(event) => event.preventDefault()}

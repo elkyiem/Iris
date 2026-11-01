@@ -2,9 +2,12 @@ import { IconCircleCheck, IconCircleWarning, IconPowerOff } from "@pond/icons";
 import { Button, Loader, Settings, Tooltip } from "@pond/ui";
 import { useState } from "react";
 import { useEnrichmentStatus } from "@/features/enrichment/status";
+import { formatPlural } from "@/shared/lib/format";
 import { hostDeviceName } from "@/shared/lib/platform";
 import { usePrefs } from "@/shared/state/prefs";
 import styles from "./styles.module.css";
+
+const TASKS = { one: "task", other: "tasks" };
 
 const TASK_LABELS = new Map<string, string>([
   ["caption", "Image Captions"],
@@ -40,10 +43,6 @@ function taskGroups(
   for (const key of active) group(key).left += 1;
   for (const key of failed) group(key).failed += 1;
   return [...groups.values()].sort((a, b) => a.label.localeCompare(b.label));
-}
-
-function plural(count: number, one: string, many: string): string {
-  return `${count.toLocaleString()} ${count === 1 ? one : many}`;
 }
 
 function groupStatus(group: TaskGroup): string {
@@ -130,11 +129,11 @@ export function ProcessingStatusCard({
         : checking
           ? "Looking for saves that need processing."
           : status.inflight > 0
-            ? `${plural(status.inflight, "task", "tasks")} left`
+            ? `${formatPlural(status.inflight, TASKS)} left`
             : checkFailed || ownerFailed
               ? (status.error ?? "Try checking the library again.")
               : failed
-                ? `${plural(failed, "task", "tasks")} couldn't finish`
+                ? `${formatPlural(failed, TASKS)} couldn't finish`
                 : enabled
                   ? `New saves are processed on ${hostDeviceName()}.`
                   : "Turn on a processing option below to get started.";

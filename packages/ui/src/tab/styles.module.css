@@ -62,7 +62,7 @@
   white-space: nowrap;
 
   &[data-overflow] {
-    mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
   }
 }
 
@@ -73,10 +73,7 @@
   flex-shrink: 0;
   pointer-events: none;
   opacity: 0;
-  transition:
-    color var(--ds-duration-fast) var(--ds-easing-standard),
-    background var(--ds-duration-fast) var(--ds-easing-standard),
-    opacity var(--ds-duration-fast) var(--ds-easing-standard);
+  transition: opacity var(--ds-duration-fast) var(--ds-easing-standard);
 }
 
 .item {

@@ -32,12 +32,12 @@
 }
 
 .name {
+  justify-content: center;
   width: 100%;
-}
-
-.name :global(input) {
+  min-height: var(--ds-size-lg);
   font-size: var(--ds-text-lg);
   font-weight: var(--ds-weight-xl);
+  color: var(--ds-gray-12);
   text-align: center;
 }
 

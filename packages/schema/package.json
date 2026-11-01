@@ -55,7 +55,8 @@
     "./folder-rules": "./src/folder-rules.ts",
     "./folder-presentation": "./src/folder-presentation.ts",
     "./saved-view-presentation": "./src/saved-view-presentation.ts",
-    "./source-ids": "./src/source-ids.ts"
+    "./source-ids": "./src/source-ids.ts",
+    "./watches": "./src/watches.ts"
   },
   "scripts": {
     "generate": "node --experimental-strip-types scripts/generate-supported-sources.ts",

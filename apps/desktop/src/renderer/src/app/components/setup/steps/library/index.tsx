@@ -1,5 +1,6 @@
 import { IconFolder } from "@pond/icons";
 import { Button, Field, Input, Toggle, ToggleGroup } from "@pond/ui";
+import { formatPlural } from "@/shared/lib/format";
 import { prettyPath } from "@/shared/lib/pretty-path";
 import type { StepProps } from "../../model";
 import styles from "./styles.module.css";
@@ -45,7 +46,7 @@ function Location({ profile, library, choices, update }: StepProps) {
 }
 
 function savesLabel(count: number): string {
-  return `${count.toLocaleString()} ${count === 1 ? "Save" : "Saves"}`;
+  return formatPlural(count, { one: "Save", other: "Saves" });
 }
 
 export function Library(props: StepProps) {

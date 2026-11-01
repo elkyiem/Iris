@@ -53,7 +53,7 @@ export function ToolList({ status, onChanged, onClose }: ToolListProps) {
           </Dialog.Header>
           <Dialog.Content className={styles.content}>
             {tools.length ? (
-              <ul className={styles.list}>
+              <ul className={styles.list} data-scroll-fade="vertical">
                 {tools.map((tool) => (
                   <ToolRow
                     key={tool.name}
@@ -136,11 +136,15 @@ function ToolRow({
     <li className={styles.tool}>
       <span className={styles.text}>
         <span className={styles.heading}>
-          <span className={styles.name}>{tool.name}</span>
+          <span className={styles.name} title={tool.name}>
+            {tool.name}
+          </span>
           {tool.readOnlyHint ? <Badge>Read-only</Badge> : null}
         </span>
         {tool.description ? (
-          <span className={styles.description}>{tool.description}</span>
+          <span className={styles.description} title={tool.description}>
+            {tool.description}
+          </span>
         ) : null}
       </span>
       <Select.Root

@@ -49,7 +49,9 @@ function usePageTitle(page: SourceFlowPage): string {
       return connectingSource ? "Connection Request" : "Add Connection";
     case "watch-target":
       return watchSource
-        ? `Watch on ${getSourceDef(watchSource).label}`
+        ? watchSource === "web"
+          ? "Watch an RSS Feed"
+          : `Watch on ${getSourceDef(watchSource).label}`
         : "New Watch";
   }
 }

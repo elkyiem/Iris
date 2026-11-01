@@ -1,5 +1,5 @@
+import { IconTweetVerifiedFill } from "@pond/icons";
 import { useState } from "react";
-import { VerifiedIcon } from "@/features/captures/components/tweet/card/icons";
 import type { TweetCardAuthor } from "@/features/captures/components/tweet/card/lib/data";
 import { initials } from "@/shared/lib/initials";
 import styles from "./styles.module.css";
@@ -12,7 +12,11 @@ export function Header({ author }: { author: TweetCardAuthor }) {
         <span className={styles.name}>
           {author.name}
           {author.verified ? (
-            <VerifiedIcon className={styles.verified} width={19} height={19} />
+            <IconTweetVerifiedFill
+              className={styles.verified}
+              size={19}
+              title="Verified"
+            />
           ) : null}
         </span>
         <span className={styles.handle}>@{author.handle}</span>
@@ -59,7 +63,7 @@ function AvatarInner({
           onError={() => setFailed(true)}
         />
       ) : (
-        <span className={styles["avatar-fallback"]}>
+        <span className={styles.fallback}>
           {initials(author.name || author.handle || "?")}
         </span>
       )}

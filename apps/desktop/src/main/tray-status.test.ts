@@ -167,6 +167,9 @@ describe("buildTrayTemplate", () => {
     findByLabel(template, "New Watch")
       ?.submenu?.find((item) => item.label === "YouTube")
       ?.click?.();
+    findByLabel(template, "New Watch")
+      ?.submenu?.find((item) => item.label === "RSS Feed")
+      ?.click?.();
     findByLabel(template, "Navigate")
       ?.submenu?.find((item) => item.label === "Search")
       ?.click?.();
@@ -176,6 +179,7 @@ describe("buildTrayTemplate", () => {
     expect(actions.onMenuAction).toHaveBeenCalledWith("library.new-folder");
     expect(actions.onMenuAction).toHaveBeenCalledWith("library.new-blank-word");
     expect(actions.onMenuAction).toHaveBeenCalledWith("library.watch-youtube");
+    expect(actions.onMenuAction).toHaveBeenCalledWith("library.watch-web");
     expect(actions.onMenuAction).toHaveBeenCalledWith("library.search");
     expect(actions.onMenuAction).toHaveBeenCalledWith("nav.sources");
   });

@@ -113,7 +113,7 @@
   transition: opacity var(--exit);
 }
 
-.viewer-title {
+.title {
   flex: 1;
   color: var(--ds-gray-12);
   text-align: center;

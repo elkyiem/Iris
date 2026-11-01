@@ -1,6 +1,7 @@
 import { Button, Dialog, Field, Input } from "@pond/ui";
 import { useRef, useState } from "react";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import { importLinks } from "../actions";
 import styles from "./styles.module.css";
 
@@ -15,9 +16,15 @@ export function SaveDialog({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const submitting = useRef(false);
+  const field = useRef<HTMLTextAreaElement>(null);
 
   async function submit() {
     if (submitting.current) return;
+    if (!text.trim()) {
+      setError("Add at least one link.");
+      field.current?.focus();
+      return;
+    }
     submitting.current = true;
     setBusy(true);
     setError(null);
@@ -26,7 +33,7 @@ export function SaveDialog({
       if (failed.length > 0) {
         setText(failed.join("\n"));
         setError(
-          `Couldn't import ${failed.length} link${failed.length === 1 ? "" : "s"}. Retry the remaining links.`,
+          `Couldn't import ${formatPlural(failed.length, { one: "link", other: "links" })}. Retry the remaining links.`,
         );
         return;
       }
@@ -66,9 +73,12 @@ export function SaveDialog({
                 <Field.Label>Links</Field.Label>
                 <Input.Root size="md" className={styles.control}>
                   <Field.Control
-                    render={<Input.Textarea />}
+                    render={<Input.Textarea ref={field} />}
                     value={text}
-                    onValueChange={setText}
+                    onValueChange={(value) => {
+                      setText(value);
+                      setError(null);
+                    }}
                     disabled={busy}
                     autoFocus
                     aria-invalid={!!error}
@@ -92,12 +102,8 @@ export function SaveDialog({
             </Dialog.Content>
             <Dialog.Footer>
               <Dialog.Cancel disabled={busy} />
-              <Button
-                type="submit"
-                disabled={busy || !text.trim()}
-                loading={busy}
-              >
-                {busy ? "Importing" : "Import"}
+              <Button type="submit" loading={busy}>
+                Import
               </Button>
             </Dialog.Footer>
           </form>

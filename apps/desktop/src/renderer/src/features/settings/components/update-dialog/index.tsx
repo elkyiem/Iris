@@ -83,7 +83,7 @@ export function UpdateDialog() {
                 loading={busy}
                 onClick={() => void confirm()}
               >
-                {busy ? copy.busyLabel : copy.action}
+                {copy.action}
               </Dialog.Confirm>
             </Dialog.Footer>
           </Dialog.Popup>

@@ -79,7 +79,7 @@ function GroupHeader() {
           </span>
         ) : (
           <Accordion.Header className={styles.heading}>
-            <Accordion.Trigger className={styles.trigger}>
+            <Accordion.Trigger variant="bare" className={styles.trigger}>
               <span className={styles.title}>{title}</span>
               <span className={styles.caret} aria-hidden>
                 <ChevronRight size={12} />

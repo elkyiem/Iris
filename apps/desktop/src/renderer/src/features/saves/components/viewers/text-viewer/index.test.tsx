@@ -6,6 +6,7 @@ import {
   $isTextNode,
   FORMAT_TEXT_COMMAND,
   getNearestEditorFromDOMNode,
+  KEY_DOWN_COMMAND,
 } from "lexical";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -311,6 +312,37 @@ describe("text viewer", () => {
     pool.upsert(save);
     await act(async () => root.render(<TextViewer save={save} />));
     expect(host.querySelector('[aria-label="Move Block"]')).not.toBeNull();
+  });
+
+  it("moves the block at the caret with the keyboard and announces it", async () => {
+    const save = noteSave();
+    pool.upsert(save);
+    await act(async () => root.render(<TextViewer save={save} />));
+    const editor = editorFromHost(host);
+    await act(async () => {
+      editor.update(() => {
+        const first = $createParagraphNode().append($createTextNode("First"));
+        const second = $createParagraphNode().append($createTextNode("Second"));
+        $getRoot().clear();
+        $getRoot().append(first, second);
+        second.selectEnd();
+      });
+    });
+    await act(async () => {
+      editor.dispatchCommand(
+        KEY_DOWN_COMMAND,
+        new KeyboardEvent("keydown", {
+          key: "ArrowUp",
+          metaKey: true,
+          shiftKey: true,
+          cancelable: true,
+        }),
+      );
+    });
+    expect(markdownFromEditor(editor).trim()).toBe("Second\n\nFirst");
+    expect(host.querySelector('[role="status"]')?.textContent).toBe(
+      "Moved block to position 1 of 2.",
+    );
   });
 
   it("renders imported text without editor chrome", async () => {

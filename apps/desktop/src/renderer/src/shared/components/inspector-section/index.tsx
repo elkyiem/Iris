@@ -73,6 +73,7 @@ export function Section({
             </span>
           ) : (
             <Accordion.Trigger
+              variant="bare"
               className={styles.trigger}
               id={`${id}-trigger`}
               aria-controls={expanded ? `${id}-panel` : undefined}

@@ -1,8 +1,14 @@
 import type { Source } from "@pond/schema/db";
 
+export type FetchWatchPage = (
+  url: string,
+  init: RequestInit,
+) => Promise<Response>;
+
 export interface WatchEntry {
   url: string;
   sourceId: string;
+  source?: Source;
 }
 
 export type WatchHarvestResult =
@@ -17,19 +23,3 @@ export type WatchHarvestResult =
         | "unavailable"
         | "unknown";
     };
-
-const WATCHABLE_SOURCES: readonly Source[] = [
-  "arena",
-  "youtube",
-  "tiktok",
-  "instagram",
-  "twitter",
-  "pinterest",
-  "cosmos",
-];
-
-export function isWatchableSource(source: Source): boolean {
-  return WATCHABLE_SOURCES.includes(source);
-}
-
-export const WATCH_NEEDS_SESSION: readonly Source[] = ["instagram", "twitter"];

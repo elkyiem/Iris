@@ -90,7 +90,11 @@ function Tile({
 }
 
 function Strip({ children }: { children: ReactNode }) {
-  return <ul className={styles.strip}>{children}</ul>;
+  return (
+    <ul className={styles.strip} data-scroll-fade="horizontal">
+      {children}
+    </ul>
+  );
 }
 
 export function Group({

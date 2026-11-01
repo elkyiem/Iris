@@ -227,6 +227,7 @@ export function AudioViewer(props: ViewerProps & { url: string }) {
               <Select.Trigger
                 size="xs"
                 variant="ghost"
+                rounding="full"
                 aria-label="Playback Speed"
               >
                 <Select.Value>{(value: string) => `${value}×`}</Select.Value>

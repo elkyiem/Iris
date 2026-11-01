@@ -17,23 +17,6 @@
   color: var(--ds-gray-10);
 }
 
-.url {
-  position: relative;
-  min-width: 0;
-}
-
-.input :global(input) {
-  padding-inline-end: 32px;
-}
-
 .open {
-  position: absolute;
-  top: 50%;
-  right: 4px;
-  transform: translateY(-50%);
-}
-
-.field :global(textarea) {
-  min-height: 0;
-  padding-block: 5px;
+  margin-inline-end: 4px;
 }

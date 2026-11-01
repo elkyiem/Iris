@@ -3,10 +3,11 @@ import {
   saveLibraryBridge,
 } from "@/features/saves/lib/library-bridge";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 
 function saveCount(count: number): string {
-  return `${count} ${count === 1 ? "Save" : "Saves"}`;
+  return formatPlural(count, { one: "Save", other: "Saves" });
 }
 
 export function notifyUndoableFolderChange(id: string, title: string): void {

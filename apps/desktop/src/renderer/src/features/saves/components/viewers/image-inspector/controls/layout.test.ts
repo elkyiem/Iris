@@ -36,6 +36,6 @@ it("uses the integrated top toolbar for the image controls", () => {
   );
   expect(controlsCss).toContain("@starting-style");
   expect(controlsCss).toContain("prefers-reduced-motion: reduce");
-  expect(controlsCss).toContain("opacity 150ms");
-  expect(controlsCss).not.toContain("transform 180ms");
+  expect(controlsCss).toContain("opacity var(--ds-duration-snap)");
+  expect(controlsCss).not.toContain("transform");
 });

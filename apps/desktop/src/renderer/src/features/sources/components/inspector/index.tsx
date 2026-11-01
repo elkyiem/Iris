@@ -9,6 +9,11 @@ import {
   IconSliders,
 } from "@pond/icons";
 import type { IncomingSaveRule, Source } from "@pond/schema/db";
+import {
+  watchHandleLabel,
+  watchKindLabel,
+  watchSourceLabel,
+} from "@pond/schema/watches";
 import { Button, Input, Settings, Sidebar } from "@pond/ui";
 import type { SourceTargetInput } from "@shared/account-contracts";
 import { useQueryClient } from "@tanstack/react-query";
@@ -44,7 +49,6 @@ import {
 import {
   useWatches,
   type WatchRow,
-  watchKindLabel,
 } from "@/features/sources/hooks/use-watches";
 import type { SourceFetchPrefs } from "@/features/sources/lib/fetch-prefs";
 import {
@@ -331,7 +335,7 @@ export function SourceDetailView({
   const active = resolveSourceDetailPage(model, page);
   if (model.status !== "ready" || !active) {
     return (
-      <div className={styles.page}>
+      <div className={styles.page} data-scroll-fade="vertical">
         <p className={styles.unavailable} role="status">
           {model.status === "loading"
             ? "Loading source details"
@@ -341,7 +345,7 @@ export function SourceDetailView({
     );
   }
   return (
-    <div className={styles.page}>
+    <div className={styles.page} data-scroll-fade="vertical">
       {model.effect}
       <Settings.Page>
         {active.bare ? null : (
@@ -527,10 +531,7 @@ function WatchData({
     onChanged: changed,
   });
   const target = { kind: "watch", id: watch.id } as const;
-  const handle =
-    watch.kind === "playlist" || watch.kind === "list"
-      ? watch.handle
-      : `@${watch.handle}`;
+  const handle = watchHandleLabel(watch.handle, watch.kind);
   return children(
     sourceDetailModel({
       handle,
@@ -579,7 +580,7 @@ function watchProperties(
 ): SourceInspectorProperty[] {
   const kind = watchKindLabel(watch.kind);
   const properties: SourceInspectorProperty[] = [
-    { label: "Source", value: getSourceDef(watch.source).label },
+    { label: "Source", value: watchSourceLabel(watch.source) },
     { label: "Type", value: kind.charAt(0).toUpperCase() + kind.slice(1) },
     { label: "Added", value: addedLabel(watch.addedAt) },
   ];

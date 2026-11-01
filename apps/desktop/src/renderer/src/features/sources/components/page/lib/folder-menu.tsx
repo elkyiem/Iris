@@ -8,7 +8,7 @@ import {
 import { Dialog, type MenuItemSpec } from "@pond/ui";
 import type { SourceActionSections } from "@/features/sources/lib/source-menu";
 import { pickWatchedFolder } from "@/features/sources/lib/watched-folder";
-import { formatNumber } from "@/shared/lib/format";
+import { formatPlural } from "@/shared/lib/format";
 import {
   hostDeviceName,
   isBrowserRuntime,
@@ -45,7 +45,7 @@ async function setWatching(
 
 function confirmStop(target: FolderMenuTarget, onChanged: () => void): void {
   const count = target.imported;
-  const fileCount = `${formatNumber(count)} file${count === 1 ? "" : "s"}`;
+  const fileCount = formatPlural(count, { one: "file", other: "files" });
   Dialog.confirm({
     title: "Stop Watching",
     description: `Pond stops importing new files from ${target.name}. The ${fileCount} already imported stay in your library.`,

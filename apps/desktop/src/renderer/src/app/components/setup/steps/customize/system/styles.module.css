@@ -1,0 +1,126 @@
+.accent {
+  flex: none;
+  color: var(--ds-accent-9);
+}
+
+.toasts {
+  display: grid;
+  justify-items: center;
+}
+
+.toast {
+  display: flex;
+  grid-area: 1 / 1;
+  gap: 6px;
+  align-items: center;
+  height: 30px;
+  padding: 0 10px;
+  font-size: var(--ds-text-sm);
+  white-space: nowrap;
+  background: var(--ds-gray-1);
+  border-radius: var(--ds-radius-md);
+  box-shadow:
+    var(--ds-shadow-md),
+    inset 0 0 0 var(--ds-border-width) var(--ds-gray-a3);
+
+  &[data-ghost] {
+    justify-self: stretch;
+    opacity: 0.5;
+    transform: translateY(-10px) scale(0.9);
+  }
+}
+
+.dock {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 6px 8px 4px;
+  background: var(--ds-gray-a2);
+  border-radius: var(--ds-radius-lg);
+  box-shadow: inset 0 0 0 var(--ds-border-width) var(--ds-gray-a3);
+}
+
+.slot {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 7px;
+  background: var(--ds-gray-a3);
+  border-radius: var(--ds-radius-md);
+}
+
+.running {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+
+  &::after {
+    width: 4px;
+    height: 4px;
+    content: "";
+    background: var(--ds-gray-11);
+    border-radius: var(--ds-radius-full);
+  }
+}
+
+.app {
+  display: block;
+  width: 40px;
+  height: 40px;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.menubar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  color: var(--ds-gray-12);
+  background: var(--ds-gray-a3);
+  border-radius: var(--ds-radius-sm);
+}
+
+.tray {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 18px;
+  background: var(--ds-gray-a5);
+  border-radius: var(--ds-radius-xs);
+}
+
+.clock {
+  font-size: var(--ds-text-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  min-width: 88px;
+  padding: 4px;
+  font-size: var(--ds-text-sm);
+  background: var(--ds-gray-1);
+  border-radius: var(--ds-radius-md);
+  box-shadow:
+    var(--ds-shadow-md),
+    inset 0 0 0 var(--ds-border-width) var(--ds-gray-a3);
+
+  > span {
+    padding: 2px 6px;
+    border-radius: var(--ds-radius-xs);
+  }
+
+  > span:first-child {
+    background: var(--ds-gray-a3);
+  }
+}

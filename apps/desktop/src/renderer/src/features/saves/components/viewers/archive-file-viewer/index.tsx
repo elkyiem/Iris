@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ViewerHud } from "@/features/saves/components/viewers/hud";
 import { ChromePortal } from "@/features/saves/components/viewers/media-viewer/chrome";
 import { ViewerToolbarGroups } from "@/features/saves/components/viewers/viewer-toolbar-groups";
-import { formatBytes } from "@/shared/lib/format";
+import { formatBytes, formatPlural } from "@/shared/lib/format";
 import { archiveSafety } from "./archive";
 import styles from "./styles.module.css";
 
@@ -117,7 +117,10 @@ export function ArchiveFileViewer({
               {toolbarStart}
               <ViewerHud.Scale>
                 {entries
-                  ? `${entries.length.toLocaleString()} files`
+                  ? formatPlural(entries.length, {
+                      one: "file",
+                      other: "files",
+                    })
                   : "ZIP archive"}
               </ViewerHud.Scale>
             </>
@@ -150,7 +153,7 @@ export function ArchiveFileViewer({
         <div className={styles.status}>Reading archive directory</div>
       ) : null}
       {entries ? (
-        <ul className={styles.list}>
+        <ul className={styles.list} data-scroll-fade="vertical">
           {filtered.map((entry) => (
             <li key={entry.name} className={styles.row}>
               <span>{entry.name}</span>

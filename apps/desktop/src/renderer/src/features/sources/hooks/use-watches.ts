@@ -1,4 +1,5 @@
 import { SOURCES, type Source, type WatchKind } from "@pond/schema/db";
+import { WATCH_KINDS } from "@pond/schema/watches";
 import { useSelector } from "@tanstack/react-store";
 import { Store } from "@tanstack/store";
 import { useEffect } from "react";
@@ -29,37 +30,6 @@ export interface WatchRow {
   syncing: boolean;
 }
 
-export const WATCHABLE: readonly Source[] = [
-  "arena",
-  "youtube",
-  "tiktok",
-  "instagram",
-  "twitter",
-  "pinterest",
-  "cosmos",
-];
-
-export function watchKindLabel(kind: WatchKind | undefined): string {
-  switch (kind) {
-    case "channel":
-      return "channel";
-    case "group":
-      return "group";
-    case "playlist":
-      return "playlist";
-    case "board":
-      return "board";
-    case "cluster":
-      return "cluster";
-    case "list":
-      return "list";
-    default:
-      return "account";
-  }
-}
-
-export const WATCH_NEEDS_SESSION: readonly Source[] = ["instagram", "twitter"];
-
 const WatchesReplySchema = z
   .object({
     watches: z
@@ -68,18 +38,7 @@ const WatchesReplySchema = z
           id: z.string(),
           source: z.enum(SOURCES),
           handle: z.string().catch(""),
-          kind: z
-            .enum([
-              "channel",
-              "user",
-              "group",
-              "playlist",
-              "board",
-              "cluster",
-              "list",
-            ])
-            .optional()
-            .catch(undefined),
+          kind: z.enum(WATCH_KINDS).optional().catch(undefined),
           label: z.string().nullable().catch(null),
           avatarUrl: z.string().nullable().optional().catch(null),
           via: z.string().nullable().catch(null),

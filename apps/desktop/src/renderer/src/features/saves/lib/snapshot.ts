@@ -18,7 +18,7 @@ function openDb(): Promise<IDBDatabase> {
   if (dbPromise) return dbPromise;
   dbPromise = new Promise((resolve, reject) => {
     try {
-      // An unscoped snapshot can hold another Library's Saves, so it is never read.
+      /** An unscoped snapshot can hold another Library's Saves, so it is never read. */
       indexedDB.deleteDatabase(DB_BASE_NAME);
       const req = indexedDB.open(libraryScopedKey(DB_BASE_NAME), VERSION);
       req.onupgradeneeded = () => {

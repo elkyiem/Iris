@@ -4,14 +4,15 @@ import {
   type ApiTokenScope,
 } from "@pond/schema/api";
 import { Button, Checkbox, Dialog, Field, Input } from "@pond/ui";
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { errorCopy } from "@/shared/lib/error-copy";
 import styles from "./styles.module.css";
 
 const SCOPE_DESCRIPTIONS = {
-  search: "Query, search, and read saves, files, and thumbnails",
-  export: "Convert copies. Originals stay in the library.",
-  write: "Add saves, edit tags, folders, notes, and ratings, and use Trash",
+  search: "Let connected apps search and read your saves, files, and folders.",
+  export: "Let connected apps export converted copies and compress images.",
+  write:
+    "Let connected apps add saves, edit tags, folders, notes, and ratings, and use Trash.",
 } satisfies Record<ApiTokenScope, string>;
 
 interface CreateTokenDialogProps {
@@ -30,6 +31,9 @@ export function CreateTokenDialog({
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [invalid, setInvalid] = useState({ name: false, scopes: false });
+  const nameField = useRef<HTMLInputElement>(null);
+  const scopesField = useRef<HTMLFieldSetElement>(null);
   const trimmed = name.trim();
 
   function toggle(scope: ApiTokenScope, checked: boolean) {
@@ -41,7 +45,19 @@ export function CreateTokenDialog({
   }
 
   async function create() {
-    if (!trimmed || scopes.length === 0) return;
+    if (busy) return;
+    const next = { name: !trimmed, scopes: scopes.length === 0 };
+    setInvalid(next);
+    if (next.name) {
+      nameField.current?.focus();
+      return;
+    }
+    if (next.scopes) {
+      scopesField.current
+        ?.querySelector<HTMLElement>("[role='checkbox']")
+        ?.focus();
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -119,10 +135,11 @@ export function CreateTokenDialog({
                 <Dialog.Title>New Token</Dialog.Title>
               </Dialog.Header>
               <Dialog.Content className={styles.content}>
-                <Field.Root>
+                <Field.Root invalid={(invalid.name && !trimmed) || undefined}>
                   <Field.Label>Name</Field.Label>
                   <Input.Root size="md">
                     <Field.Control
+                      ref={nameField}
                       render={<Input.Field />}
                       value={name}
                       onValueChange={setName}
@@ -132,8 +149,20 @@ export function CreateTokenDialog({
                       autoFocus
                     />
                   </Input.Root>
+                  {invalid.name && !trimmed ? (
+                    <Field.Error match>Name the token.</Field.Error>
+                  ) : null}
                 </Field.Root>
-                <fieldset className={styles.scopes} disabled={busy}>
+                <fieldset
+                  ref={scopesField}
+                  className={styles.scopes}
+                  disabled={busy}
+                  aria-describedby={
+                    invalid.scopes && scopes.length === 0
+                      ? `${id}-scopes-error`
+                      : undefined
+                  }
+                >
                   <legend className={styles.legend}>Access</legend>
                   {API_TOKEN_SCOPES.map((scope) => (
                     <label
@@ -160,6 +189,15 @@ export function CreateTokenDialog({
                       </span>
                     </label>
                   ))}
+                  {invalid.scopes && scopes.length === 0 ? (
+                    <p
+                      id={`${id}-scopes-error`}
+                      role="alert"
+                      className={styles.error}
+                    >
+                      Choose at least one access level.
+                    </p>
+                  ) : null}
                 </fieldset>
                 {error ? (
                   <Dialog.Description role="alert" data-error>
@@ -169,11 +207,7 @@ export function CreateTokenDialog({
               </Dialog.Content>
               <Dialog.Footer>
                 <Dialog.Cancel disabled={busy} />
-                <Dialog.Confirm
-                  type="submit"
-                  loading={busy}
-                  disabled={!trimmed || scopes.length === 0}
-                >
+                <Dialog.Confirm type="submit" loading={busy}>
                   Create
                 </Dialog.Confirm>
               </Dialog.Footer>

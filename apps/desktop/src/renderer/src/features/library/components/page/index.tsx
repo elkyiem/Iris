@@ -27,7 +27,6 @@ export function Library() {
   const isFish = fishIdFromPath(pathname) !== null;
   const isTags = pathname === "/tags";
   const isSettings = pathname.startsWith("/settings");
-  const isGallery = pathname === "/gallery";
   const isCanvas =
     canvasIdFromPath(isSave ? getLastListPath() : pathname) !== null;
   const showLibraryGrid =
@@ -36,7 +35,6 @@ export function Library() {
     !isFish &&
     !isTags &&
     !isSettings &&
-    !isGallery &&
     !isCanvas;
 
   useLayoutEffect(() => {

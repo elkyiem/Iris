@@ -120,6 +120,10 @@ mac:
     # only the main process of the app that holds the extension.
     - from: resources/SafariExtension/safari-settings.node
       to: safari-settings.node
+    # Opens the app group container through containermanagerd, which macOS requires
+    # before an unsandboxed app may create the Safari socket in it.
+    - from: resources/SafariExtension/app-group.node
+      to: app-group.node
   # App extensions: the Safari App Extension (scripts/build-safari-extension.mjs) and
   # the Share extension (scripts/build-share-extension.mjs). Safari cannot launch an
   # external native-messaging host, so its handler ships inside the app bundle; macOS

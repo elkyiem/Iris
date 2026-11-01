@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { ConnectedAccount } from "@pond/schema/db";
 import { BrowserWindow, session, shell } from "electron";
 import log from "electron-log/main.js";
@@ -285,8 +286,4 @@ export async function signOutOfBluesky(
       origin: WEB,
       storages: ["localstorage", "indexdb", "cookies", "serviceworkers"],
     });
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

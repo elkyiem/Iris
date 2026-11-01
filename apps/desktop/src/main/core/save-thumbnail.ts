@@ -26,7 +26,7 @@ function thumbnailWriteArgs(
   height?: number,
   custom = false,
 ): WriteFileArgs {
-  // A refreshed web save lists its new image after the archive files.
+  /** A refreshed web save lists its new image after the archive files. */
   const primary =
     files.find((file) => isOriginalImageKind(file.kind))?.path ??
     primaryOriginalPath(files);

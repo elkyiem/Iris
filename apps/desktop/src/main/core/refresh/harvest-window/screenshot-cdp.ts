@@ -1,7 +1,7 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { JsonObject } from "@pond/schema/json";
 import type { BrowserWindow } from "electron";
 import log from "electron-log/main.js";
-import { sleep } from "./util";
 
 /** CDP commands can hang indefinitely on a wedged hidden window; bound them so a stuck capture can't hold its window lease and starve the pool. */
 const CDP_COMMAND_TIMEOUT_MS = 10_000;

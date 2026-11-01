@@ -74,7 +74,7 @@ type IndexLine =
   | { kind: "header"; key: string; letter: string; count: number }
   | { kind: "tags"; key: string; rows: TagData[]; groupEnd: boolean };
 
-// Mirrors the .tag-grid breakpoints in styles.module.css.
+/** Must match the .grid breakpoints in styles.module.css. */
 function readColumns(): number {
   if (matchMedia("(max-width: 680px)").matches) return 1;
   if (matchMedia("(max-width: 900px)").matches) return 2;
@@ -114,12 +114,10 @@ function chunkTags(
   return lines;
 }
 
-// Only the lines near the viewport mount: every TagItem carries two menus, and
-// rendering thousands of them at once stalls the page for seconds.
-// The scroller is looked up from the list itself: a ref on the parent <main>
-// is not attached yet when the virtualizer first measures on mount.
-// The line holding focus stays mounted off screen, so an open rename editor
-// keeps its draft while the user scrolls.
+/**
+ * Every TagItem carries two menus, so mounting thousands at once stalls the page; the focused line stays mounted to keep a rename draft.
+ * @remarks The scroller comes from the list, since a ref on the parent <main> is unattached at the first measure.
+ */
 function VirtualTagIndex({ lines }: { lines: IndexLine[] }) {
   const listRef = useRef<HTMLDivElement>(null);
   const [focusedKey, setFocusedKey] = useState<string | null>(null);
@@ -133,7 +131,7 @@ function VirtualTagIndex({ lines }: { lines: IndexLine[] }) {
     const onFocusIn = (event: FocusEvent) => {
       const item =
         event.target instanceof Element
-          ? event.target.closest(`.${styles["virtual-item"]}`)
+          ? event.target.closest(`.${styles.item}`)
           : null;
       setFocusedKey(
         lines[Number(item?.getAttribute("data-index"))]?.key ?? null,
@@ -192,7 +190,7 @@ function VirtualTagIndex({ lines }: { lines: IndexLine[] }) {
             key={item.key}
             ref={virtual.measureElement}
             data-index={item.index}
-            className={styles["virtual-item"]}
+            className={styles.item}
             style={{
               transform: `translateY(${item.start - virtual.options.scrollMargin}px)`,
             }}
@@ -207,7 +205,7 @@ function VirtualTagIndex({ lines }: { lines: IndexLine[] }) {
               </header>
             ) : (
               <div
-                className={styles["tag-grid"]}
+                className={styles.grid}
                 data-group-end={line.groupEnd || undefined}
               >
                 {line.rows.map((row) => (
@@ -490,7 +488,7 @@ export function TagsPage() {
                     ) : null}
                     {groupSummaries.length > 0 ? (
                       <nav
-                        className={styles["group-navigation"]}
+                        className={styles.navigation}
                         aria-label="Tag Groups"
                       >
                         {groupSummaries.map((group) => (
@@ -519,13 +517,13 @@ export function TagsPage() {
               </Sidebar.Root>
             </aside>
 
-            <main className={styles.main}>
+            <main className={styles.main} data-scroll-fade="vertical">
               {activeGroupRow ? (
-                <section className={styles["group-detail"]}>
-                  <div className={styles["group-detail-title"]}>
+                <section className={styles.detail}>
+                  <div className={styles.title}>
                     <h1>
                       {activeGroupRow.group.name}
-                      <span className={styles["group-detail-count"]}>
+                      <span className={styles.count}>
                         ({visibleRows.length})
                       </span>
                     </h1>
@@ -546,7 +544,7 @@ export function TagsPage() {
                     </TagPicker.Root>
                   </div>
                   <Input.Root
-                    className={styles["group-description"]}
+                    className={styles.description}
                     size="xs"
                     variant="borderless"
                   >
@@ -594,7 +592,7 @@ export function TagsPage() {
 
               {(activeGroupRow || allTags.sort !== "name") &&
               orderedRows.length > 0 ? (
-                <div className={styles["group-tags"]}>
+                <div className={styles.tags}>
                   <VirtualTagIndex lines={flatLines} />
                 </div>
               ) : alphabet.length > 0 ? (

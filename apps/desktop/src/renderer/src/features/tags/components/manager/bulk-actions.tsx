@@ -2,6 +2,7 @@ import { Button, DataTable, Dialog, Input } from "@pond/ui";
 import { type MutableRefObject, useState } from "react";
 import { tagOperations } from "@/features/tags/operations/tag-client";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 import styles from "./styles.module.css";
 
@@ -14,7 +15,7 @@ type Draft = {
 function confirmBulkDelete(names: string[], onDone: () => void) {
   const count = names.length;
   Dialog.confirm({
-    title: `Delete ${count} ${count === 1 ? "Tag" : "Tags"}`,
+    title: `Delete ${formatPlural(count, { one: "Tag", other: "Tags" })}`,
     description: "They will be removed from every save. This cannot be undone.",
     confirmLabel: "Delete",
     onConfirm: () => void tagOperations.deleteTags(names).then(onDone),

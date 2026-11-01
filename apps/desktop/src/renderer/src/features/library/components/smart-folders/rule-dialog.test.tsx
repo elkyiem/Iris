@@ -102,7 +102,14 @@ describe("smart folder rule dialog", () => {
       },
     });
     await fill("Smart Folder Name", "  Forests  ");
-    expect(button("Create").disabled).toBe(true);
+    await act(async () => button("Create").click());
+    expect(saved).toHaveLength(0);
+    expect(document.querySelector('[role="alert"]')?.textContent).toBe(
+      "Complete every rule to save.",
+    );
+    expect(document.activeElement?.getAttribute("aria-label")).toBe(
+      "Name Value",
+    );
     await settle();
     expect(previews).toHaveLength(0);
     await fill("Name Value", "forest");
@@ -115,6 +122,24 @@ describe("smart folder rule dialog", () => {
     expect(JSON.stringify(saved[0]?.query)).toContain("forest");
     expect(JSON.stringify(saved[0]?.query)).not.toContain("reference");
     expect(closed).toBe(true);
+  });
+
+  it("explains a missing name beside the field and focuses it", async () => {
+    const saved: string[] = [];
+    await render({
+      query: nameQuery("forest"),
+      onSave: async (name) => {
+        saved.push(name);
+      },
+    });
+    await act(async () => button("Create").click());
+    expect(saved).toHaveLength(0);
+    expect(document.body.textContent).toContain("Name the smart folder.");
+    const field = document.activeElement;
+    expect(field?.getAttribute("aria-invalid")).toBe("true");
+    expect(
+      document.querySelector(`label[for="${field?.id}"]`)?.textContent,
+    ).toBe("Smart Folder Name");
   });
 
   it("refreshes an unchanged rule count after a library revision", async () => {
@@ -164,7 +189,11 @@ describe("smart folder rule dialog", () => {
     expect(
       document.querySelector('[aria-label="Rules Group 2 Match"]'),
     ).not.toBeNull();
-    expect(button("Create").disabled).toBe(true);
+    await act(async () => button("Create").click());
+    expect(attempts).toBe(0);
+    expect(document.querySelector('[role="alert"]')?.textContent).toBe(
+      "Complete every rule to save.",
+    );
     await act(async () => button("Remove Rules Group 2").click());
     await act(async () => button("Create").click());
     expect(document.querySelector('[role="alert"]')?.textContent).toBe(

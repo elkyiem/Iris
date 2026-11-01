@@ -5,10 +5,15 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { nextPickerIndex, PickerPanel } from ".";
 
-const css = readFileSync(
-  resolve(dirname(fileURLToPath(import.meta.url)), "styles.module.css"),
-  "utf8",
-);
+function read(path: string) {
+  return readFileSync(
+    resolve(dirname(fileURLToPath(import.meta.url)), path),
+    "utf8",
+  );
+}
+
+const css = read("styles.module.css");
+const itemCss = read("item/styles.module.css");
 
 function declarations(selector: string, occurrence = 0) {
   let start = -1;
@@ -47,6 +52,17 @@ describe("PickerPanel", () => {
     expect(markup).toContain('data-active=""');
     expect(markup).toContain('data-selection="mixed"');
     expect(markup).toContain('data-slot="picker-label"');
+  });
+
+  it("can limit the row fill to the active row", () => {
+    const markup = renderToStaticMarkup(
+      <PickerPanel.Item highlight="active">Open</PickerPanel.Item>,
+    );
+
+    expect(markup).toContain('data-highlight="active"');
+    expect(itemCss).toContain(
+      '.item:not([data-highlight="active"]):hover::before',
+    );
   });
 
   it("keeps static and collapsible section headers on the same type scale", () => {

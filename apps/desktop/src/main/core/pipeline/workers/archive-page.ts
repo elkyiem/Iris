@@ -1,6 +1,7 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { setTimeout as sleep } from "node:timers/promises";
 import type { WebContents } from "electron";
 import log from "electron-log/main.js";
 import { z } from "zod";
@@ -16,7 +17,6 @@ import {
   type ImportableCookie,
   writePartitionCookies,
 } from "../../refresh/harvest-window/session";
-import { sleep } from "../../refresh/harvest-window/util";
 import { readLibraryMedia } from "../../storage/library-media-storage";
 import { TransientError } from "../extractors/errors";
 import {

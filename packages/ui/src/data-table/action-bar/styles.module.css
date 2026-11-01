@@ -1,0 +1,47 @@
+.bar {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 50;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 7px 8px 7px 14px;
+  background: var(--ds-gray-1);
+  border-radius: var(--ds-radius-full);
+  box-shadow: var(--ds-shadow-md);
+  transform: translateX(calc(-50% + var(--data-table-action-bar-offset, 0px)));
+  animation: data-table-action-bar-in var(--ds-duration-fast)
+    var(--ds-easing-standard);
+}
+
+.divider {
+  width: 1px;
+  height: 18px;
+  margin: 0 2px;
+  background: var(--ds-gray-a5);
+}
+
+@keyframes data-table-action-bar-in {
+  from {
+    opacity: 0;
+    transform: translate(
+      calc(-50% + var(--data-table-action-bar-offset, 0px)),
+      8px
+    );
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(
+      calc(-50% + var(--data-table-action-bar-offset, 0px)),
+      0
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}

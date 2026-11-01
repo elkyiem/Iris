@@ -27,6 +27,19 @@ export function formatCount(n: number): string {
   return compactFormatter.format(n);
 }
 
+/** Plural category follows the copy's language, not the reader's locale, so `0` never picks `one`. */
+const pluralRules = new Intl.PluralRules("en");
+
+export interface PluralForms {
+  one: string;
+  other: string;
+}
+
+export function formatPlural(count: number, forms: PluralForms): string {
+  const noun = pluralRules.select(count) === "one" ? forms.one : forms.other;
+  return `${formatNumber(count)} ${noun}`;
+}
+
 export function formatDuration(sec: number): string {
   const total = Math.max(0, Math.floor(sec));
   return prettyMs(total * 1000, {

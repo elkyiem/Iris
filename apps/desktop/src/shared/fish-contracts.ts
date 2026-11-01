@@ -5,14 +5,21 @@ export const DEFAULT_FISH_ID = "default";
 export const DEFAULT_FISH_NAME = "Koi";
 
 export const FISH_COLORS = [
+  "red",
   "orange",
   "gold",
-  "red",
-  "pink",
-  "purple",
-  "blue",
-  "teal",
+  "yellow",
+  "lime",
   "green",
+  "jade",
+  "teal",
+  "cyan",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "magenta",
+  "pink",
 ] as const;
 export const FishColorSchema = z.enum(FISH_COLORS);
 export type FishColor = z.infer<typeof FishColorSchema>;
@@ -26,6 +33,13 @@ export const FISH_SPECIES = [
   "shark",
   "anglerfish",
   "sunfish",
+  "swordfish",
+  "seahorse",
+  "betta",
+  "manta",
+  "eel",
+  "catfish",
+  "lionfish",
 ] as const;
 export const FishSpeciesSchema = z.enum(FISH_SPECIES);
 export type FishSpecies = z.infer<typeof FishSpeciesSchema>;

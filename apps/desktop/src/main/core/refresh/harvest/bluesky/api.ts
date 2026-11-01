@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { ListKind } from "@pond/schema/db";
 import type { Capture } from "@pond/schema/raw";
 import { session } from "electron";
@@ -288,8 +289,4 @@ export async function fetchBlueskyCapture(args: {
   url: string;
 }): Promise<BlueskyCaptureResult> {
   return readBlueskyCapture(args.sourceId, args.url, publicGet());
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

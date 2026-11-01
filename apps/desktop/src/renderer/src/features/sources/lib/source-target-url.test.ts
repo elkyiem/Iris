@@ -29,6 +29,12 @@ describe("sourceTargetUrl", () => {
       "https://www.youtube.com/playlist?list=PL%20pond",
     ],
     ["twitter", "12345", "list", "https://x.com/i/lists/12345"],
+    [
+      "web",
+      "https://example.com/Feed?key=AbC",
+      "feed",
+      "https://example.com/Feed?key=AbC",
+    ],
   ] as const)("builds a %s target URL", (source, handle, kind, expected) => {
     expect(sourceTargetUrl({ source, handle, kind })).toBe(expected);
   });
@@ -47,4 +53,23 @@ describe("sourceTargetUrl", () => {
     expect(sourceTargetUrl({ source: "instagram", handle: null })).toBeNull();
     expect(sourceTargetUrl({ source: "instagram", handle: " / " })).toBeNull();
   });
+
+  it("preserves a feed path and query and removes its fragment", () => {
+    expect(
+      sourceTargetUrl({
+        source: "web",
+        kind: "feed",
+        handle: " https://example.com/Feed?key=AbC#top ",
+      }),
+    ).toBe("https://example.com/Feed?key=AbC");
+  });
+
+  it.each(["file:///tmp/feed", "https://user:pass@example.com/feed"])(
+    "does not open an invalid feed address %s",
+    (handle) => {
+      expect(
+        sourceTargetUrl({ source: "web", kind: "feed", handle }),
+      ).toBeNull();
+    },
+  );
 });

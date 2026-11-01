@@ -1,18 +1,16 @@
-import type { ComponentType, SVGProps } from "react";
+import { IconTweetVerifiedFill } from "@pond/icons";
+import type { IconComponent } from "@pond/icons/types";
 import { Avatar } from "@/features/captures/components/tweet/card/header";
-import { VerifiedIcon } from "@/features/captures/components/tweet/card/icons";
 import type { TweetCardData } from "@/features/captures/components/tweet/card/lib/data";
 import { MediaGrid } from "@/features/captures/components/tweet/card/media-grid";
 import styles from "./styles.module.css";
 
-type VerifiedGlyph = ComponentType<SVGProps<SVGSVGElement>>;
-
 export function QuotedCard({
   data,
-  Verified = VerifiedIcon,
+  Verified = IconTweetVerifiedFill,
 }: {
   data: TweetCardData;
-  Verified?: VerifiedGlyph;
+  Verified?: IconComponent;
 }) {
   const { author, text, media } = data;
   return (
@@ -22,7 +20,7 @@ export function QuotedCard({
         <span className={styles.name}>
           {author.name}
           {author.verified ? (
-            <Verified className={styles.verified} width={15} height={15} />
+            <Verified className={styles.verified} size={15} title="Verified" />
           ) : null}
         </span>
         <span className={styles.handle}>@{author.handle}</span>

@@ -18,7 +18,7 @@ exports.verifyBrowserRelease = async function verifyBrowserRelease({
 }) {
   assert.match(
     resolve(sandbox).split(sep).join("/"),
-    /\/(?:added-commits-\d{8}\/sandbox(?:-[a-z0-9-]+)?|iris-web-ci-[a-z0-9-]+)$/i,
+    /\/(?:added-commits-\d{8}\/sandbox(?:-[a-z0-9-]+)?|pond-220-\d{8}\/upgrade-220|iris-web-ci-[a-z0-9-]+)$/i,
   );
   assert.ok(
     resolve((await query("library.info")).path).startsWith(

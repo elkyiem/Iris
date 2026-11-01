@@ -1,8 +1,8 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import { z } from "zod";
 import { NAV_TIMEOUT_MS } from "./harvest-window/constants";
 import { navigateWithTimeout } from "./harvest-window/navigation";
 import { leaseWindow } from "./harvest-window/pool";
-import { sleep } from "./harvest-window/util";
 
 export { browserUserAgent } from "./harvest-window/constants";
 

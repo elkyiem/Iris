@@ -13,6 +13,7 @@ function Main({ className, ...props }: MainProps) {
   return (
     <main
       className={cn(styles.main, className)}
+      data-scroll-fade="vertical"
       {...props}
       data-scroll-viewport=""
     />

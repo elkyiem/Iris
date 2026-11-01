@@ -8,7 +8,10 @@ function Root({
   ...props
 }: ComponentProps<"table"> & { containerClassName?: string }) {
   return (
-    <div className={cn(styles.container, containerClassName)}>
+    <div
+      className={cn(styles.container, containerClassName)}
+      data-scroll-fade="horizontal"
+    >
       <table className={cn(styles.table, className)} {...props} />
     </div>
   );

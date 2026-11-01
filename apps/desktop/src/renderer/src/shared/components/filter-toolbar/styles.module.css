@@ -1,10 +1,5 @@
 .toggle {
   flex: none;
-
-  &[data-active] {
-    color: var(--ds-gray-12);
-    background: var(--ds-gray-a3);
-  }
 }
 
 .shell {
@@ -23,7 +18,7 @@
   padding: 8px;
 }
 
-.filters-viewport {
+.viewport {
   flex: 1;
   min-width: 0;
   overflow: visible;

@@ -10,7 +10,7 @@ const labels = new Map<string, string>(
   Object.entries({
     searchLibrary: "Search library",
     readSave: "Read Save",
-    grepLibrary: "Grep library",
+    grepLibrary: "Search saved text",
     libraryOverview: "Library overview",
     listFolders: "Read folders",
     applyFilter: "Apply filter",

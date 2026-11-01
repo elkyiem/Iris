@@ -170,10 +170,6 @@
   display: block;
   overflow-y: auto;
   cursor: text;
-  resize: none;
-  outline: none;
-  background: transparent;
-  border: 0;
 
   &::placeholder {
     color: var(--ds-gray-a9);

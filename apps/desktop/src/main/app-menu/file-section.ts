@@ -1,5 +1,6 @@
+import { SOURCES } from "@pond/schema/source-ids";
 import { EXTERNAL_SOURCE_IDS, sourceLabel } from "@pond/schema/sources";
-import { isWatchableSource } from "../core/watch/types";
+import { isWatchableSource, watchSourceLabel } from "@pond/schema/watches";
 import {
   FILE_MENU_DUPLICATES_LABELS,
   FILE_MENU_EXPORT_LABELS,
@@ -122,12 +123,10 @@ export function buildFileSection(context: AppMenuContext): AppMenuItem {
           },
           {
             label: "New Watch",
-            submenu: EXTERNAL_SOURCE_IDS.filter(isWatchableSource).map(
-              (source) => ({
-                label: sourceLabel(source),
-                click: sendMenuAction(`library.watch-${source}`),
-              }),
-            ),
+            submenu: SOURCES.filter(isWatchableSource).map((source) => ({
+              label: watchSourceLabel(source),
+              click: sendMenuAction(`library.watch-${source}`),
+            })),
           },
         ],
       },

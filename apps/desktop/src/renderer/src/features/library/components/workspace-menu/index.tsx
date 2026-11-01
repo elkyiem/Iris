@@ -87,7 +87,7 @@ function LibraryMenuContent({
               >
                 <Menu.ItemIcon className={styles.identity}>
                   <img
-                    className={styles["library-icon"]}
+                    className={styles.icon}
                     src={entry.icon ?? defaultAppIcon}
                     alt=""
                   />
@@ -179,18 +179,20 @@ export function WorkspaceMenu() {
       >
         <Menu.Trigger
           variant="ghost"
-          size="sm"
+          density="compact"
           className={styles.trigger}
           aria-label="Library Menu"
         >
           <span className={styles.mark} aria-hidden>
             <img
-              className={styles["library-icon"]}
+              className={styles.icon}
               src={info?.icon ?? defaultAppIcon}
               alt=""
             />
           </span>
-          <span className={styles.name}>{name}</span>
+          <span className={styles.name} title={name}>
+            {name}
+          </span>
           <IconChevronDown size={12} className={styles.chevron} aria-hidden />
         </Menu.Trigger>
         <Menu.Portal>

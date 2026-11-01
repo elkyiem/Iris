@@ -85,12 +85,7 @@ async function resolveShellHint(): Promise<ShellHint> {
   const resolved = await resolveTheme();
   if (!resolved) return {};
   const { mode, ...vars } = resolved;
-  const prefs = await getPrefs().catch(() => null);
-  return {
-    theme: mode,
-    ...vars,
-    pointerCursors: prefs?.preferences.pointerCursors === true,
-  };
+  return { theme: mode, ...vars };
 }
 
 let openingLibraryWindow: Promise<BrowserWindow> | null = null;
@@ -161,8 +156,7 @@ async function buildLibraryWindow(): Promise<BrowserWindow> {
     if (!isQuitting) void settleDockAfterClose();
   });
   win.on("show", () => void showDock());
-  // Mouse utilities such as Logi Options+ send back and forward buttons as
-  // swipes on macOS, as do three-finger trackpad swipes.
+  /** On macOS, Logi Options+ and three-finger trackpad swipes send back and forward as swipes. */
   win.on("swipe", (_event, direction) => {
     if (direction === "left") win.webContents.send(IPC.navigationSwipe, "back");
     if (direction === "right")

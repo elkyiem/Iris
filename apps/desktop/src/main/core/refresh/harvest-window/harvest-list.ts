@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import {
   type ImportCollection,
   MEDIA_TYPES,
@@ -37,6 +38,10 @@ import type {
   ListHarvestArgs,
   ListHarvestResult,
 } from "../harvest/list-types";
+import {
+  buildMarkedListExpression,
+  MARKED_LIST_URL,
+} from "../harvest/marked/list";
 import {
   buildPinterestListExpression,
   pinterestProfileUrl,
@@ -78,7 +83,6 @@ import {
 } from "./navigation";
 import { runOnSourcePage } from "./page-run";
 import { leaseWindow } from "./pool";
-import { sleep } from "./util";
 
 interface SourceListArgs extends ListHarvestArgs {
   accountKey?: string;
@@ -454,6 +458,8 @@ function listUrlForSource(
       return UNSPLASH_LIST_URL;
     case "bluesky":
       return null;
+    case "marked":
+      return MARKED_LIST_URL;
     case "web":
       return null;
     case "local":
@@ -502,6 +508,8 @@ function buildListExpressionFor(
       return buildUnsplashListExpression(args);
     case "bluesky":
       return null;
+    case "marked":
+      return buildMarkedListExpression(args);
     case "web":
       return null;
     case "local":

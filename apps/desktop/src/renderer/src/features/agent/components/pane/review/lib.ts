@@ -1,4 +1,7 @@
 import type { AssistantChange } from "@shared/assistant";
+import { formatPlural } from "@/shared/lib/format";
+
+const CHANGES = { one: "change", other: "changes" };
 
 export interface ChipChange {
   value: string;
@@ -64,7 +67,7 @@ export function summaryParts(
     case "rating":
       return neutral(
         change.after
-          ? `Rate ${change.after} ${change.after === 1 ? "star" : "stars"}`
+          ? `Rate ${formatPlural(change.after, { one: "star", other: "stars" })}`
           : "Clear rating",
       );
     case "trash":
@@ -89,12 +92,8 @@ export function isPurgeTrash(change: AssistantChange): boolean {
   return change.field === "action" && change.action === "purgeTrash";
 }
 
-function count(n: number, noun: string, plural = `${noun}s`): string {
-  return `${n} ${n === 1 ? noun : plural}`;
-}
-
 export function reviewQuestion(pending: number): string {
-  return `Apply ${count(pending, "change")} to your library?`;
+  return `Apply ${formatPlural(pending, CHANGES)} to your library?`;
 }
 
 function summaryVerb(change: AssistantChange): string {
@@ -126,8 +125,8 @@ export function reviewSummary(changes: readonly AssistantChange[]): string {
     verb === "action"
       ? n === 1
         ? (changes.find((change) => change.field === "action")?.after ?? "")
-        : `runs ${count(n, "library action")}`
-      : `${verb} ${count(n, "Save")}`,
+        : `runs ${formatPlural(n, { one: "library action", other: "library actions" })}`
+      : `${verb} ${formatPlural(n, { one: "Save", other: "Saves" })}`,
   );
   const text = parts.filter(Boolean).join(", ");
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -155,7 +154,7 @@ export function reviewOutcome(
   const [only] = parts;
   const text =
     only && parts.length === 1
-      ? `${only[0]} ${count(only[1], "change")}`
+      ? `${only[0]} ${formatPlural(only[1], CHANGES)}`
       : parts
           .map(
             ([verb, n], index) => `${index ? verb.toLowerCase() : verb} ${n}`,

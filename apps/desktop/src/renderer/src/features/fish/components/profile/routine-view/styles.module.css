@@ -5,12 +5,6 @@
   border-bottom: none;
 }
 
-.back {
-  gap: 4px;
-  padding-inline: 6px 10px;
-  color: var(--ds-gray-11);
-}
-
 .scroll {
   display: flex;
   flex: 1;

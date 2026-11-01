@@ -74,12 +74,6 @@
   padding: 2px;
   border-radius: var(--ds-radius-full);
   box-shadow: var(--ds-shadow-float);
-
-  & :global([data-rounding]) {
-    --button-radius-xs: var(--ds-radius-full);
-    --button-radius-sm: var(--ds-radius-full);
-    --button-radius-md: var(--ds-radius-full);
-  }
 }
 
 .tools {

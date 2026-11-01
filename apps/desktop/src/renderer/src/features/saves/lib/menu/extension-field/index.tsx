@@ -1,5 +1,6 @@
 import { Input } from "@pond/ui";
 import { useState } from "react";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 import styles from "./styles.module.css";
 
@@ -19,7 +20,7 @@ export function ExtensionField({ ids }: { ids: string[] }) {
       notify({
         id: "batch-extension",
         title: "Extensions changed",
-        description: `${result.changedFiles} files changed. Use Undo to reverse this action.`,
+        description: `${formatPlural(result.changedFiles, { one: "file", other: "files" })} changed. Use Undo to reverse this action.`,
       });
     } finally {
       setBusy(false);

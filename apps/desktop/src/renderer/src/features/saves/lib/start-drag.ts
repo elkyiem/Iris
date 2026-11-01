@@ -1,8 +1,11 @@
 import { resolveFileIndex } from "@/features/saves/lib/actions";
 import { pool } from "@/features/saves/state/pool";
 import { selection } from "@/features/saves/state/selection";
+import { formatPlural } from "@/shared/lib/format";
 import { isBrowserRuntime } from "@/shared/lib/platform";
 import { notify } from "@/shared/lib/toast";
+
+const SAVES = { one: "Save", other: "Saves" };
 
 export const SAVE_DRAG_TYPE = "application/x-pond-save";
 
@@ -78,7 +81,7 @@ function createDragPreview(ids: readonly string[]): HTMLElement {
   }
 
   const count = document.createElement("span");
-  count.textContent = `${ids.length} ${ids.length === 1 ? "Save" : "Saves"}`;
+  count.textContent = formatPlural(ids.length, SAVES);
   count.style.cssText =
     "position:absolute;right:0;bottom:0;display:flex;align-items:center;min-height:24px;padding:0 8px;color:white;font:600 11px/1 system-ui,sans-serif;background:var(--ds-accent-9,#1677ff);border:2px solid white;border-radius:999px;box-shadow:0 2px 8px rgb(0 0 0 / 24%);white-space:nowrap;";
   preview.append(count);
@@ -107,7 +110,7 @@ export function announceSaveDragTarget(
   folderName: string,
   count: number,
 ): void {
-  announce(`Add ${count} ${count === 1 ? "Save" : "Saves"} to ${folderName}`);
+  announce(`Add ${formatPlural(count, SAVES)} to ${folderName}`);
 }
 
 function installSessionListeners(): void {
@@ -178,9 +181,7 @@ export function beginSaveDrag(id: string, event?: SaveDragStartEvent): void {
   const selected = selection.has(id) ? [...selection.snapshot()] : [id];
   draggingIds = selected;
   document.body.dataset.saveDragging = String(selected.length);
-  announce(
-    `${selected.length} ${selected.length === 1 ? "Save" : "Saves"} ready to add to a folder`,
-  );
+  announce(`${formatPlural(selected.length, SAVES)} ready to add to a folder`);
   const ids = selected.filter((saveId) => {
     const save = pool.get(saveId);
     return save ? resolveFileIndex(save) != null : false;

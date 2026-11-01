@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { setTimeout as sleep } from "node:timers/promises";
 import { type Session, session } from "electron";
 import log from "electron-log/main.js";
 import { z } from "zod";
@@ -256,8 +257,4 @@ export async function harvestBehanceAppreciations(
   if (first.ok || !("challenge" in first)) return first;
   await warmBehance(jar);
   return readBehanceAppreciations(args, post);
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

@@ -14,7 +14,7 @@ export function resolveLogFile(
       const root = directory();
       mkdirSync(root, { recursive: true });
       const file = join(root, "main.log");
-      // Opening a directory can succeed on Windows; logging requires a file.
+      /** Opening a directory can succeed on Windows, so the descriptor must be checked for a file. */
       const descriptor = openSync(file, "a");
       try {
         if (!fstatSync(descriptor).isFile()) continue;

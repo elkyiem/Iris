@@ -1,3 +1,15 @@
+@property --scroll-fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
 @layer reset {
   *,
   *::before,
@@ -138,5 +150,61 @@
   ol {
     padding: 0;
     list-style: none;
+  }
+
+  /* An inactive scroll timeline (no overflow) leaves both edges at 0, so nothing fades. */
+  /* Never on a Base UI popup or panel: they wait on the element's animations, and these never finish. */
+  [data-scroll-fade] {
+    --scroll-fade-size: 24px;
+    --scroll-fade-start-size: var(--scroll-fade-size);
+    --scroll-fade-end-size: var(--scroll-fade-size);
+
+    overscroll-behavior: contain;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      black var(--scroll-fade-start),
+      black calc(100% - var(--scroll-fade-end)),
+      transparent
+    );
+    animation:
+      scroll-fade-start linear both,
+      scroll-fade-end linear both;
+    animation-timeline: scroll(self block), scroll(self block);
+    animation-range:
+      0 var(--scroll-fade-start-size),
+      calc(100% - var(--scroll-fade-end-size)) 100%;
+  }
+
+  [data-scroll-fade="horizontal"] {
+    overscroll-behavior: contain auto;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black var(--scroll-fade-start),
+      black calc(100% - var(--scroll-fade-end)),
+      transparent
+    );
+    animation-timeline: scroll(self inline), scroll(self inline);
+  }
+
+  @keyframes scroll-fade-start {
+    from {
+      --scroll-fade-start: 0px;
+    }
+
+    to {
+      --scroll-fade-start: var(--scroll-fade-start-size);
+    }
+  }
+
+  @keyframes scroll-fade-end {
+    from {
+      --scroll-fade-end: var(--scroll-fade-end-size);
+    }
+
+    to {
+      --scroll-fade-end: 0px;
+    }
   }
 }

@@ -74,10 +74,7 @@
   &:has(> .affix) {
     overflow: hidden;
     border-radius: var(--input-radius);
-    transition:
-      background var(--ds-duration-medium) var(--ds-easing-standard),
-      border-color var(--ds-duration-medium) var(--ds-easing-standard),
-      box-shadow var(--ds-duration-medium) var(--ds-easing-standard);
+    transition: box-shadow var(--ds-duration-medium) var(--ds-easing-standard);
   }
 
   &:has(> [data-multiline]) {
@@ -154,7 +151,7 @@
     color: var(--ds-red-11);
   }
 
-  &[data-multiline] {
+  &[data-multiline]:not([data-appearance="bare"]) {
     display: block;
     min-width: 0;
     max-width: 100%;
@@ -168,6 +165,30 @@
   &[data-multiline][data-padding="comfortable"] {
     padding: 16px;
   }
+
+  &[data-multiline][data-padding="compact"] {
+    min-height: var(--input-min-height);
+    padding-block: calc((var(--input-min-height) - 1lh) / 2);
+  }
+
+  &[data-sizing="content"] {
+    field-sizing: content;
+  }
+}
+
+.field:where([data-appearance="bare"]) {
+  --ds-focus-outline: transparent;
+
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  resize: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
 }
 
 .root:where([data-variant="primary"]) > .field {

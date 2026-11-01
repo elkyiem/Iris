@@ -1,10 +1,10 @@
-.folder-overlay {
+.overlay {
   width: 100%;
   height: 100%;
   pointer-events: none;
   opacity: 0.55;
 }
 
-.folder-overlay > button {
+.overlay > button {
   height: 100%;
 }

@@ -4,6 +4,7 @@ import log from "electron-log/main.js";
 import { broadcastSyncAction } from "../executor";
 import { persistSave } from "../persist-save";
 import type { ImportableCookie } from "../refresh/harvest-window/session";
+import { restoreSave } from "../restore-save";
 import { listAccounts } from "../sync/accounts";
 import {
   type EnqueueCandidate,
@@ -29,6 +30,7 @@ import {
   harvestShouldAdoptSave,
   harvestShouldIgnoreSave,
   harvestShouldReseedFailedSave,
+  harvestShouldRestoreSave,
 } from "./harvest-policy";
 import { listKindsFromTrigger } from "./list-kinds";
 import { stashPageCookies } from "./page-cookies";
@@ -87,6 +89,7 @@ export interface EnqueueOneResult {
   id: string;
   created: boolean;
   reseeded?: boolean;
+  restored?: boolean;
 }
 
 export interface EnqueueManyResult {
@@ -150,6 +153,17 @@ async function enqueueOne(
       opts.trigger ?? "pipeline:enqueue",
     );
     await adoptOrphanedSave(current, opts);
+    const existing: EnqueueOneResult = { id: current.id, created: false };
+    if (harvestShouldRestoreSave(current, isInteractiveTrigger(opts.trigger))) {
+      await restoreSave(current.id, opts.trigger ?? "enqueue:restore");
+      current.deletedAt = null;
+      existing.restored = true;
+      log.info("[pond pipeline:enqueue] restored save from trash", {
+        id: current.id,
+        source,
+        trigger: opts.trigger,
+      });
+    }
     if (harvestShouldIgnoreSave(current)) {
       stashWebCookiesThenKick(current.id, source, opts.cookies);
       log.info("[pond pipeline:enqueue] existing save", {
@@ -176,7 +190,7 @@ async function enqueueOne(
         source,
         trigger: opts.trigger,
       });
-      return { id: current.id, created: false, reseeded: true };
+      return { ...existing, reseeded: true };
     }
     if (opts.force) {
       await resetTasksForSave(
@@ -212,7 +226,7 @@ async function enqueueOne(
       trigger: opts.trigger,
       force: opts.force === true,
     });
-    return { id: current.id, created: false };
+    return existing;
   }
 
   const now = new Date();

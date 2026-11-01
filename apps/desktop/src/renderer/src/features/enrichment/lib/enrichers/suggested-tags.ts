@@ -11,9 +11,9 @@ import type { Enricher } from "../types";
 const SUGGESTED_TAGS_VERSION = "suggested-tags@2";
 const SCORE_THRESHOLD = 0.3;
 const MAX_SUGGESTIONS = 5;
-// One embedding call pads every row to the longest name, so a large tag list in a single call outgrows ONNX Runtime's tensor limit.
+/** One embedding call pads every row to the longest name, so one call for a large tag list outgrows ONNX Runtime's tensor limit. */
 const VOCAB_BATCH_SIZE = 64;
-// Tags are short labels; a longer string is import debris and only pads its batch.
+/** Tags are short labels; a longer string is import debris and only pads its batch. */
 const MAX_TAG_LENGTH = 100;
 /** After a vocab embed fails, skip rebuilds until tags change or this cooldown elapses. */
 export const SUGGESTED_TAGS_VOCAB_RETRY_MS = 5 * 60 * 1000;
@@ -73,7 +73,7 @@ export function createSuggestedTagsEnricher(
       try {
         await inFlight;
       } catch {
-        // Failure is recorded; this caller re-checks cache, cooldown, and tag names.
+        /** The failure is recorded, and the retry below re-checks cache, cooldown, and tag names. */
       }
       return getVocab();
     }

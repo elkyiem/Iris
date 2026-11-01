@@ -34,6 +34,7 @@ export function VideoDownload({ save }: { save: Save }) {
           <Button
             size="sm"
             variant="primary"
+            rounding="full"
             disabled={downloading}
             onClick={download}
           >
@@ -43,6 +44,7 @@ export function VideoDownload({ save }: { save: Save }) {
             <Button
               size="sm"
               variant="ghost"
+              rounding="full"
               onClick={() => void window.pond.openExternal(url)}
             >
               Open Original

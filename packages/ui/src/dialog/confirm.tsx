@@ -19,7 +19,6 @@ export interface ConfirmOptions {
   description?: ReactNode;
   confirmLabel?: ReactNode;
   confirmVariant?: ButtonVariant;
-  busyLabel?: ReactNode;
   checkbox?: {
     label: ReactNode;
     defaultChecked?: boolean;
@@ -113,9 +112,7 @@ function ConfirmContent({
             loading={busy}
             onClick={() => void submit(() => options.onConfirm({ checked }))}
           >
-            {busy
-              ? (options.busyLabel ?? options.confirmLabel ?? "Confirm")
-              : (options.confirmLabel ?? "Confirm")}
+            {options.confirmLabel ?? "Confirm"}
           </Button>
         </Dialog.Footer>
       </Dialog.Popup>

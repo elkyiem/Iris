@@ -84,7 +84,7 @@ export const captures = createCaptureQueue({
         ),
       });
       id = result.id;
-      duplicate = !result.created;
+      duplicate = !result.created && !result.restored;
     } else {
       const temp =
         item.kind === "image"

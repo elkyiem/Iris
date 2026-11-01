@@ -19,7 +19,7 @@
     pointer-events: none;
     content: "";
     background: var(--ds-accent-9);
-    border-radius: 1px;
+    border-radius: var(--ds-radius-full);
   }
 
   &[data-drop="before"]::before {

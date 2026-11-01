@@ -26,6 +26,17 @@ listen there as well as on the Chrome socket. macOS requires the team ID prefix 
 Developer ID app group, so a build signed by another team needs its own group ID in
 `SAFARI_APP_GROUP`, both entitlements files, and the Swift handler.
 
+Pond must ask for the container before it binds the socket. Since macOS 15, app data
+protection refuses an unsandboxed app that creates `~/Library/Group Containers/<group>`
+itself (`mkdir` fails with EPERM), and it refuses a socket inside a container the appex
+created first (`listen` fails with EPERM, and the user sees "Data Access Blocked"). The
+Files & Folders setting does not lift it. Calling
+`containerURLForSecurityApplicationGroupIdentifier:` admits Pond, so the main process does
+that through `app-group.node` (built from `apps/extension/safari/app-group.m`) right
+before it listens. Verified on macOS 27.2 with a notarized Developer ID test app: `mkdir`
+and `listen` fail without the call, and both succeed after it, whichever side created the
+container.
+
 Development builds of Pond run unsigned, have no group entitlement, and skip the Safari
 socket. Test Safari against a packaged build.
 

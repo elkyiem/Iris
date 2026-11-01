@@ -13,7 +13,6 @@
   position: absolute;
   top: 32px;
   right: 32px;
-  border-radius: 100%;
 }
 
 .chrome[data-align="title"] .close {

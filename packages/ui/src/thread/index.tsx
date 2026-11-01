@@ -4,12 +4,15 @@ import { useReducedMotionConfig } from "motion/react";
 import {
   type ComponentProps,
   type ComponentPropsWithoutRef,
+  createContext,
   forwardRef,
   type ReactNode,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from "react";
+import { type ScrollToBottom, useStickToBottom } from "use-stick-to-bottom";
 import { Button } from "../button";
 import { ComposerView } from "../composer";
 import { Tooltip } from "../tooltip";
@@ -22,7 +25,12 @@ function Root({ className, ...props }: ComponentPropsWithoutRef<"div">) {
 const Viewport = forwardRef<HTMLDivElement, ComponentPropsWithoutRef<"div">>(
   function Viewport({ className, ...props }, ref) {
     return (
-      <div ref={ref} className={cn(styles.viewport, className)} {...props} />
+      <div
+        ref={ref}
+        className={cn(styles.viewport, className)}
+        data-scroll-fade="vertical"
+        {...props}
+      />
     );
   },
 );
@@ -46,40 +54,34 @@ function Messages({
   return <>{children}</>;
 }
 
-function ScrollToLatest({ viewport }: { viewport: HTMLElement | null }) {
+interface ThreadScroll {
+  isAtBottom: boolean;
+  scrollToBottom: ScrollToBottom;
+  stopScroll: () => void;
+}
+
+const ThreadScrollContext = createContext<ThreadScroll | null>(null);
+
+/** Follow, release and return to the latest message from anywhere inside a `Thread.Conversation`. */
+export function useThreadScroll(): ThreadScroll {
+  const value = useContext(ThreadScrollContext);
+  if (!value) throw new Error("useThreadScroll requires Thread.Conversation");
+  return value;
+}
+
+function ScrollToLatest() {
   const reduceMotion = useReducedMotionConfig();
-  const [clipped, setClipped] = useState(false);
-  useEffect(() => {
-    if (!viewport) return;
-    const update = () => {
-      setClipped(
-        viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight > 24,
-      );
-    };
-    update();
-    viewport.addEventListener("scroll", update);
-    const observer = new ResizeObserver(update);
-    observer.observe(viewport);
-    return () => {
-      viewport.removeEventListener("scroll", update);
-      observer.disconnect();
-    };
-  }, [viewport]);
-  if (!clipped) return null;
+  const { isAtBottom, scrollToBottom } = useThreadScroll();
+  if (isAtBottom) return null;
   return (
     <div className={styles["scroll-action"]}>
       <Button
-        aria-label="Read latest response"
+        aria-label="Read Latest Response"
         icon
         rounding="full"
         size="xs"
         variant="secondary"
-        onClick={() =>
-          viewport?.scrollTo({
-            top: viewport.scrollHeight,
-            behavior: reduceMotion ? "instant" : "smooth",
-          })
-        }
+        onClick={() => scrollToBottom(reduceMotion ? "instant" : "smooth")}
       >
         <IconArrowDownToLine aria-hidden="true" />
       </Button>
@@ -149,6 +151,7 @@ interface RailProps extends ComponentPropsWithoutRef<"nav"> {
 /** One tick per turn along the edge of a conversation; hover previews it, click jumps to it. */
 function Rail({ marks, viewport, className, ...props }: RailProps) {
   const reduceMotion = useReducedMotionConfig();
+  const scroll = useContext(ThreadScrollContext);
   const current = useCurrentMark(
     viewport,
     marks.map((mark) => mark.id),
@@ -158,6 +161,7 @@ function Rail({ marks, viewport, className, ...props }: RailProps) {
   function jump(id: string) {
     const node = viewport && markNode(viewport, id);
     if (!viewport || !node) return;
+    scroll?.stopScroll();
     const offset =
       node.getBoundingClientRect().top - viewport.getBoundingClientRect().top;
     viewport.scrollTo({
@@ -170,6 +174,7 @@ function Rail({ marks, viewport, className, ...props }: RailProps) {
     <nav
       aria-label="Conversation Timeline"
       className={cn(styles.rail, className)}
+      data-scroll-fade="vertical"
       {...props}
     >
       <Tooltip.Group>
@@ -181,11 +186,9 @@ function Rail({ marks, viewport, className, ...props }: RailProps) {
             delay={0}
             label={
               <span className={styles.preview}>
-                <span className={styles["preview-title"]}>{mark.title}</span>
+                <span className={styles.title}>{mark.title}</span>
                 {mark.description ? (
-                  <span className={styles["preview-description"]}>
-                    {mark.description}
-                  </span>
+                  <span className={styles.description}>{mark.description}</span>
                 ) : null}
               </span>
             }
@@ -216,30 +219,39 @@ function Conversation({
   empty?: ReactNode;
   composer?: ReactNode;
   marks?: readonly ThreadMark[];
-  viewportProps?: Omit<ComponentProps<typeof Viewport>, "ref"> & {
-    ref?: (node: HTMLDivElement | null) => void;
-  };
+  viewportProps?: Omit<ComponentProps<typeof Viewport>, "ref">;
 }) {
+  const reduceMotion = useReducedMotionConfig();
+  const { scrollRef, contentRef, isAtBottom, scrollToBottom, stopScroll } =
+    useStickToBottom({
+      initial: "instant",
+      resize: reduceMotion ? "instant" : "smooth",
+    });
   const [viewport, setViewport] = useState<HTMLDivElement | null>(null);
-  const { ref: viewportRef, ...restViewport } = viewportProps ?? {};
   const setViewportRef = useCallback(
     (node: HTMLDivElement | null) => {
+      scrollRef(node);
       setViewport(node);
-      viewportRef?.(node);
     },
-    [viewportRef],
+    [scrollRef],
   );
   return (
-    <Root {...props}>
-      <Viewport {...restViewport} ref={setViewportRef}>
-        <Messages empty={empty}>{children}</Messages>
-        <ViewportFooter>
-          <ScrollToLatest viewport={viewport} />
-          {composer}
-        </ViewportFooter>
-      </Viewport>
-      {marks ? <Rail marks={marks} viewport={viewport} /> : null}
-    </Root>
+    <ThreadScrollContext.Provider
+      value={{ isAtBottom, scrollToBottom, stopScroll }}
+    >
+      <Root {...props}>
+        <Viewport {...viewportProps} ref={setViewportRef}>
+          <div ref={contentRef} className={styles.content}>
+            <Messages empty={empty}>{children}</Messages>
+          </div>
+          <ViewportFooter>
+            <ScrollToLatest />
+            {composer}
+          </ViewportFooter>
+        </Viewport>
+        {marks ? <Rail marks={marks} viewport={viewport} /> : null}
+      </Root>
+    </ThreadScrollContext.Provider>
   );
 }
 

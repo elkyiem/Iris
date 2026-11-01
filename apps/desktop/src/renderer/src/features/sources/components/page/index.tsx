@@ -47,6 +47,7 @@ import {
   toFolderTableRow,
   toSourceTableRow,
 } from "./lib/helpers";
+import { SourcesLoading } from "./loading";
 import { SourceOptionsMenu } from "./options";
 import { SourceSelectionBar } from "./selection-bar";
 import styles from "./styles.module.css";
@@ -256,7 +257,9 @@ export function SourcesPage() {
       {toolbar}
       <div className={styles.page}>
         <div className={styles.content}>
-          {!loaded ? null : tableRows.length === 0 ? (
+          {!loaded ? (
+            <SourcesLoading />
+          ) : tableRows.length === 0 ? (
             <SourcesEmpty />
           ) : showMatchesEmpty ? (
             <div className={styles.empty}>

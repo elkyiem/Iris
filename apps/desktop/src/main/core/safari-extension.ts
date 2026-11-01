@@ -184,7 +184,7 @@ async function registeredExtensions(
     ]);
     return parsePluginkit(stdout);
   } catch (cause) {
-    // No matches makes pluginkit exit non-zero with empty output; both mean "none".
+    /** pluginkit exits non-zero with empty output when nothing matches, so a failure means none. */
     log.debug("[pond safari] pluginkit returned nothing", cause);
     return [];
   }
@@ -195,8 +195,7 @@ async function registeredExtensions(
  * and `stderr` strings, but the error type does not say so.
  */
 function captureOf(cause: unknown) {
-  // SAFETY: execFile always attaches both buffers to its rejection; the fallbacks cover a
-  // non-Error throw, and String() keeps either from being undefined.
+  /** SAFETY: execFile attaches both buffers to its rejection; the fallbacks cover a non-Error throw. */
   const captured = (cause ?? {}) as { stdout?: unknown; stderr?: unknown };
   return {
     stdout: String(captured.stdout ?? ""),

@@ -19,17 +19,19 @@ const ACCESS = [
   {
     key: "mcpSearch",
     title: "Search Saves",
-    description: "Query, search, read, and list folders",
+    description: "Let connected apps search and read your saves and folders.",
   },
   {
     key: "mcpOpen",
     title: "Open in Pond",
-    description: "Reveal a save in the Pond window",
+    description:
+      "Let connected apps open a save or filter your library in Pond.",
   },
   {
     key: "mcpExport",
     title: "Export Files",
-    description: "Convert copies. Originals stay in the library.",
+    description:
+      "Let connected apps export converted copies and compress images.",
   },
 ] as const;
 

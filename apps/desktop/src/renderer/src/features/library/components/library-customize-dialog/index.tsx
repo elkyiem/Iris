@@ -498,7 +498,7 @@ function MarkPicker({
             className={styles.picker}
             aria-label={picker === "emoji" ? "Choose Emoji" : "Choose Icon"}
           >
-            <div className={styles.grid}>
+            <div className={styles.grid} data-scroll-fade="vertical">
               {options.map((option) => (
                 <Button
                   key={option.key}

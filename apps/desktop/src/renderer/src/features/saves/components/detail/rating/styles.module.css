@@ -8,27 +8,11 @@
 }
 
 .star {
-  width: auto;
-  height: auto;
-  aspect-ratio: auto;
-  padding: 0;
   color: var(--ds-gray-8);
-  background-color: transparent;
   opacity: 0.4;
 
-  &:hover,
-  &[data-pressed] {
-    color: var(--ds-gray-8);
-    background-color: transparent;
-  }
-
   &[data-active] {
-    color: var(--ds-amber-9);
+    color: var(--ds-gold-9);
     opacity: 1;
-  }
-
-  & > svg {
-    width: 14px;
-    height: 14px;
   }
 }

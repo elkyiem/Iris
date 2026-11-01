@@ -41,8 +41,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--ds-focus-ring);
-    outline-offset: 1px;
+    outline: var(--ds-focus-width) solid var(--ds-focus-outline);
+    outline-offset: var(--ds-focus-offset);
   }
 
   &[data-icon] {

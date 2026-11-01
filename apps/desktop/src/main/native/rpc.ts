@@ -20,6 +20,7 @@ export interface EnqueueResult {
   id: string;
   created: boolean;
   reseeded?: boolean;
+  restored?: boolean;
 }
 
 export interface NativeFolder {

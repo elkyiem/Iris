@@ -34,10 +34,8 @@
   font-size: var(--ds-text-xs);
   font-weight: var(--ds-weight-lg);
   color: white;
-  letter-spacing: 0.02em;
-  background: rgb(0 0 0 / 56%);
+  background: var(--ds-black-a10);
   border-radius: var(--ds-radius-sm);
-  backdrop-filter: blur(8px);
 }
 
 .list[data-multiple] .preview {

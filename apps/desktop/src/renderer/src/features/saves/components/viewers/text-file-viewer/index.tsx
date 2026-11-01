@@ -72,7 +72,7 @@ export function TextFileViewer({
     } catch {
       notify({
         id: "text-encoding",
-        title: "Couldn't Convert Text",
+        title: "Couldn't convert text",
         description: "The original file is unchanged.",
       });
     } finally {
@@ -87,7 +87,7 @@ export function TextFileViewer({
     if (!result.ok && result.reason !== "cancelled")
       notify({
         id: "dotlottie-export",
-        title: "Couldn't Export dotLottie",
+        title: "Couldn't export dotLottie",
         description: result.error,
       });
   };
@@ -137,7 +137,7 @@ export function TextFileViewer({
           end={<ViewerNavigationControls navigation={navigation} />}
         />
       </ChromePortal>
-      <div className={styles.scroll}>
+      <div className={styles.scroll} data-scroll-fade="vertical">
         {failed ? (
           <p className={styles.status}>Pond couldn't read this text file.</p>
         ) : (

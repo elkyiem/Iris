@@ -102,12 +102,11 @@ export function StorageLocationSettings() {
                 description:
                   "Pond will verify the new copy before removing the library from its current location.",
                 confirmLabel: "Move",
-                busyLabel: "Moving",
                 onConfirm: () => move.mutateAsync(),
               })
             }
           >
-            {move.isPending ? "Moving" : "Move"}
+            Move
           </Button>
         </Settings.ItemControl>
       </Settings.Item>

@@ -1,4 +1,4 @@
-import { cssVars } from "@pond/ui";
+import { cssVars, Input } from "@pond/ui";
 import { type NodeProps, NodeResizer } from "@xyflow/react";
 import { clsx as cn } from "clsx";
 import { useEffect, useRef } from "react";
@@ -48,8 +48,10 @@ export function CodeItem({
       >
         <div className={styles.header}>{languageLabel(data.language)}</div>
         {editing ? (
-          <textarea
+          <Input.Textarea
             ref={field}
+            appearance="bare"
+            rows={2}
             className={cn(styles.source, "nodrag", "nowheel", "nopan")}
             aria-label="Code"
             placeholder="Write code"

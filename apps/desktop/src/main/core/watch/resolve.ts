@@ -1,8 +1,11 @@
 import type { Source, WatchKind } from "@pond/schema/db";
+import { normalizeFeedUrl } from "@pond/schema/watches";
 import log from "electron-log/main.js";
 import { COSMOS_RESERVED_ROOTS } from "../pipeline/extractors/sources/cosmos";
 import { PINTEREST_RESERVED_ROOTS } from "../pipeline/extractors/sources/pinterest";
-import { type FetchWatchPage, verifyWatchTarget } from "./verify";
+import { readFeed } from "./feed";
+import type { FetchWatchPage } from "./types";
+import { verifyWatchTarget } from "./verify";
 
 export interface WatchTarget {
   kind: WatchKind;
@@ -62,6 +65,16 @@ export async function resolveWatchTarget(
   rawInput: string,
   fetchPage: FetchWatchPage = fetch,
 ): Promise<WatchTarget | null> {
+  if (source === "web") {
+    const url = normalizeFeedUrl(rawInput);
+    if (!url) return null;
+    const feed = await readFeed(url, fetchPage);
+    if (!feed.ok) {
+      if (feed.reason === "not_found") return null;
+      throw new Error("The feed could not be checked.");
+    }
+    return target("feed", url, feed.title ?? url);
+  }
   const parsed = await parseWatchTarget(source, rawInput, fetchPage);
   return parsed && source !== "arena"
     ? verifyWatchTarget(source, parsed, fetchPage)

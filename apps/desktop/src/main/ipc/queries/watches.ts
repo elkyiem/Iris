@@ -1,3 +1,4 @@
+import { isWatchableSource, WATCH_NEEDS_SESSION } from "@pond/schema/watches";
 import { z } from "zod";
 import type { OkFailure } from "../../../shared/query-contracts-shared";
 import { acquire } from "../../core/pipeline/rate-governor";
@@ -14,7 +15,6 @@ import {
 } from "../../core/sync/watches";
 import { resolveWatchTarget } from "../../core/watch/resolve";
 import { watchNow } from "../../core/watch/run";
-import { isWatchableSource, WATCH_NEEDS_SESSION } from "../../core/watch/types";
 import {
   type QueryHandlerMap,
   query,
@@ -108,7 +108,7 @@ export const watchesQueries = {
         source,
         handle: resolved.handle,
         kind: resolved.kind,
-        label,
+        label: label ?? (resolved.kind === "feed" ? resolved.display : null),
         via,
       });
       void watchNow(watch.id, { trigger: "manual" });

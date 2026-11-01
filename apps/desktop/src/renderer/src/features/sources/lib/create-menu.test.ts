@@ -32,6 +32,7 @@ describe("source create menu", () => {
       "Dribbble",
       "Unsplash",
       "Bluesky",
+      "Marked",
       "New Watch",
       "Twitter",
       "Instagram",
@@ -40,6 +41,7 @@ describe("source create menu", () => {
       "Cosmos",
       "TikTok",
       "YouTube",
+      "RSS Feed",
       "New Folder",
     ]);
   });
@@ -67,11 +69,16 @@ describe("source create menu", () => {
     const youtube = watch.items.find(
       (item) => "id" in item && item.id === "watch-youtube",
     );
+    const feed = watch.items.find(
+      (item) => "id" in item && item.id === "watch-web",
+    );
     if (
       !instagram ||
       !("onClick" in instagram) ||
       !youtube ||
-      !("onClick" in youtube)
+      !("onClick" in youtube) ||
+      !feed ||
+      !("onClick" in feed)
     ) {
       throw new Error("Missing source items");
     }
@@ -79,6 +86,8 @@ describe("source create menu", () => {
     youtube.onClick?.();
     expect(onConnect).toHaveBeenCalledExactlyOnceWith("instagram");
     expect(onWatch).toHaveBeenCalledExactlyOnceWith("youtube");
+    feed.onClick?.();
+    expect(onWatch).toHaveBeenNthCalledWith(2, "web");
   });
 
   it("uses source tiles so light logos stay visible on the menu", () => {

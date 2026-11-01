@@ -7,7 +7,7 @@
 }
 
 .copy[data-state] {
-  animation: reveal 420ms var(--ds-easing-standard) both;
+  animation: reveal var(--ds-duration-slow) var(--ds-easing-standard) both;
 }
 
 .copy {
@@ -45,7 +45,7 @@
   }
 }
 
-.details-title {
+.heading {
   margin: 0 0 10px;
   font-size: var(--ds-text-sm);
   font-weight: var(--ds-weight-lg);
@@ -98,13 +98,11 @@
 @keyframes reveal {
   from {
     opacity: 0;
-    filter: blur(4px);
     transform: translateY(4px);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
     transform: translateY(0);
   }
 }

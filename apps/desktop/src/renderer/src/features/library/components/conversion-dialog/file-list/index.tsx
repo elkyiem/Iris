@@ -112,7 +112,11 @@ export function FileList({
       </div>
     );
   return (
-    <ul className={styles.list} aria-label="Saves to export">
+    <ul
+      className={styles.list}
+      aria-label="Saves to export"
+      data-scroll-fade="vertical"
+    >
       {rows.map((row) => (
         <Row
           key={row.id}

@@ -5,7 +5,7 @@ import type { WebContents } from "electron";
 import log from "electron-log/main.js";
 import { WARCRecord, WARCSerializer } from "warcio";
 import { z } from "zod";
-import { readResponseBodyWithinBudget } from "./response-body";
+import { readResponseBodyWithinBudget } from "../../../lib/response-body";
 
 const MAX_BODY_BYTES = 30 * 1024 * 1024;
 const MAX_TOTAL_BYTES = 250 * 1024 * 1024;

@@ -81,10 +81,6 @@ export function withSize(
   };
 }
 
-export function clamp(value: number, [min, max]: readonly [number, number]) {
-  return Math.min(max, Math.max(min, Math.round(value)));
-}
-
 export function supportsTransparency(
   format: CombineImagesOptions["format"],
 ): boolean {

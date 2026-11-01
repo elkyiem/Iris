@@ -19,6 +19,7 @@ import { openSources } from "@/features/sources";
 import { tagCreation } from "@/features/tags";
 import { getAppRouter } from "@/shared/lib/app-router";
 import { errorCopy } from "@/shared/lib/error-copy";
+import { formatNumber, formatPlural } from "@/shared/lib/format";
 import { REVEAL_LABEL } from "@/shared/lib/platform";
 import { notify, updateNotification } from "@/shared/lib/toast";
 import { markImportedFrom } from "@/shared/state/prompts";
@@ -31,6 +32,8 @@ const SaveResultSchema = z.object({
 });
 
 const LIST_FORMAT = new Intl.ListFormat("en", { type: "conjunction" });
+const SAVES = { one: "Save", other: "Saves" };
+const ITEMS = { one: "item", other: "items" };
 
 export interface NewActionServices {
   notify: typeof notify;
@@ -62,14 +65,20 @@ export function createNewActions({
   function reportSaved(count: number): void {
     notify({
       id: "new-import",
-      title: count === 1 ? "Saved to Pond" : `Saved ${count} items to Pond`,
+      title:
+        count === 1
+          ? "Saved to Pond"
+          : `Saved ${formatNumber(count)} items to Pond`,
     });
   }
 
   function reportDownloading(count: number): void {
     notify({
       id: "new-import",
-      title: count === 1 ? "Downloading" : `Downloading ${count} links`,
+      title:
+        count === 1
+          ? "Downloading"
+          : `Downloading ${formatNumber(count)} links`,
     });
   }
 
@@ -166,7 +175,7 @@ export function createNewActions({
     notify({
       id: "new-import",
       title: result.imported
-        ? `Imported ${result.imported} bookmark${result.imported === 1 ? "" : "s"}`
+        ? `Imported ${formatPlural(result.imported, { one: "bookmark", other: "bookmarks" })}`
         : "Nothing new to import",
       description: result.skipped > 0 ? `${result.skipped} skipped` : undefined,
       timeout: 5000,
@@ -183,7 +192,7 @@ export function createNewActions({
     notify({
       id: "new-import",
       title: result.imported
-        ? `Imported ${result.imported} ${result.imported === 1 ? "Save" : "Saves"} from mymind`
+        ? `Imported ${formatPlural(result.imported, SAVES)} from mymind`
         : "Nothing new to import",
       description: result.skipped > 0 ? `${result.skipped} skipped` : undefined,
       timeout: 5000,
@@ -202,7 +211,7 @@ export function createNewActions({
     notify({
       id: "new-import",
       title: result.imported
-        ? `Imported ${result.imported} ${result.imported === 1 ? "Save" : "Saves"} from ${from}`
+        ? `Imported ${formatPlural(result.imported, SAVES)} from ${from}`
         : "Nothing new to import",
       description:
         result.imported && connect
@@ -237,7 +246,7 @@ export function createNewActions({
     updateNotification({
       id: notificationId,
       title: result.queued
-        ? `Queued ${result.queued} ${result.queued === 1 ? "image" : "images"}`
+        ? `Queued ${formatPlural(result.queued, { one: "image", other: "images" })}`
         : "No images large enough",
       timeout: 5000,
     });
@@ -262,8 +271,8 @@ export function createNewActions({
         title: "Importing Eagle library",
         description: hasItems
           ? progress.stage === "uploading"
-            ? `Uploading ${progress.processed} of ${progress.total} files`
-            : `${progress.processed} of ${progress.total} item${progress.total === 1 ? "" : "s"}`
+            ? `Uploading ${formatNumber(progress.processed)} of ${formatPlural(progress.total, { one: "file", other: "files" })}`
+            : `${formatNumber(progress.processed)} of ${formatPlural(progress.total, ITEMS)}`
           : "Checking library",
         progress: {
           label: "Eagle library import progress",
@@ -301,7 +310,7 @@ export function createNewActions({
     updateNotification({
       id: notificationId,
       title: result.imported
-        ? `Imported ${result.imported} item${result.imported === 1 ? "" : "s"}`
+        ? `Imported ${formatPlural(result.imported, ITEMS)}`
         : "Nothing new to import",
       description: `${result.skipped} skipped, ${result.failed} failed`,
       timeout: 5000,
@@ -320,7 +329,7 @@ export function createNewActions({
     notify({
       id: "new-import",
       title: result.imported
-        ? `Imported ${result.imported} Save${result.imported === 1 ? "" : "s"}`
+        ? `Imported ${formatPlural(result.imported, SAVES)}`
         : "Nothing new to import",
       description: result.skipped ? `${result.skipped} skipped` : undefined,
       timeout: 5000,
@@ -340,7 +349,7 @@ export function createNewActions({
     notify({
       id: "new-import",
       title: result.imported
-        ? `Imported ${result.imported} Save${result.imported === 1 ? "" : "s"}`
+        ? `Imported ${formatPlural(result.imported, SAVES)}`
         : "Nothing new to import",
       description: result.skipped ? `${result.skipped} skipped` : undefined,
       timeout: 5000,
@@ -440,7 +449,7 @@ export function createNewActions({
       title:
         result.updated === 0
           ? "Library is up to date"
-          : `Updated ${result.updated} of ${result.total} saves`,
+          : `Updated ${formatNumber(result.updated)} of ${formatPlural(result.total, { one: "save", other: "saves" })}`,
     });
   }
 
@@ -471,13 +480,15 @@ export function createNewActions({
       return;
     }
     const happened: string[] = [];
-    if (missing === 1) happened.push("1 save is missing from disk");
-    else if (missing > 1) {
-      happened.push(`${missing} saves are missing from disk`);
+    if (missing > 0) {
+      happened.push(
+        `${formatPlural(missing, { one: "save is", other: "saves are" })} missing from disk`,
+      );
     }
-    if (orphans === 1) happened.push("1 file isn't in the index");
-    else if (orphans > 1) {
-      happened.push(`${orphans} files aren't in the index`);
+    if (orphans > 0) {
+      happened.push(
+        `${formatPlural(orphans, { one: "file isn't", other: "files aren't" })} in the index`,
+      );
     }
     if (errorCount > 0 && happened.length === 0) {
       happened.push("Couldn't verify every file");

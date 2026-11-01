@@ -1,7 +1,7 @@
 import { Button, Dialog, Field, Input } from "@pond/ui";
 import type { SavesReadQueryResults } from "@shared/saves-read-contracts";
 import { useSelector } from "@tanstack/react-store";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { folders } from "@/features/library/state/folders";
 import {
   closeOrganizationReview,
@@ -55,6 +55,10 @@ export function SmartCollectionReview({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [labelsText, setLabelsText] = useState("");
+  const [nameInvalid, setNameInvalid] = useState(false);
+  const [labelsInvalid, setLabelsInvalid] = useState(false);
+  const nameField = useRef<HTMLInputElement>(null);
+  const labelsField = useRef<HTMLInputElement>(null);
   const [classification, setClassification] = useState<Classification | null>(
     null,
   );
@@ -63,6 +67,7 @@ export function SmartCollectionReview({
   if (cluster !== namedCluster) {
     setNamedCluster(cluster);
     setName(cluster ? proposedName(cluster) : "");
+    setNameInvalid(false);
   }
   const previewFailed =
     error !== null && clusters.length === 0 && unclustered.length === 0;
@@ -151,7 +156,12 @@ export function SmartCollectionReview({
   }
 
   async function createFolder(): Promise<void> {
-    if (!cluster || !name.trim()) return;
+    if (!cluster) return;
+    if (!name.trim()) {
+      setNameInvalid(true);
+      nameField.current?.focus();
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -187,7 +197,12 @@ export function SmartCollectionReview({
   async function previewLabels(): Promise<void> {
     const saveIds = classificationIds();
     const labels = classificationLabels();
-    if (saveIds.length === 0 || labels.length === 0) return;
+    if (labels.length === 0) {
+      setLabelsInvalid(true);
+      labelsField.current?.focus();
+      return;
+    }
+    if (saveIds.length === 0) return;
     setBusy(true);
     setError(null);
     try {
@@ -270,16 +285,26 @@ export function SmartCollectionReview({
                     </header>
                     {cluster ? (
                       <>
-                        <Field.Root className={styles.field}>
+                        <Field.Root
+                          className={styles.field}
+                          invalid={nameInvalid || undefined}
+                        >
                           <Field.Label>Folder Name</Field.Label>
                           <Input.Root>
                             <Field.Control
+                              ref={nameField}
                               render={<Input.Field />}
                               value={name}
-                              onValueChange={setName}
+                              onValueChange={(value) => {
+                                setName(value);
+                                if (value.trim()) setNameInvalid(false);
+                              }}
                               disabled={busy}
                             />
                           </Input.Root>
+                          {nameInvalid ? (
+                            <Field.Error match>Name the folder.</Field.Error>
+                          ) : null}
                         </Field.Root>
                         <div className={styles.members}>
                           <p className={styles.meta}>
@@ -302,7 +327,7 @@ export function SmartCollectionReview({
                           </Button>
                           <Button
                             variant="secondary"
-                            disabled={busy || !name.trim()}
+                            disabled={busy}
                             onClick={() => void createFolder()}
                           >
                             Create Folder
@@ -328,24 +353,33 @@ export function SmartCollectionReview({
                   <header className={styles.heading}>
                     <h3>Tag by Label</h3>
                   </header>
-                  <Field.Root className={styles.field}>
+                  <Field.Root
+                    className={styles.field}
+                    invalid={labelsInvalid || undefined}
+                  >
                     <Field.Label>Labels</Field.Label>
                     <Input.Root>
                       <Field.Control
+                        ref={labelsField}
                         render={<Input.Field />}
                         placeholder="Posters, Logos, Interiors"
                         value={labelsText}
                         onValueChange={(value) => {
                           setLabelsText(value);
                           setClassification(null);
+                          setLabelsInvalid(false);
                         }}
                         disabled={busy}
                       />
                     </Input.Root>
-                    <Field.Description>
-                      Separate labels with commas. Applying adds the best match
-                      as a tag and keeps existing tags.
-                    </Field.Description>
+                    {labelsInvalid ? (
+                      <Field.Error match>Add at least one label.</Field.Error>
+                    ) : (
+                      <Field.Description>
+                        Separate labels with commas. Applying adds the best
+                        match as a tag and keeps existing tags.
+                      </Field.Description>
+                    )}
                   </Field.Root>
                   {classification ? (
                     <>
@@ -381,11 +415,7 @@ export function SmartCollectionReview({
                     ) : (
                       <Button
                         variant="secondary"
-                        disabled={
-                          busy ||
-                          classificationIds().length === 0 ||
-                          classificationLabels().length === 0
-                        }
+                        disabled={busy || classificationIds().length === 0}
                         onClick={() => void previewLabels()}
                       >
                         Preview Labels

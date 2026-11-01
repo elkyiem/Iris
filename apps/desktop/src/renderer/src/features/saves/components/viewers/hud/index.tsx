@@ -165,6 +165,7 @@ function Tool({
         icon={icon}
         size="sm"
         variant="ghost"
+        rounding="full"
         aria-label={label}
         aria-pressed={pressed || undefined}
         data-pressed={pressed || undefined}

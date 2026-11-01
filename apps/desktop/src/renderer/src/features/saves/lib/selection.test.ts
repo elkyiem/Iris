@@ -1,10 +1,13 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { selection } from "@/features/saves/state/selection";
+import { tagClipboard } from "@/features/tags";
 import { pool } from "../state/pool";
 import { normalise, SavePatchSchema } from "./reconcile";
 import {
   addTagsToSelection,
+  copyTagsForSelection,
   copyUrlsForSelection,
+  pasteTagsForSelection,
   retryFailedSelection,
   trashSelection,
 } from "./selection";
@@ -20,8 +23,12 @@ function seed() {
 afterEach(() => {
   pool.clear();
   selection.clear();
+  tagClipboard.clear();
   vi.unstubAllGlobals();
 });
+function notificationTitle(event: Event): string | undefined {
+  return event instanceof CustomEvent ? event.detail.title : undefined;
+}
 it("adds tags and retries using all selected IDs without hydrating the renderer pool", async () => {
   seed();
   const query = vi.fn(async (method: string) =>
@@ -40,6 +47,33 @@ it("adds tags and retries using all selected IDs without hydrating the renderer 
     ["saves.retryFailed", { ids }],
   ]);
   expect(pool.snapshot()).toHaveLength(1);
+});
+it("confirms a tag copy but lets the pasted tags speak for themselves", async () => {
+  const save = normalise(
+    SavePatchSchema.parse({
+      id: "tagged",
+      url: "https://example.com/tagged",
+      tags: ["Reviewed"],
+    }),
+  );
+  if (!save) throw new Error("Invalid fixture");
+  pool.upsert(save);
+  const titles: Array<string | undefined> = [];
+  const query = vi.fn(async () => ({ changed: 301 }));
+  vi.stubGlobal("window", {
+    pond: { query },
+    dispatchEvent: (event: Event) => titles.push(notificationTitle(event)),
+  });
+
+  await copyTagsForSelection(["tagged"]);
+  expect(titles).toEqual(["Tags copied"]);
+
+  await pasteTagsForSelection(ids);
+  expect(query).toHaveBeenCalledWith("saves.bulkEdit", {
+    ids,
+    operation: { kind: "tags", tags: ["Reviewed"] },
+  });
+  expect(titles).toEqual(["Tags copied"]);
 });
 it("hydrates cold metadata before copying every selected URL", async () => {
   seed();

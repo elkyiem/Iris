@@ -15,7 +15,9 @@
   border: 1px solid var(--ds-gray-4);
   border-radius: var(--ds-radius-xs);
   transition:
-    all var(--ds-duration-snap) var(--ds-easing-standard),
+    background-color var(--ds-duration-snap) var(--ds-easing-standard),
+    border-color var(--ds-duration-snap) var(--ds-easing-standard),
+    opacity var(--ds-duration-snap) var(--ds-easing-standard),
     scale var(--ds-duration-bounce) var(--ds-easing-bounce);
 
   &::before {
@@ -27,7 +29,9 @@
   &:active:not([data-disabled]) {
     scale: 0.82;
     transition:
-      all var(--ds-duration-snap) var(--ds-easing-standard),
+      background-color var(--ds-duration-snap) var(--ds-easing-standard),
+      border-color var(--ds-duration-snap) var(--ds-easing-standard),
+      opacity var(--ds-duration-snap) var(--ds-easing-standard),
       scale var(--ds-duration-fast) var(--ds-easing-decelerate);
   }
 

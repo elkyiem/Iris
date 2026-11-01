@@ -24,15 +24,14 @@ export function RatingStars({
           <Button
             key={star}
             icon
-            size="xs"
-            variant="text"
+            variant="bare"
             aria-label={`${star} ${star === 1 ? "Star" : "Stars"}`}
             aria-pressed={star === value}
             data-active={filled || undefined}
             className={styles.star}
             onClick={() => onChange(value === star ? 0 : star)}
           >
-            <IconStarFill />
+            <IconStarFill size={14} />
           </Button>
         );
       })}

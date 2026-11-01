@@ -72,9 +72,9 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  color: #fff;
-  background: rgb(15 20 25 / 0.6);
-  border: 3px solid rgb(255 255 255 / 0.9);
+  color: white;
+  background: var(--tw-scrim);
+  border: 3px solid var(--tw-ring);
   border-radius: var(--ds-radius-full);
   transform: translate(-50%, -50%);
 }
@@ -86,7 +86,7 @@
   padding: 1px 6px;
   font-size: var(--ds-text-sm);
   font-weight: 600;
-  color: #fff;
-  background: rgb(15 20 25 / 0.77);
+  color: white;
+  background: var(--tw-scrim-strong);
   border-radius: var(--ds-radius-xs);
 }

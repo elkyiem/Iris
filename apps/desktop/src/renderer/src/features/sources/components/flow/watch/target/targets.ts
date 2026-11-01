@@ -12,6 +12,13 @@ interface WatchTargets {
 
 const TARGETS = new Map<Source, WatchTargets>([
   [
+    "web",
+    {
+      placeholder: "https://example.com/feed.xml",
+      kinds: [{ label: "RSS and Atom feeds", example: "Feed URL" }],
+    },
+  ],
+  [
     "arena",
     {
       placeholder: "Channel name or are.na link",

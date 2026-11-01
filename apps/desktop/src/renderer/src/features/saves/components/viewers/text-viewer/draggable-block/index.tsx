@@ -9,18 +9,22 @@ import {
   mergeRegister,
 } from "@lexical/utils";
 import { IconGripDotsVertical } from "@pond/icons";
-import { Button } from "@pond/ui";
+import { Button, Menu } from "@pond/ui";
 import {
   $getNearestNodeFromDOMNode,
   $getNodeByKey,
   $getRoot,
+  $getSelection,
   $isElementNode,
+  $isNodeSelection,
   $isParagraphNode,
+  $isRangeSelection,
   $isRootNode,
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
   DRAGOVER_COMMAND,
   DROP_COMMAND,
+  KEY_DOWN_COMMAND,
   type LexicalEditor,
   type LexicalNode,
 } from "lexical";
@@ -32,6 +36,7 @@ import {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { platformGlyphs } from "@/shared/lib/shortcuts";
 import {
   $isCollapsibleContainerNode,
   $isCollapsibleContentNode,
@@ -91,6 +96,55 @@ function $moveBlock(
   }
   if (after) target.insertAfter(dragged);
   else target.insertBefore(dragged);
+}
+
+function $blockOf(node: LexicalNode | null | undefined): LexicalNode | null {
+  let current = node ?? null;
+  while (current && !$isRootNode(current)) {
+    const parent: LexicalNode | null = current.getParent();
+    if (
+      $isDraggable(current) &&
+      parent &&
+      ($isRootNode(parent) || $walkable(parent))
+    )
+      return current;
+    current = parent;
+  }
+  return null;
+}
+
+function $selectedBlock(): LexicalNode | null {
+  const selection = $getSelection();
+  if ($isRangeSelection(selection)) return $blockOf(selection.anchor.getNode());
+  if ($isNodeSelection(selection)) return $blockOf(selection.getNodes()[0]);
+  return null;
+}
+
+type Direction = -1 | 1;
+
+function $neighbor(block: LexicalNode, direction: Direction) {
+  return direction < 0 ? block.getPreviousSibling() : block.getNextSibling();
+}
+
+function $moveBy(block: LexicalNode, direction: Direction): boolean {
+  const neighbor = $neighbor(block, direction);
+  if (!neighbor) return false;
+  $moveBlock(block, neighbor, direction > 0);
+  return true;
+}
+
+function $movedLabel(block: LexicalNode): string {
+  const total = block.getParent()?.getChildrenSize() ?? 0;
+  return `Moved block to position ${block.getIndexWithinParent() + 1} of ${total}.`;
+}
+
+const MOVE_UP_SHORTCUT = ["⌘", "⇧", "↑"];
+const MOVE_DOWN_SHORTCUT = ["⌘", "⇧", "↓"];
+
+interface BlockMenu {
+  key: string;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
 }
 
 interface CollapsedMargins {
@@ -218,7 +272,15 @@ export function DraggableBlockPlugin({ anchor }: { anchor: HTMLElement }) {
   const lineRef = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const [block, setBlock] = useState<HTMLElement | null>(null);
+  const [menu, setMenu] = useState<BlockMenu | null>(null);
+  const [open, setOpen] = useState(false);
+  const [announcement, setAnnouncement] = useState("");
+  const menuOpen = useRef(false);
   const scroller = anchor.parentElement;
+
+  useEffect(() => {
+    menuOpen.current = open;
+  }, [open]);
 
   const onMenu = useCallback((node: HTMLElement) => {
     return Boolean(handleRef.current?.contains(node));
@@ -226,6 +288,7 @@ export function DraggableBlockPlugin({ anchor }: { anchor: HTMLElement }) {
 
   useEffect(() => {
     function onMove(event: MouseEvent) {
+      if (menuOpen.current) return;
       const target = event.target;
       if (!isHTMLElement(target)) {
         setBlock(null);
@@ -236,6 +299,7 @@ export function DraggableBlockPlugin({ anchor }: { anchor: HTMLElement }) {
     }
 
     function onLeave() {
+      if (menuOpen.current) return;
       setBlock(null);
     }
 
@@ -298,8 +362,49 @@ export function DraggableBlockPlugin({ anchor }: { anchor: HTMLElement }) {
         },
         COMMAND_PRIORITY_HIGH,
       ),
+      editor.registerCommand(
+        KEY_DOWN_COMMAND,
+        (event) => {
+          if (!(event.metaKey || event.ctrlKey) || !event.shiftKey)
+            return false;
+          if (event.altKey) return false;
+          const direction: Direction | null =
+            event.key === "ArrowUp" ? -1 : event.key === "ArrowDown" ? 1 : null;
+          if (!direction) return false;
+          const selected = $selectedBlock();
+          if (!selected) return false;
+          event.preventDefault();
+          if ($moveBy(selected, direction))
+            setAnnouncement($movedLabel(selected));
+          return true;
+        },
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [anchor, editor]);
+
+  function openMenu() {
+    if (!block) return;
+    editor.getEditorState().read(() => {
+      const node = $getNearestNodeFromDOMNode(block);
+      if (!node) return;
+      setMenu({
+        key: node.getKey(),
+        canMoveUp: $neighbor(node, -1) !== null,
+        canMoveDown: $neighbor(node, 1) !== null,
+      });
+      setOpen(true);
+    });
+  }
+
+  function moveFromMenu(direction: Direction) {
+    const key = menu?.key;
+    if (!key) return;
+    editor.update(() => {
+      const node = $getNodeByKey(key);
+      if (node && $moveBy(node, direction)) setAnnouncement($movedLabel(node));
+    });
+  }
 
   function onDragStart(event: ReactDragEvent<HTMLButtonElement>) {
     const transfer = event.dataTransfer;
@@ -338,15 +443,51 @@ export function DraggableBlockPlugin({ anchor }: { anchor: HTMLElement }) {
         size="xs"
         variant="text"
         draggable
-        tabIndex={-1}
         className={styles.handle}
         aria-label="Move Block"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={openMenu}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
       >
         <IconGripDotsVertical size={12} />
       </Button>
+      <Menu.Root
+        open={open}
+        onOpenChange={(next) => {
+          if (!next) setOpen(false);
+        }}
+      >
+        <Menu.Portal>
+          <Menu.Positioner anchor={handleRef} side="bottom" align="start">
+            <Menu.Popup finalFocus={handleRef}>
+              <Menu.Item
+                disabled={!menu?.canMoveUp}
+                onClick={() => moveFromMenu(-1)}
+              >
+                <Menu.ItemLabel>Move Up</Menu.ItemLabel>
+                <Menu.ItemKeyboard>
+                  {platformGlyphs(MOVE_UP_SHORTCUT)}
+                </Menu.ItemKeyboard>
+              </Menu.Item>
+              <Menu.Item
+                disabled={!menu?.canMoveDown}
+                onClick={() => moveFromMenu(1)}
+              >
+                <Menu.ItemLabel>Move Down</Menu.ItemLabel>
+                <Menu.ItemKeyboard>
+                  {platformGlyphs(MOVE_DOWN_SHORTCUT)}
+                </Menu.ItemKeyboard>
+              </Menu.Item>
+            </Menu.Popup>
+          </Menu.Positioner>
+        </Menu.Portal>
+      </Menu.Root>
       <div ref={lineRef} className={styles.drop} />
+      <p role="status" className={styles.announcement}>
+        {announcement}
+      </p>
     </>,
     anchor,
   );

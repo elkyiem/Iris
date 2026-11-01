@@ -6,27 +6,40 @@
   overflow-wrap: anywhere;
 }
 
-.streaming-word {
-  display: inline-block;
-  animation: streaming-word-in var(--ds-duration-slow)
-    var(--ds-easing-decelerate) both;
+.response :global([data-sd-animate]) {
+  animation: word-in var(--sd-duration) var(--sd-easing) var(--sd-delay, 0ms)
+    both;
 }
 
-@keyframes streaming-word-in {
+.response :global([data-sd-animate-marker])::marker {
+  animation: marker-in var(--sd-marker-duration) var(--sd-marker-easing)
+    var(--sd-marker-delay, 0ms) both;
+}
+
+@keyframes word-in {
   from {
     opacity: 0;
     filter: blur(4px);
-    transform: translateY(2px);
+  }
+}
+
+@keyframes marker-in {
+  from {
+    color: transparent;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .streaming-word {
+  .response :global([data-sd-animate]),
+  .response :global([data-sd-animate-marker])::marker {
     animation: none;
   }
 }
 
-:global([data-reduced-motion="true"]) .streaming-word {
+:global([data-reduced-motion="true"]) .response :global([data-sd-animate]),
+:global([data-reduced-motion="true"])
+  .response
+  :global([data-sd-animate-marker])::marker {
   animation: none;
 }
 

@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { Capture, CaptureMedia } from "@pond/schema/raw";
 import type { BrowserWindow } from "electron";
 import log from "electron-log/main.js";
@@ -17,7 +18,6 @@ import {
   buildArticleRectExpression,
   buildThreadsPostRectExpression,
 } from "./screenshot-dom";
-import { sleep } from "./util";
 
 export interface TweetScreenshotResult {
   ok: boolean;

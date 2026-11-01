@@ -32,8 +32,7 @@ export async function hasReadableSourceIcon(
   }
 }
 
-// `replace` drops the stored icon even when no new one can be fetched,
-// because the backfill only replaces icons that cannot be read.
+/** `replace` drops the stored icon even without a new one, since the backfill only replaces unreadable icons. */
 export async function fetchSourceIcon(
   saveId: string,
   save: Save,

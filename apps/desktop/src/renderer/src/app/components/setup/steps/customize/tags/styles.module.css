@@ -1,0 +1,23 @@
+.tags {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.ghosts {
+  display: flex;
+  gap: 6px;
+  opacity: 0.5;
+
+  > span {
+    width: 44px;
+    height: 20px;
+    background: var(--ds-gray-a3);
+    border-radius: var(--ds-radius-full);
+  }
+
+  > span:last-child {
+    width: 56px;
+  }
+}

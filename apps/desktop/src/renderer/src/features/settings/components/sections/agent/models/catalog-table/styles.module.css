@@ -9,11 +9,8 @@
   flex-direction: column;
   gap: 28px;
 }
-.group-header {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 12px;
+.header {
+  padding-inline: 12px;
 }
 .panel {
   margin-inline: -2px;

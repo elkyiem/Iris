@@ -89,12 +89,10 @@
   display: inline-flex;
   gap: 4px;
   align-items: baseline;
+  font-size: var(--ds-text-md);
+  font-weight: var(--ds-weight-lg);
+  line-height: 1;
   color: var(--ds-accent-11);
-  transition: color var(--ds-duration-medium) var(--ds-easing-standard);
-
-  &::after {
-    display: none;
-  }
 
   &:hover {
     color: var(--ds-accent-12);
@@ -105,14 +103,14 @@
   }
 }
 
-.citation-icon {
+.icon {
   flex-shrink: 0;
   align-self: center;
   width: 12px;
   height: 12px;
 }
 
-.citation-title {
+.title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

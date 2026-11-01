@@ -65,7 +65,6 @@
   font-variant-numeric: tabular-nums;
   color: var(--ds-gray-12);
   cursor: var(--ds-cursor-interactive, pointer);
-  outline: none;
   background: transparent;
   border: 0;
   border-radius: var(--ds-radius-sm);
@@ -75,10 +74,6 @@
 
   &:hover {
     background: var(--ds-gray-a3);
-  }
-
-  &:focus-visible {
-    box-shadow: 0 0 0 2px var(--ds-accent-a7);
   }
 
   &[data-outside] {

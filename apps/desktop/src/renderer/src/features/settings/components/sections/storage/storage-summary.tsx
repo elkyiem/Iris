@@ -27,7 +27,7 @@ export function StorageSummary() {
     <Settings.List>
       <Settings.Item>
         <Settings.ItemDetails>
-          <Settings.ItemTitle>Library size</Settings.ItemTitle>
+          <Settings.ItemTitle>Library Size</Settings.ItemTitle>
           <Settings.ItemDescription>
             {query.data
               ? `${bytes(query.data.pondBytes)} used · ${bytes(query.data.deviceFreeBytes)} available on disk`

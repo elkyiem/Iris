@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import { session } from "electron";
 import log from "electron-log/main.js";
 import { z } from "zod";
@@ -223,8 +224,4 @@ async function accessToken(partition: string): Promise<string | null> {
     log.warn("[pond cosmos-api] cookies.get failed", err);
     return null;
   }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((r) => setTimeout(r, ms));
 }

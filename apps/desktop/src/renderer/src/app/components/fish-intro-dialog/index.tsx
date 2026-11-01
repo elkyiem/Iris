@@ -13,7 +13,7 @@ import {
   fishIntroDialog,
   useFishIntroDialogOpen,
 } from "@/shared/state/fish-intro";
-import { promptDialog } from "@/shared/state/prompts";
+import { promptToast } from "@/shared/state/prompts";
 import { setupFlow } from "@/shared/state/setup";
 import { supportDialog } from "@/shared/state/support";
 import { readWhatsNewSeen, whatsNewDialog } from "@/shared/state/whats-new";
@@ -30,22 +30,22 @@ const CHECK_INTERVAL_MS = 3000;
 const FACTS = [
   {
     icon: IconMagnifier,
-    title: "Ask about your saves",
+    title: "Ask About Your Saves",
     text: "A fish searches your library and shows the saves it read.",
   },
   {
     icon: IconCalendar,
-    title: "Run routines",
+    title: "Run Routines",
     text: "A fish can run on a schedule or when new saves arrive.",
   },
   {
     icon: IconShieldCheck,
-    title: "Review every change",
+    title: "Review Every Change",
     text: "Anything a fish wants to change waits for your approval.",
   },
   {
     icon: IconSparkle,
-    title: "Pick the model",
+    title: "Pick the Model",
     text: "Use Apple Intelligence, your key, or a local host you run.",
   },
 ] as const;
@@ -61,7 +61,7 @@ function anotherDialogOpen(): boolean {
     setupFlow.isOpen() ||
     whatsNewDialog.isOpen() ||
     supportDialog.isOpen() ||
-    promptDialog.isOpen()
+    promptToast.isOpen()
   );
 }
 
@@ -114,14 +114,14 @@ function Intro() {
               <li key={title} className={styles.fact}>
                 <Icon size={18} className={styles.icon} />
                 <div>
-                  <p className={styles["fact-title"]}>{title}</p>
+                  <p className={styles.heading}>{title}</p>
                   <p className={styles.text}>{text}</p>
                 </div>
               </li>
             ))}
           </ul>
           <div className={styles.rename}>
-            <p className={styles["fact-title"]}>Assistant is now Fish</p>
+            <p className={styles.heading}>Assistant Is Now Fish</p>
             <p className={styles.text}>
               Your Assistant chats now belong to {name}, your first fish. Add
               more fish from the sidebar, each with its own job.

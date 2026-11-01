@@ -197,8 +197,10 @@ export async function importMymindExport(
     (entry) => entry.isFile() && isMymindMediaFile(entry.name),
   );
   const availableMedia = fileCounts(media.map((entry) => entry.name));
-  // mymind names each card's file `<card id>.<ext>`, whatever the card type, and a card with a file
-  // can also carry its source URL. Matching by id keeps that card to one Save with its metadata.
+  /**
+   * mymind names each card's file `<card id>.<ext>`, and a card with a file can also carry its source URL.
+   * @remarks Matching by id keeps that card to one Save with its metadata.
+   */
   const mediaByCardId = new Map(
     media.map((entry) => [
       entry.name.slice(0, entry.name.length - extname(entry.name).length),
@@ -241,7 +243,7 @@ export async function importMymindExport(
       else imported += 1;
       continue;
     }
-    // mymind exports placeholder cards with nothing in them; Pond can't save an empty card.
+    /** mymind exports placeholder cards with nothing in them, and an empty card cannot become a Save. */
     if (!card.title && !note) {
       skipped += 1;
       continue;

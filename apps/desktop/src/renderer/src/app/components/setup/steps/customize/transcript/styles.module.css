@@ -1,0 +1,84 @@
+.player {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-self: stretch;
+  min-width: 0;
+  margin-inline: 12px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  background: var(--ds-gray-1);
+  border-radius: var(--ds-radius-md);
+  box-shadow:
+    var(--ds-shadow-sm),
+    inset 0 0 0 var(--ds-border-width) var(--ds-gray-a3);
+}
+
+.play {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: var(--ds-gray-1);
+  background: var(--ds-gray-12);
+  border-radius: var(--ds-radius-full);
+}
+
+.wave {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+  align-items: center;
+  min-width: 0;
+  height: 20px;
+  overflow: hidden;
+
+  > span {
+    flex: none;
+    width: 2px;
+    background: var(--ds-gray-a6);
+    border-radius: var(--ds-radius-full);
+  }
+
+  > [data-played] {
+    background: var(--ds-accent-9);
+  }
+}
+
+.cues {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  mask-image: linear-gradient(to bottom, black 60%, transparent);
+}
+
+.cue {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 5px 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--ds-text-sm);
+  line-height: 16px;
+  color: var(--ds-gray-10);
+  white-space: nowrap;
+  border-radius: var(--ds-radius-sm);
+
+  &[data-current] {
+    color: var(--ds-gray-12);
+    background: var(--ds-gray-a3);
+  }
+}
+
+.time {
+  font-size: var(--ds-text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--ds-gray-9);
+}

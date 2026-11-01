@@ -5,7 +5,7 @@
   transition: opacity var(--exit);
 }
 
-.pane-title {
+.title {
   padding-left: 4px;
   font-weight: var(--ds-weight-xl);
   color: var(--ds-gray-12);

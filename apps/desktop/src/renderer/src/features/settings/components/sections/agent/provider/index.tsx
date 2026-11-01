@@ -6,7 +6,7 @@ import {
   IconEye2 as EyeOff,
   IconTrash as Trash,
 } from "@pond/icons";
-import { Button, Input, Settings, Switch } from "@pond/ui";
+import { Button, Field, Input, Settings, Switch } from "@pond/ui";
 import { type AssistantProvider, providerGroup } from "@shared/assistant";
 import { useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence } from "motion/react";
@@ -78,16 +78,16 @@ export function ProviderConnection({
   const [revealed, setRevealed] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [invalid, setInvalid] = useState({ key: false, endpoint: false });
+  const keyField = useRef<HTMLInputElement>(null);
+  const endpointField = useRef<HTMLInputElement>(null);
   const appeared = useRef(false);
   const queryClient = useQueryClient();
   useEffect(() => {
     appeared.current = true;
   }, []);
-  const hasEndpoint = endpoint === undefined || Boolean(endpointDraft.trim());
-  const canSave =
-    !saving &&
-    hasEndpoint &&
-    (!catalog.needsKey || connected || Boolean(keyDraft.trim()));
+  const missingEndpoint = endpoint !== undefined && !endpointDraft.trim();
+  const missingKey = catalog.needsKey && !connected && !keyDraft.trim();
   const refresh = async () => {
     await onRefresh();
     await queryClient.invalidateQueries({
@@ -102,7 +102,16 @@ export function ProviderConnection({
     ]);
   };
   const save = async () => {
-    if (!canSave) return;
+    if (saving) return;
+    setInvalid({ key: missingKey, endpoint: missingEndpoint });
+    if (missingKey) {
+      keyField.current?.focus();
+      return;
+    }
+    if (missingEndpoint) {
+      endpointField.current?.focus();
+      return;
+    }
     setSaving(true);
     setError("");
     let endpointSaved = false;
@@ -174,6 +183,7 @@ export function ProviderConnection({
     setEndpointDraft(endpoint ?? "");
     setRevealed(false);
     setError("");
+    setInvalid({ key: false, endpoint: false });
     if (connected) {
       setEditing(false);
       return;
@@ -290,42 +300,71 @@ export function ProviderConnection({
                     supported.
                   </p>
                 ) : (
-                  <Input.Root className={styles.input}>
-                    <Input.Field
-                      type={revealed ? "text" : "password"}
-                      autoComplete="off"
-                      aria-label="API Key"
-                      disabled={saving}
-                      placeholder={`Enter your ${catalog.provider} API Key`}
-                      value={keyDraft}
-                      onValueChange={setKeyDraft}
-                    />
-                    <Input.Action>
-                      <Button
-                        type="button"
-                        icon
-                        size="xs"
-                        variant="ghost"
-                        aria-label={revealed ? "Hide API Key" : "Show API Key"}
-                        aria-pressed={revealed || undefined}
-                        onClick={() => setRevealed((open) => !open)}
-                      >
-                        {revealed ? <EyeOff size={12} /> : <Eye size={12} />}
-                      </Button>
-                    </Input.Action>
-                  </Input.Root>
+                  <Field.Root
+                    invalid={(invalid.key && missingKey) || undefined}
+                  >
+                    <Input.Root className={styles.input}>
+                      <Input.Field
+                        ref={keyField}
+                        type={revealed ? "text" : "password"}
+                        autoComplete="off"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        aria-label="API Key"
+                        disabled={saving}
+                        placeholder={`Enter your ${catalog.provider} API Key`}
+                        value={keyDraft}
+                        onValueChange={setKeyDraft}
+                      />
+                      <Input.Action>
+                        <Button
+                          type="button"
+                          icon
+                          size="xs"
+                          variant="ghost"
+                          aria-label={
+                            revealed ? "Hide API Key" : "Show API Key"
+                          }
+                          aria-pressed={revealed || undefined}
+                          onClick={() => setRevealed((open) => !open)}
+                        >
+                          {revealed ? <EyeOff size={12} /> : <Eye size={12} />}
+                        </Button>
+                      </Input.Action>
+                    </Input.Root>
+                    {invalid.key && missingKey ? (
+                      <Field.Error match>
+                        Enter your {catalog.provider} API key.
+                      </Field.Error>
+                    ) : null}
+                  </Field.Root>
                 )}
                 {endpoint !== undefined ? (
-                  <Input.Root className={styles.input}>
-                    <Input.Field
-                      type={catalog.id === "azure" ? "text" : "url"}
-                      aria-label={endpointLabel}
-                      placeholder={endpointLabel}
-                      disabled={saving}
-                      value={endpointDraft}
-                      onValueChange={setEndpointDraft}
-                    />
-                  </Input.Root>
+                  <Field.Root
+                    invalid={(invalid.endpoint && missingEndpoint) || undefined}
+                  >
+                    <Input.Root className={styles.input}>
+                      <Input.Field
+                        ref={endpointField}
+                        type={catalog.id === "azure" ? "text" : "url"}
+                        autoComplete="off"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        aria-label={endpointLabel}
+                        placeholder={endpointLabel}
+                        disabled={saving}
+                        value={endpointDraft}
+                        onValueChange={setEndpointDraft}
+                      />
+                    </Input.Root>
+                    {invalid.endpoint && missingEndpoint ? (
+                      <Field.Error match>
+                        {catalog.id === "azure"
+                          ? "Enter the resource name."
+                          : "Enter the API base URL."}
+                      </Field.Error>
+                    ) : null}
+                  </Field.Root>
                 ) : null}
                 {error ? (
                   <p className={styles.error} role="alert">
@@ -342,7 +381,7 @@ export function ProviderConnection({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="secondary" disabled={!canSave}>
+                <Button type="submit" variant="secondary" disabled={saving}>
                   {subscription || apple
                     ? "Connect"
                     : catalog.needsKey

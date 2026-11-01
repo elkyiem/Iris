@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { Capture } from "@pond/schema/raw";
 import { session } from "electron";
 import log from "electron-log/main.js";
@@ -243,8 +244,4 @@ export async function fetchTumblrCapture(args: {
     args.url,
     sessionGet(await partitionForIngest("tumblr", args.accountId)),
   );
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

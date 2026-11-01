@@ -1,4 +1,5 @@
 import type { Source, WatchKind } from "@pond/schema/db";
+import { normalizeFeedUrl } from "@pond/schema/watches";
 
 export interface SourceTarget {
   source: Source;
@@ -18,6 +19,7 @@ function encodedPath(handle: string): string {
 
 export function sourceTargetUrl(target: SourceTarget): string | null {
   if (!target.handle) return null;
+  if (target.kind === "feed") return normalizeFeedUrl(target.handle);
   const path = encodedPath(target.handle);
   if (!path) return null;
 

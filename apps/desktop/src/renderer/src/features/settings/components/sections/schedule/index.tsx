@@ -9,39 +9,18 @@ import styles from "./styles.module.css";
 
 export function ScheduleSection() {
   const [sync, , loaded] = usePrefs("sync");
-  if (!loaded) return null;
   return (
     <ScheduleEditor
-      initial={sync.cron ?? DEFAULT_SYNC_CRON}
+      initial={loaded ? (sync.cron ?? DEFAULT_SYNC_CRON) : null}
       onSave={(cron) => savePrefsSection("sync", { cron })}
     />
   );
 }
 
-function localDate(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
+const LOADING_SCHEDULE: SyncSchedule = { ...DEFAULT_SYNC_CRON, enabled: false };
 
-const weekdayNames = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
-const units = ["hour", "day", "week", "month"] as const;
-
-export function ScheduleEditor({
-  initial,
-  onSave,
-}: {
-  initial: SyncSchedule;
-  onSave: (schedule: SyncSchedule) => void | Promise<void>;
-}) {
-  const scheduleId = useId();
-  const [draft, setDraft] = useState(() => ({
+function draftFrom(initial: SyncSchedule) {
+  return {
     enabled: initial.enabled,
     unit:
       initial.recurrence?.unit ??
@@ -61,7 +40,40 @@ export function ScheduleEditor({
       (initial.calendar?.kind === "weekly"
         ? initial.calendar.days
         : [new Date().getDay()]),
-  }));
+  };
+}
+
+function localDate(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+const weekdayNames = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+const units = ["hour", "day", "week", "month"] as const;
+
+export function ScheduleEditor({
+  initial: loadedInitial,
+  onSave,
+}: {
+  initial: SyncSchedule | null;
+  onSave: (schedule: SyncSchedule) => void | Promise<void>;
+}) {
+  const scheduleId = useId();
+  const initial = loadedInitial ?? LOADING_SCHEDULE;
+  const [draft, setDraft] = useState(() => draftFrom(initial));
+  const [seeded, setSeeded] = useState(loadedInitial !== null);
+  if (!seeded && loadedInitial) {
+    setSeeded(true);
+    setDraft(draftFrom(loadedInitial));
+  }
+  const loading = !seeded;
   const { enabled, unit, every, startDate, time, days } = draft;
   const pendingSave = useRef(Promise.resolve());
   const revision = useRef(0);
@@ -103,7 +115,7 @@ export function ScheduleEditor({
       });
   };
   return (
-    <div className={styles.editor}>
+    <div className={styles.editor} aria-busy={loading || undefined}>
       <Settings.List>
         <AnimateHeight initial={false}>
           <Settings.Item>
@@ -121,6 +133,7 @@ export function ScheduleEditor({
                 aria-describedby={`${scheduleId}-description`}
                 aria-controls={enabled ? scheduleId : undefined}
                 checked={enabled}
+                disabled={loading}
                 onCheckedChange={(checked) => {
                   edit({ enabled: checked });
                 }}

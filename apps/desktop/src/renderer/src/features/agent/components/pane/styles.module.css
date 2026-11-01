@@ -8,7 +8,7 @@
   overflow: hidden;
 }
 
-.assistant-workspace {
+.workspace {
   position: relative;
   display: flex;
   flex: 1;
@@ -16,7 +16,7 @@
   min-height: 0;
 }
 
-.assistant-body {
+.body {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -24,11 +24,15 @@
   min-height: 0;
 }
 
-.chat-viewport {
+.viewport {
   padding: 24px 24px 12px;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: none;
+}
+
+.turn[data-role="user"]:not(:first-child, .time + *) {
+  margin-top: 20px;
 }
 
 .time {

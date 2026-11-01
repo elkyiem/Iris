@@ -175,6 +175,7 @@ export function EpubViewer({
                 <Select.Trigger
                   size="sm"
                   variant="ghost"
+                  rounding="full"
                   aria-label="Table of contents"
                 >
                   <Select.Value placeholder="Contents">

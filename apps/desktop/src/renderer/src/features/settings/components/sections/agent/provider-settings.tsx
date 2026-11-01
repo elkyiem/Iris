@@ -19,7 +19,7 @@ export const GROUPS = [
   {
     kind: "cloud" as const,
     title: "Cloud Providers",
-    description: "Use your API keys. Requests go directly to each provider.",
+    description: "Use your API keys to reach each provider directly.",
     empty: "No cloud providers",
   },
   {
@@ -97,7 +97,7 @@ function ProviderList({ children }: { children: ReactNode }) {
   return (
     <Settings.List>
       <AnimateHeight initial={false}>
-        <div className={styles["list-body"]}>{children}</div>
+        <div className={styles.body}>{children}</div>
       </AnimateHeight>
     </Settings.List>
   );

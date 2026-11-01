@@ -1,0 +1,9 @@
+.area {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden auto;
+
+  &[data-scroll-fade="horizontal"] {
+    overflow: auto hidden;
+  }
+}

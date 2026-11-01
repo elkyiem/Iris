@@ -7,6 +7,14 @@ export function harvestShouldIgnoreSave(save: {
   return save.status === "skipped" || save.deletedAt != null;
 }
 
+/** Saving a trashed page again asks for it back; background runs such as sync leave it in Trash. */
+export function harvestShouldRestoreSave(
+  save: { status: SaveStatus; deletedAt: Date | null },
+  interactive: boolean,
+): boolean {
+  return interactive && save.deletedAt != null && save.status !== "skipped";
+}
+
 /** Disconnecting keeps an account's saves; the reconnected account that lists them takes them over so its sync baseline counts them. */
 export function harvestShouldAdoptSave(
   save: { accountId: string | null },

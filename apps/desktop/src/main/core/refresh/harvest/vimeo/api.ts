@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { ListKind } from "@pond/schema/db";
 import type { Capture } from "@pond/schema/raw";
 import { session } from "electron";
@@ -344,8 +345,4 @@ export async function fetchVimeoCapture(args: {
     args.sourceId,
     sessionGet(await partitionForIngest("vimeo", args.accountId)),
   );
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

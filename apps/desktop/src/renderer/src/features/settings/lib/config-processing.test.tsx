@@ -25,30 +25,39 @@ describe("sensitive-content processing settings", () => {
     ).toBe(false);
   });
 
+  it("dims nested details until their parent switch is on", () => {
+    const item = (key: string) => {
+      const found = processingItems().find((i) => i?.key === key);
+      if (found?.control !== "switch") throw new Error(`Missing ${key}`);
+      expect(found.visible).toBeUndefined();
+      return found;
+    };
+    const off = {
+      ...DEFAULT_PREFS.ai,
+      enableClip: false,
+      enableCaption: false,
+      enableOcr: false,
+      semanticSearch: false,
+    };
+    expect(item("enableAesthetic").disabled?.(off)).toBe(true);
+    expect(
+      item("enableAesthetic").disabled?.({ ...off, enableClip: true }),
+    ).toBe(false);
+    expect(item("enableAutoTitle").disabled?.(off)).toBe(true);
+    expect(
+      item("enableAutoTitle").disabled?.({ ...off, enableOcr: true }),
+    ).toBe(false);
+    expect(item("enableSuggestedTags").disabled?.(off)).toBe(true);
+    expect(
+      item("enableSuggestedTags").disabled?.({ ...off, semanticSearch: true }),
+    ).toBe(false);
+  });
+
   it("does not expose implementation model choices", () => {
     const keys = processingItems().map((item) => item?.key);
     expect(keys).not.toContain("captionModelId");
     expect(keys).not.toContain("clipModelId");
     expect(keys).not.toContain("whisperModelId");
-  });
-
-  it("offers explicit Florence fallback only for primary Gemma processing", () => {
-    const fallback = processingItems().find(
-      (item) => item?.key === "mediaUnderstandingFallbackToFlorence",
-    );
-
-    expect(fallback).toMatchObject({
-      control: "switch",
-      title: "Image Processing Fallback",
-      description: "Uses the built-in model if this one fails.",
-    });
-    expect(fallback?.visible?.(DEFAULT_PREFS.ai)).toBe(false);
-    expect(
-      fallback?.visible?.({
-        ...DEFAULT_PREFS.ai,
-        mediaUnderstandingMode: "gemma4",
-      }),
-    ).toBe(true);
   });
 
   it("lets users choose the image model, runtime, and exact installed model ID", () => {
@@ -79,7 +88,7 @@ describe("sensitive-content processing settings", () => {
     });
     expect(model).toMatchObject({
       control: "custom",
-      title: "Local Model ID",
+      title: "Local Model",
     });
     expect(provider?.visible?.(DEFAULT_PREFS.ai)).toBe(false);
     expect(model?.visible?.(DEFAULT_PREFS.ai)).toBe(false);

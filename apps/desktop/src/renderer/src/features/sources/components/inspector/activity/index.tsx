@@ -5,7 +5,7 @@ import {
   type SourceRun,
   useSourceHistory,
 } from "@/features/sources/hooks/use-source-activity";
-import { formatNumber } from "@/shared/lib/format";
+import { formatPlural } from "@/shared/lib/format";
 import { relativeTimeFromMs } from "@/shared/lib/relative-time";
 import { notify } from "@/shared/lib/toast";
 import styles from "./styles.module.css";
@@ -20,7 +20,7 @@ function outcomeLabel(run: SourceRun): string {
     case "noop": {
       const fresh = runFreshCount(run);
       if (fresh === 0) return "No new saves";
-      return fresh === 1 ? "1 new save" : `${formatNumber(fresh)} new saves`;
+      return formatPlural(fresh, { one: "new save", other: "new saves" });
     }
     case "auth_required":
       return "Signed out";

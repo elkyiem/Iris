@@ -84,7 +84,7 @@ export function KoiQuestion({
                 selected={choice === FREEFORM}
                 disabled={busy}
                 aria-label="Your answer"
-                placeholder="Other…"
+                placeholder="Other"
                 value={text}
                 onFocus={() => setChoice(FREEFORM)}
                 onChange={(event) => {
@@ -114,7 +114,7 @@ export function KoiQuestion({
             loading={busy}
             onClick={() => void submit()}
           >
-            {busy ? "Sending" : "Continue"}
+            Continue
           </Button>
         </Prompt.Footer>
       </Reveal>

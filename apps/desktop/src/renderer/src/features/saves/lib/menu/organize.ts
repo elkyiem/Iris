@@ -26,6 +26,7 @@ import { saveLibraryBridge } from "@/features/saves/lib/library-bridge";
 import { pasteTagsForSelection } from "@/features/saves/lib/selection";
 import { errorCopy } from "@/shared/lib/error-copy";
 import { buildFolderTreeMenu } from "@/shared/lib/folder-tree-menu";
+import { formatPlural } from "@/shared/lib/format";
 import { shortcutGlyphs } from "@/shared/lib/shortcuts";
 import { notify } from "@/shared/lib/toast";
 import { glyph } from "./shared";
@@ -44,7 +45,7 @@ function createFolderWithSaves(ids: string[]): void {
       saveLibraryBridge.startEditingFolder(folder.id);
       notifyUndoableFolderChange(
         "create-folder-with-saves",
-        `Created "${folder.name}" with ${ids.length} saves`,
+        `Created "${folder.name}" with ${formatPlural(ids.length, { one: "save", other: "saves" })}`,
       );
     } catch (error) {
       notify({
@@ -145,7 +146,7 @@ function buildAddItems(ids: string[], batch: boolean): MenuItemSpec[] {
       items: buildFolderItems(ids, batch),
     },
     {
-      label: `New Folder with ${ids.length} Saves`,
+      label: `New Folder with ${formatPlural(ids.length, { one: "Save", other: "Saves" })}`,
       icon: glyph(IconFolderPlus),
       hidden: !batch,
       onClick: () => createFolderWithSaves(ids),

@@ -173,6 +173,7 @@ export function PdfViewer(props: ViewerProps & { url: string }) {
         <div
           ref={scrollRef}
           className={styles.scroll}
+          data-scroll-fade="vertical"
           onScroll={syncCurrentPage}
         >
           {!document && !error ? (

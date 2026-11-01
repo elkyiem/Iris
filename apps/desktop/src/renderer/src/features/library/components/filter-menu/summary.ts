@@ -6,6 +6,7 @@ import type {
   PredicateValue,
 } from "@pond/schema/filters/types";
 import { describePredicate } from "@/features/search/query";
+import { formatPlural } from "@/shared/lib/format";
 import type { FilterOption } from "./options";
 import { isFilterSelected } from "./selection";
 
@@ -92,7 +93,7 @@ function quantity(field: FieldId, value: number): string {
   if (field === "rating" && value === 0) return "Unrated";
   const noun = NOUNS.get(field);
   if (!noun) return bare(field, value);
-  return `${integer.format(value)} ${value === 1 ? noun[0] : noun[1]}`;
+  return formatPlural(value, { one: noun[0], other: noun[1] });
 }
 
 function numberSummary(rule: Predicate): string {

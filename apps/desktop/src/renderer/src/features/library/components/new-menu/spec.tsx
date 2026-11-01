@@ -223,6 +223,7 @@ export function buildNewMenuItems(
                 "Pond saves the images and files from the page you enter.",
               confirmLabel: "Import",
               placeholder: "https://",
+              emptyError: "Enter a page link to import.",
               onConfirm: (url) =>
                 void runNewAction(() => importPageAssets(url)),
             });

@@ -35,7 +35,7 @@ export function startMachinePace(): void {
       publish();
     };
     if (process.platform === "darwin") {
-      // macOS fills free RAM with reclaimable caches; use kernel pressure.
+      /** macOS fills free RAM with reclaimable caches, so free memory says nothing; read kernel pressure. */
       execFile(
         "/usr/sbin/sysctl",
         ["-n", "kern.memorystatus_vm_pressure_level"],

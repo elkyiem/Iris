@@ -7,17 +7,18 @@ import {
   type ReactNode,
   useContext,
 } from "react";
-import Markdown, { type Components } from "react-markdown";
-import remarkGfm from "remark-gfm";
+import {
+  type AnimateOptions,
+  type Components,
+  defaultRemarkPlugins,
+  Streamdown,
+} from "streamdown";
 import { parseSaveMentionHref, SaveMentionChip } from "../../composer/mention";
 import { remarkSaveCitations } from "../remark-save-citations";
 import { SaveCitation } from "../save-preview";
 import styles from "./styles.module.css";
 
-const whitespace = /^\s+$/;
-
 interface ResponseRenderContext {
-  streaming: boolean;
   sources: AssistantSource[];
   onOpenSave: (id: string) => void;
 }
@@ -30,46 +31,10 @@ function useResponseContext() {
   return value;
 }
 
-function StreamingWords({
-  children,
-  active,
-}: {
-  children: ReactNode;
-  active: boolean;
-}) {
-  if (!active) return children;
-  return Children.map(children, (child) => {
-    if (child == null || isValidElement(child)) return child;
-    let offset = 0;
-    return String(child)
-      .split(/(\s+)/)
-      .map((part) => {
-        const start = offset;
-        offset += part.length;
-        return !part || whitespace.test(part) ? (
-          part
-        ) : (
-          <span
-            key={`word-${start}`}
-            className={styles["streaming-word"]}
-            data-streaming-word=""
-          >
-            {part}
-          </span>
-        );
-      });
-  });
-}
-
 function textContent(children: ReactNode): string {
   const parts = Children.toArray(children);
   const value = parts.length === 1 ? parts[0] : null;
   return value != null && !isValidElement(value) ? String(value) : "";
-}
-
-function Streamed({ children }: { children: ReactNode }) {
-  const { streaming } = useResponseContext();
-  return <StreamingWords active={streaming}>{children}</StreamingWords>;
 }
 
 function ResponseLink({
@@ -109,74 +74,35 @@ function ResponseLink({
   );
 }
 
-const responseComponents = {
+/** Streamdown's defaults carry Tailwind classes; Pond styles the bare elements instead. */
+const responseComponents: Components = {
+  ol: "ol",
+  ul: "ul",
+  li: "li",
+  hr: "hr",
+  strong: "strong",
+  h1: "h1",
+  h2: "h2",
+  h3: "h3",
+  h4: "h4",
+  h5: "h5",
+  h6: "h6",
+  thead: "thead",
+  tbody: "tbody",
+  tr: "tr",
+  th: "th",
+  td: "td",
+  blockquote: "blockquote",
+  code: "code",
+  inlineCode: ({ node: _node, ...props }) => <code {...props} />,
+  sup: "sup",
+  sub: "sub",
+  p: "p",
+  section: "section",
   img: () => null,
-  p: ({ node: _node, children, ...props }) => (
-    <p {...props}>
-      <Streamed>{children}</Streamed>
-    </p>
+  a: ({ href, children }) => (
+    <ResponseLink href={href}>{children}</ResponseLink>
   ),
-  li: ({ node: _node, children, ...props }) => (
-    <li {...props}>
-      <Streamed>{children}</Streamed>
-    </li>
-  ),
-  h1: ({ node: _node, children, ...props }) => (
-    <h1 {...props}>
-      <Streamed>{children}</Streamed>
-    </h1>
-  ),
-  h2: ({ node: _node, children, ...props }) => (
-    <h2 {...props}>
-      <Streamed>{children}</Streamed>
-    </h2>
-  ),
-  h3: ({ node: _node, children, ...props }) => (
-    <h3 {...props}>
-      <Streamed>{children}</Streamed>
-    </h3>
-  ),
-  h4: ({ node: _node, children, ...props }) => (
-    <h4 {...props}>
-      <Streamed>{children}</Streamed>
-    </h4>
-  ),
-  h5: ({ node: _node, children, ...props }) => (
-    <h5 {...props}>
-      <Streamed>{children}</Streamed>
-    </h5>
-  ),
-  h6: ({ node: _node, children, ...props }) => (
-    <h6 {...props}>
-      <Streamed>{children}</Streamed>
-    </h6>
-  ),
-  strong: ({ node: _node, children, ...props }) => (
-    <strong {...props}>
-      <Streamed>{children}</Streamed>
-    </strong>
-  ),
-  em: ({ node: _node, children, ...props }) => (
-    <em {...props}>
-      <Streamed>{children}</Streamed>
-    </em>
-  ),
-  del: ({ node: _node, children, ...props }) => (
-    <del {...props}>
-      <Streamed>{children}</Streamed>
-    </del>
-  ),
-  th: ({ node: _node, children, ...props }) => (
-    <th {...props}>
-      <Streamed>{children}</Streamed>
-    </th>
-  ),
-  td: ({ node: _node, children, ...props }) => (
-    <td {...props}>
-      <Streamed>{children}</Streamed>
-    </td>
-  ),
-  a: ResponseLink,
   pre: ({ node, children }) => {
     const code = node?.children.find(
       (child) => child.type === "element" && child.tagName === "code",
@@ -196,6 +122,7 @@ const responseComponents = {
   table: ({ children }) => (
     <section
       className={styles.table}
+      data-scroll-fade="horizontal"
       // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide tables in the side pane.
       tabIndex={0}
       aria-label="Response table"
@@ -203,7 +130,28 @@ const responseComponents = {
       <table>{children}</table>
     </section>
   ),
-} satisfies Components;
+};
+
+interface MarkdownParent {
+  type: string;
+  children?: MarkdownParent[];
+}
+
+/** Model HTML is dropped outright; `safeResponseUrl` already gates every link. */
+function remarkDropHtml() {
+  const prune = (node: MarkdownParent) => {
+    if (!node.children) return;
+    node.children = node.children.filter((child) => child.type !== "html");
+    for (const child of node.children) prune(child);
+  };
+  return prune;
+}
+
+/** Mirrors `--ds-duration-slow`; Streamdown zeroes it for words already on screen. */
+const wordReveal: AnimateOptions = {
+  duration: 350,
+  easing: "var(--ds-easing-decelerate)",
+};
 
 export function safeResponseUrl(url: string): string {
   if (/^#save-[1-9]\d*$/.test(url)) return url;
@@ -232,20 +180,25 @@ export function AssistantResponse({
   onOpenSave: (id: string) => void;
 }) {
   return (
-    <ResponseContext.Provider value={{ streaming, sources, onOpenSave }}>
-      <div className={styles.response}>
-        <Markdown
-          remarkPlugins={[
-            remarkGfm,
-            [remarkSaveCitations, { count: sources.length, source: content }],
-          ]}
-          skipHtml
-          urlTransform={safeResponseUrl}
-          components={responseComponents}
-        >
-          {content}
-        </Markdown>
-      </div>
+    <ResponseContext.Provider value={{ sources, onOpenSave }}>
+      <Streamdown
+        className={styles.response}
+        mode={streaming ? "streaming" : "static"}
+        isAnimating={streaming}
+        animated={wordReveal}
+        controls={false}
+        linkSafety={{ enabled: false }}
+        remarkPlugins={[
+          ...Object.values(defaultRemarkPlugins),
+          remarkDropHtml,
+          [remarkSaveCitations, { count: sources.length, source: content }],
+        ]}
+        rehypePlugins={[]}
+        urlTransform={safeResponseUrl}
+        components={responseComponents}
+      >
+        {content}
+      </Streamdown>
     </ResponseContext.Provider>
   );
 }

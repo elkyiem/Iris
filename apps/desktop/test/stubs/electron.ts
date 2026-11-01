@@ -8,6 +8,20 @@ export const app = {
 export const shell = {};
 export const session = {};
 export const net = {};
-export class BrowserWindow {}
-export class Notification {}
+/** Tests open no windows, so main-process broadcasts reach none. */
+export class BrowserWindow {
+  static getAllWindows(): BrowserWindow[] {
+    return [];
+  }
+  isDestroyed(): boolean {
+    return true;
+  }
+}
+/** Tests have no notification center, so feedback falls back to silence. */
+export class Notification {
+  static isSupported(): boolean {
+    return false;
+  }
+  show(): void {}
+}
 export default {};

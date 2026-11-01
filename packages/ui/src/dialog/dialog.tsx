@@ -353,6 +353,7 @@ function Page({ children }: { children: React.ReactNode }) {
       aria-hidden={!present || undefined}
       tabIndex={-1}
       className={styles.page}
+      data-scroll-fade="vertical"
       custom={deeper}
       variants={reduceMotion ? fadeVariants : scaleVariants}
       initial="enter"
@@ -415,7 +416,13 @@ function Close(props: Base.Close.Props) {
 }
 
 function Content({ className, ...props }: ComponentPropsWithoutRef<"div">) {
-  return <div className={cn(styles.content, className)} {...props} />;
+  return (
+    <div
+      className={cn(styles.content, className)}
+      data-scroll-fade="vertical"
+      {...props}
+    />
+  );
 }
 
 interface FooterProps extends ComponentPropsWithoutRef<"div"> {

@@ -58,6 +58,9 @@
 }
 
 .preview {
+  /* The sticky table head would fade with the start edge. */
+  --scroll-fade-start-size: 0px;
+
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
@@ -123,7 +126,7 @@
 .mark {
   padding: 1px 0;
   color: inherit;
-  border-radius: 2px;
+  border-radius: var(--ds-radius-xs);
 
   &[data-tone="find"] {
     background: var(--ds-yellow-4);

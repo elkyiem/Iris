@@ -86,7 +86,7 @@ export function YouTubeEmbed() {
 function EmbedMenu({ children }: { children: React.ReactNode }) {
   return (
     <Menu.Surface className={styles.slash} aria-label="Embed">
-      <div className={styles.commands}>
+      <div className={styles.commands} data-scroll-fade="vertical">
         <Menu.Group>{children}</Menu.Group>
       </div>
     </Menu.Surface>

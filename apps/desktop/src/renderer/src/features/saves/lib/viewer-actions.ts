@@ -57,7 +57,7 @@ export function runViewerAction(saveId: string, action: ViewerAction): void {
       if (!result.ok)
         notify({
           id: "quick-look",
-          title: "Couldn't Open Quick Look",
+          title: "Couldn't open Quick Look",
           description: result.error,
         });
     });

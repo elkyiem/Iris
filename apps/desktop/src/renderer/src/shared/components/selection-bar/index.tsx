@@ -38,7 +38,9 @@ function Root({ label, count, onClear, children }: RootProps) {
               <span className={styles.count} aria-live="polite">
                 <span className={styles.number}>{count}</span> selected
               </span>
-              <div className={styles.actions}>{children}</div>
+              <div className={styles.actions} data-scroll-fade="horizontal">
+                {children}
+              </div>
               <Tooltip
                 label="Clear Selection"
                 shortcut={<Keyboard.Cluster keys={["Esc"]} />}

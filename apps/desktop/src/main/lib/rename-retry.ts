@@ -1,5 +1,6 @@
 import { renameSync } from "node:fs";
 import { rename } from "node:fs/promises";
+import { setTimeout as delay } from "node:timers/promises";
 import { z } from "zod";
 
 /**
@@ -47,7 +48,7 @@ export async function renameWithRetry(
   const {
     rename: move = rename,
     platform = process.platform,
-    sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+    sleep = delay,
   } = deps;
   for (let attempt = 1; ; attempt++) {
     try {

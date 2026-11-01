@@ -1,4 +1,9 @@
 import {
+  watchHandleLabel,
+  watchKindLabel,
+  watchSourceLabel,
+} from "@pond/schema/watches";
+import {
   type CardModel,
   cardModel,
 } from "@/features/sources/components/sync-monitor/lib/helpers";
@@ -7,10 +12,7 @@ import {
   type WatchedFolderStatus,
   watchedFolderName,
 } from "@/features/sources/hooks/use-watched-folder";
-import {
-  type WatchRow,
-  watchKindLabel,
-} from "@/features/sources/hooks/use-watches";
+import type { WatchRow } from "@/features/sources/hooks/use-watches";
 import { getSourceDef } from "@/features/sources/lib/registry";
 import {
   type FilterableSource,
@@ -37,9 +39,7 @@ export interface SourceTableRow extends FilterableSource {
 
 function watchName(watch: WatchRow): string {
   if (watch.label) return watch.label;
-  return watch.kind === "playlist" || watch.kind === "list"
-    ? watch.handle
-    : `@${watch.handle}`;
+  return watchHandleLabel(watch.handle, watch.kind);
 }
 
 type RemoteSourceEntry = Exclude<SourceEntry, { kind: "folder" }>;
@@ -106,7 +106,10 @@ export function toSourceTableRow(
     lastSyncedMs,
     statusId,
     statusLabel: sourceStatusLabel(statusId),
-    sourceLabel: getSourceDef(entry.row.source).label,
+    sourceLabel:
+      entry.kind === "watch"
+        ? watchSourceLabel(entry.row.source)
+        : getSourceDef(entry.row.source).label,
     kindLabel: typeLabel(entry),
     model,
     entry,

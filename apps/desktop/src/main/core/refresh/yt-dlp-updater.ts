@@ -11,6 +11,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { join } from "node:path";
+import { setTimeout as delay } from "node:timers/promises";
 import log from "electron-log/main.js";
 import { z } from "zod";
 import { killProcessTree } from "../../lib/process-tree";
@@ -221,7 +222,7 @@ export async function recoverFiles(
   const move = (from: string, to: string) =>
     renameWithRetry(from, to, { rename: deps.rename });
 
-  // Downloads are written to `<name>.<pid>.tmp` only after recovery has run.
+  /** Downloads are written to `<name>.<pid>.tmp` only after recovery has run. */
   for (const name of await readdir(dir).catch(() => [])) {
     if (isStaleTmp(name)) await rm(join(dir, name), { force: true });
   }
@@ -238,7 +239,7 @@ export async function recoverFiles(
       );
     return;
   }
-  // A backup that cannot run would only replace one broken state with another.
+  /** A backup that cannot run would only replace one broken state with another. */
   if (!(await deps.smokeTest(previous))) {
     log.warn("[pond yt-dlp-update] backup binary failed --version, keeping it");
     return;
@@ -297,7 +298,7 @@ export async function renameWithRetry(
   const {
     rename: move = rename,
     platform = process.platform,
-    sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+    sleep = delay,
   } = deps;
   for (let attempt = 1; ; attempt++) {
     try {

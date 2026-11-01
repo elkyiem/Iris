@@ -24,7 +24,7 @@ import type {
   SelectOption,
 } from "@/features/settings/lib/engine-types";
 import { EnumSelect } from "@/shared/components/enum-select";
-import { clamp as clampNum } from "@/shared/lib/math";
+import { clamp } from "@/shared/lib/math";
 import styles from "./styles.module.css";
 
 const ControlValueSchema = z
@@ -179,7 +179,7 @@ function FieldControl({
               value={String(toNumber(current, item.min))}
               onChange={(e) => {
                 const n = clamp(
-                  Number(e.target.value) || item.min,
+                  Math.round(Number(e.target.value) || item.min),
                   item.min,
                   item.max,
                 );
@@ -223,7 +223,7 @@ function FieldControl({
             value={String(toNumber(current, item.min))}
             onChange={(e) => {
               const next = clamp(
-                Number(e.target.value) || item.min,
+                Math.round(Number(e.target.value) || item.min),
                 item.min,
                 item.max,
               );
@@ -255,9 +255,4 @@ function FieldControl({
 function toNumber(value: ControlValue, fallback: number): number {
   const parsed = FiniteNumberSchema.safeParse(value);
   return parsed.success ? parsed.data : fallback;
-}
-
-function clamp(value: number, min: number, max: number): number {
-  if (!Number.isFinite(value)) return min;
-  return clampNum(Math.round(value), min, max);
 }

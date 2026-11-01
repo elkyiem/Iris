@@ -3,18 +3,8 @@ import type { ComponentProps } from "react";
 import { Button, type ButtonProps } from "../button";
 import styles from "./styles.module.css";
 
-function Root({
-  className,
-  hover = "trigger",
-  ...props
-}: ComponentProps<"article"> & { hover?: "trigger" | "row" }) {
-  return (
-    <article
-      className={cn(styles.root, className)}
-      data-hover={hover === "row" ? "row" : undefined}
-      {...props}
-    />
-  );
+function Root({ className, ...props }: ComponentProps<"article">) {
+  return <article className={cn(styles.root, className)} {...props} />;
 }
 function Trigger({ className, ...props }: ComponentProps<"button">) {
   return (

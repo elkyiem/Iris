@@ -168,7 +168,7 @@ export function FontViewer(props: ViewerProps & { url: string }) {
           end={navigationControls(props.navigation)}
         />
       </ChromePortal>
-      <div className={styles.scroll}>
+      <div className={styles.scroll} data-scroll-fade="vertical">
         {mode === "specimen" ? (
           <div className={styles.specimen}>{specimen || DEFAULT_SPECIMEN}</div>
         ) : null}
@@ -216,7 +216,7 @@ export function FontViewer(props: ViewerProps & { url: string }) {
                 <dd>{formatBytes(props.file.size)}</dd>
               </div>
             </dl>
-            <div className={styles["info-actions"]}>
+            <div className={styles.actions}>
               {renaming ? (
                 <InlineNameEditor
                   name={props.save.title ?? props.file.family ?? "Untitled"}

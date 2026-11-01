@@ -235,7 +235,7 @@ export function FilterBarView(data: FilterBarData) {
       void savedViews.updateCurrent(activeViewId).catch((error) =>
         notify({
           id: "save-filter-view",
-          title: "Couldn't Update Saved View",
+          title: "Couldn't update the saved view",
           description: errorCopy(error, "Try again."),
         }),
       );
@@ -247,7 +247,7 @@ export function FilterBarView(data: FilterBarData) {
       .catch((error) =>
         notify({
           id: "save-filter-view",
-          title: "Couldn't Save View",
+          title: "Couldn't save the view",
           description: errorCopy(error, "Try again."),
         }),
       );

@@ -88,11 +88,38 @@ export async function processImage(
 export async function probeImageDims(
   bytes: Buffer,
 ): Promise<{ width: number; height: number } | null> {
+  if (bytes.subarray(0, 4).equals(ICO_HEADER)) return icoDims(bytes);
   const meta = await sharp(bytes, { failOn: "none" }).metadata();
   const dims = dimsFromMeta(meta);
   return dims.width && dims.height
     ? { width: dims.width, height: dims.height }
     : null;
+}
+
+const ICO_HEADER = Buffer.from([0x00, 0x00, 0x01, 0x00]);
+const ICO_ENTRY_BYTES = 16;
+
+/* sharp has no ICO decoder, and web saves fall back to the site favicon as their cover. Read the largest icon's size from the directory instead; a size byte of 0 means 256. Throws like sharp does when an entry points outside the file. */
+function icoDims(bytes: Buffer): { width: number; height: number } {
+  const count = bytes.byteLength >= 6 ? bytes.readUInt16LE(4) : 0;
+  if (count === 0 || bytes.byteLength < 6 + count * ICO_ENTRY_BYTES) {
+    throw new Error("ICO directory is truncated");
+  }
+  let largest = { width: 0, height: 0 };
+  for (let i = 0; i < count; i++) {
+    const at = 6 + i * ICO_ENTRY_BYTES;
+    const size = bytes.readUInt32LE(at + 8);
+    const offset = bytes.readUInt32LE(at + 12);
+    if (size === 0 || offset + size > bytes.byteLength) {
+      throw new Error("ICO entry points outside the file");
+    }
+    const width = bytes[at] || 256;
+    const height = bytes[at + 1] || 256;
+    if (width * height > largest.width * largest.height) {
+      largest = { width, height };
+    }
+  }
+  return largest;
 }
 
 interface ImageDims {

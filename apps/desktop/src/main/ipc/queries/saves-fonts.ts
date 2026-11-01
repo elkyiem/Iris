@@ -106,7 +106,7 @@ export const savesFontQueries = {
 
   "saves.fontStatus": query(z.object({ id: StringParam }), ({ id }) => {
     const path = readFontActivation(id);
-    // The sidecar travels with the library; trust it only while the file exists here.
+    /** The sidecar travels with the library, so trust it only while the file exists on this Mac. */
     return path && existsSync(path)
       ? { activated: true, path }
       : { activated: false };

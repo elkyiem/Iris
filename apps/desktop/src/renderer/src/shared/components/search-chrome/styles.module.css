@@ -30,13 +30,13 @@
   height: 32px;
 }
 
-.input[data-variant="borderless"] > .field {
-  padding-inline: 0;
-  font-weight: 400;
-}
+.field[data-appearance="bare"] {
+  color: var(--ds-gray-12);
 
-.input[data-variant="borderless"] > .field::placeholder {
-  color: var(--ds-gray-9);
+  /* Matches the Library search bar placeholder. */
+  &::placeholder {
+    color: var(--ds-gray-9);
+  }
 }
 
 .actions {

@@ -24,24 +24,13 @@ function Body({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return <div className={cn(styles.body, className)} {...props} />;
 }
 
-interface BubbleProps extends ComponentPropsWithoutRef<"div"> {
-  trailing?: ReactNode;
-}
-
-function Bubble({ className, trailing, ...props }: BubbleProps) {
-  const bubble = (
+function Bubble({ className, ...props }: ComponentPropsWithoutRef<"div">) {
+  return (
     <div
       data-slot="message-bubble"
       className={cn(styles.bubble, className)}
       {...props}
     />
-  );
-  if (!trailing) return bubble;
-  return (
-    <div className={styles["bubble-row"]}>
-      {bubble}
-      {trailing}
-    </div>
   );
 }
 

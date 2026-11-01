@@ -52,8 +52,8 @@ export async function ensureTray(opts: TrayOptions): Promise<TrayHandle> {
   tray.setToolTip("Pond");
   log.info("[pond tray] created");
 
-  // Windows shows only the context menu on right-click; a plain click should open Pond.
   const onThemeUpdated = () => tray.setImage(loadTrayIcon());
+  /** Windows shows the context menu only on right-click, so a plain click opens Pond. */
   if (process.platform === "win32") {
     tray.on("click", () => void opts.onOpenLibrary());
     nativeTheme.on("updated", onThemeUpdated);

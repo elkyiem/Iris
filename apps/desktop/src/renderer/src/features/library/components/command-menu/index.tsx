@@ -14,6 +14,7 @@ import {
 } from "@/features/library/state/command-menu";
 import { openSave } from "@/features/saves/navigation";
 import { useSaveLookup } from "@/features/search";
+import { formatPlural } from "@/shared/lib/format";
 import { usePrefs } from "@/shared/state/prefs";
 import { ResultsList } from "./results-list";
 import { SearchField } from "./search-field";
@@ -63,7 +64,7 @@ function actionsPage(entry: MenuEntry): MenuPage | null {
 function resultsAnnouncement(query: string, count: number): string {
   if (!query) return "";
   if (count === 0) return "No results found";
-  return count === 1 ? "1 result" : `${count} results`;
+  return formatPlural(count, { one: "result", other: "results" });
 }
 
 function CommandMenu({

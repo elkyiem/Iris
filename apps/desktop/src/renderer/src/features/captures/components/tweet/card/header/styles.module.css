@@ -21,7 +21,7 @@
   object-fit: cover;
 }
 
-.avatar-fallback {
+.fallback {
   font-size: var(--ds-text-lg);
   font-weight: 700;
   color: var(--tw-secondary);

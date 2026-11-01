@@ -13,7 +13,8 @@ export function JsonBlock({ json }: { json: string }) {
       <Button
         size="sm"
         variant="secondary"
-        disabled={!json || copying}
+        disabled={!json}
+        loading={copying}
         onClick={() => {
           void (async () => {
             setCopying(true);
@@ -30,7 +31,7 @@ export function JsonBlock({ json }: { json: string }) {
           })();
         }}
       >
-        {copying ? "Copying" : copied ? "Copied" : "Copy"}
+        {copied ? "Copied" : "Copy"}
       </Button>
     </>
   );

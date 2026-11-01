@@ -82,7 +82,7 @@ export function handleDeepLink(
     }
     log.info("[pond deep-link] route", route);
     const target = mainWindow && !mainWindow.isDestroyed() ? mainWindow : null;
-    // A window that is still loading cannot receive IPC; did-finish-load consumes the route.
+    /** A window that is still loading cannot receive IPC; did-finish-load consumes the route. */
     if (!target || target.webContents.isLoading()) {
       pendingDeepLink = route;
       return "library";
@@ -117,6 +117,6 @@ export function handleSecondInstance(
     if (destination === "library") void deps.openLibraryWindow();
     return;
   }
-  // openLibraryWindow also recreates a window the user closed.
+  /** openLibraryWindow also recreates a window that was closed. */
   void deps.openLibraryWindow();
 }

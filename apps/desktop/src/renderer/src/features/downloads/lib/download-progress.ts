@@ -2,20 +2,7 @@ import type {
   DownloadActivity,
   DownloadPhase,
 } from "@shared/download-activity";
-
-export function formatBytes(bytes: number): string {
-  const units = ["B", "KB", "MB", "GB"];
-  const value = Math.max(0, bytes);
-  const index = Math.min(3, Math.floor(Math.log10(Math.max(1, value)) / 3));
-  return `${new Intl.NumberFormat(undefined, { maximumFractionDigits: index === 0 ? 0 : 1 }).format(value / 1_000 ** index)} ${units[index]}`;
-}
-
-export function formatDuration(ms: number): string {
-  const seconds = Math.max(0, Math.floor(ms / 1_000));
-  if (seconds < 60) return `${seconds}s`;
-  if (seconds < 3_600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
-  return `${Math.floor(seconds / 3_600)}h ${Math.floor((seconds % 3_600) / 60)}m`;
-}
+import { formatBytes, formatDuration } from "@/shared/lib/format";
 
 const DOWNLOAD_PHASE_LABELS = {
   starting: "Preparing download",
@@ -101,8 +88,8 @@ export function describeDownloadActivity(
   if (stalled)
     detail =
       transfer?.state === "requesting"
-        ? `No response for ${formatDuration(now - transfer.startedAt)}`
-        : `No data received for ${formatDuration(stale)}`;
+        ? `No response for ${formatDuration((now - transfer.startedAt) / 1_000)}`
+        : `No data received for ${formatDuration(stale / 1_000)}`;
   else if (transferring && transfer)
     detail =
       moving.length > 1

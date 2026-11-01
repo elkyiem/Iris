@@ -93,30 +93,27 @@ export function Imports() {
         {FEATURED.map((source) => {
           const busy = running.has(source.id);
           return (
-            <ContentRow.Root
+            <Button
               key={source.id}
-              hover="row"
+              variant="bare"
+              width="full"
               className={styles.card}
+              aria-label={`Import ${source.title}`}
               aria-busy={busy || undefined}
+              disabled={busy}
+              onClick={() => void start(source)}
             >
-              <ContentRow.Trigger
-                aria-label={`Import ${source.title}`}
-                disabled={busy}
-                className={styles.trigger}
-                onClick={() => void start(source)}
-              >
-                <ContentRow.Media className={styles.icon}>
-                  {source.icon}
-                </ContentRow.Media>
-                <ContentRow.Content>
-                  <ContentRow.Title>{source.title}</ContentRow.Title>
-                  <ContentRow.Description>
-                    {source.description}
-                  </ContentRow.Description>
-                </ContentRow.Content>
-              </ContentRow.Trigger>
+              <ContentRow.Media className={styles.icon}>
+                {source.icon}
+              </ContentRow.Media>
+              <ContentRow.Content>
+                <ContentRow.Title>{source.title}</ContentRow.Title>
+                <ContentRow.Description>
+                  {source.description}
+                </ContentRow.Description>
+              </ContentRow.Content>
               {busy ? <Loader.Spinner className={styles.spinner} /> : null}
-            </ContentRow.Root>
+            </Button>
           );
         })}
       </div>

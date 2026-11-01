@@ -430,7 +430,7 @@ describe("new menu actions", () => {
     await rescanLibrary();
     expect(query).toHaveBeenCalledExactlyOnceWith("library.rescan", {});
     expect(updateNotification).toHaveBeenLastCalledWith(
-      expect.objectContaining({ title: "Updated 3 of 1200 saves" }),
+      expect.objectContaining({ title: "Updated 3 of 1,200 saves" }),
     );
   });
 

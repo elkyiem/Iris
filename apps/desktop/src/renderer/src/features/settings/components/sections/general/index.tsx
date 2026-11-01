@@ -69,7 +69,7 @@ export function CheckNowRow() {
           disabled={busy}
           loading={busy}
         >
-          {busy ? "Checking" : "Check Now"}
+          Check Now
         </Button>
       </Settings.ItemControl>
     </>

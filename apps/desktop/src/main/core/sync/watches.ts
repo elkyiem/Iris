@@ -63,7 +63,11 @@ export async function createWatch(args: {
   if (args.kind) watch.kind = args.kind;
 
   await writeWatches((watches) => ({ ...watches, [watch.id]: watch }));
-  log.info(`[pond watches] created ${watch.source} watch`, watch.id, handle);
+  log.info(
+    `[pond watches] created ${watch.source} watch`,
+    watch.id,
+    watch.kind === "feed" ? "feed" : handle,
+  );
   return watch;
 }
 

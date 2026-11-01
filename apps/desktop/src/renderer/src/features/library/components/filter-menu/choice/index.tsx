@@ -5,6 +5,7 @@ import type { FieldId, Predicate } from "@pond/schema/filters/types";
 import { Menu } from "@pond/ui";
 import { useState } from "react";
 import { fieldIcon } from "@/features/search/query";
+import { formatPlural } from "@/shared/lib/format";
 import { choiceIsSearchable } from "../layout";
 import type { FilterOption } from "../options";
 import { isChoiceSelected } from "../selection";
@@ -178,7 +179,7 @@ export function ChoiceFilter({
                 <FieldIcon />
               </Menu.ItemIcon>
               <Menu.ItemLabel>
-                {`${unused.length} ${unused.length === 1 ? one : many} with no matching Saves`}
+                {`${formatPlural(unused.length, { one, other: many })} with no matching Saves`}
               </Menu.ItemLabel>
             </Menu.Item>
           </>

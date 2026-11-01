@@ -106,17 +106,6 @@ export const generalSection = defineCustomSection({
           render: () => <SystemPreferences />,
         },
         {
-          control: "select",
-          key: "displayColorSpace",
-          title: "Display Color Space",
-          description: "Color space for the viewer.",
-          options: [
-            { value: "auto", label: "Automatic" },
-            { value: "srgb", label: "sRGB" },
-            { value: "display-p3", label: "Display P3" },
-          ],
-        },
-        {
           control: "switch",
           key: "hardwareAcceleration",
           title: "Hardware Acceleration",
@@ -327,8 +316,8 @@ export const generalSection = defineCustomSection({
           key: "autoInstall",
           title: "Automatic Updates",
           description: BROWSER
-            ? "Download host updates in the background and apply when the host next launches."
-            : "Download in the background. Apply on next launch.",
+            ? "Download host updates in the background and install them when the host quits."
+            : "Download updates in the background and install them when Pond quits.",
           apply: () => runApply("updates.applyPrefs"),
         },
         {

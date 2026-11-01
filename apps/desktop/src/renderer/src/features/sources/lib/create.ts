@@ -1,5 +1,5 @@
 import { SOURCES, type Source } from "@pond/schema/db";
-import { WATCHABLE } from "@/features/sources/hooks/use-watches";
+import { isWatchableSource } from "@pond/schema/watches";
 import { connectFlow } from "@/features/sources/state/connect-flow";
 import { sourceFlow } from "@/features/sources/state/source-flow";
 import { watchFlow } from "@/features/sources/state/watch-flow";
@@ -8,9 +8,8 @@ export const CONNECTABLE: readonly Source[] = SOURCES.filter(
   (source) => source !== "local" && source !== "web",
 );
 
-export const WATCH_MENU_SOURCES: readonly Source[] = CONNECTABLE.filter(
-  (source) => WATCHABLE.includes(source),
-);
+export const WATCH_MENU_SOURCES: readonly Source[] =
+  SOURCES.filter(isWatchableSource);
 
 export async function startConnect(
   source: Source,

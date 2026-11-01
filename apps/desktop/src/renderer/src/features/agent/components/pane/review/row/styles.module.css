@@ -4,7 +4,6 @@
   align-items: center;
   padding: 0 6px;
   border-radius: var(--ds-radius-md);
-  transition: background var(--ds-duration-fast) var(--ds-easing-standard);
 
   &:has(button.main):hover {
     background: var(--ds-gray-a2);
@@ -20,27 +19,14 @@
   flex: 1;
   gap: 10px;
   align-items: center;
+  justify-content: flex-start;
   min-width: 0;
   padding: 6px 0;
-  font: inherit;
-  color: inherit;
   text-align: left;
-  outline: none;
-  background: transparent;
-  border: 0;
   transition: opacity var(--ds-duration-medium) var(--ds-easing-standard);
-
-  &:is(button) {
-    cursor: pointer;
-  }
 
   .row[data-dimmed] & {
     opacity: 0.6;
-  }
-
-  &:focus-visible {
-    outline: var(--ds-focus-width) solid var(--ds-focus-outline);
-    border-radius: var(--ds-radius-sm);
   }
 }
 

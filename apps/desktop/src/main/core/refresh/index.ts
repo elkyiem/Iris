@@ -89,11 +89,10 @@ export async function refreshSave(
       .where(and(eq(tasks.saveId, saveId), eq(tasks.op, "harvest_metadata")))
       .run();
 
-    // The new metadata can point at different media; fetch_blobs only
-    // downloads what is not on disk yet, and ensure_poster only builds
-    // posters that are missing. Tasks that are not done also rerun: a
-    // blocked refresh restores the save, which sweeps its waiting tasks
-    // to dead, and the save only completes once every task is done.
+    /**
+     * New metadata can point at new media; fetch_blobs and ensure_poster only fill in what is missing.
+     * @remarks Unfinished tasks rerun because a blocked refresh sweeps them to dead and the save waits on every task.
+     */
     db.update(tasks)
       .set({
         status: "pending",
@@ -115,9 +114,7 @@ export async function refreshSave(
       )
       .run();
 
-    // Saves read back from the library folder have no task rows, since
-    // tasks live only in the local index. Add whatever the source's plan
-    // is missing.
+    /** Tasks live only in the local index, so Saves read back from the library folder have no task rows. */
     const existingOps = new Set(
       db
         .select({ op: tasks.op })

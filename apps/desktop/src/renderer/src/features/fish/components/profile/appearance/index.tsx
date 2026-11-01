@@ -12,14 +12,21 @@ import { FishMark, fishColorCss, fishMood, SPECIES_LABELS } from "../../mark";
 import styles from "./styles.module.css";
 
 const COLOR_LABELS = {
+  red: "Red",
   orange: "Orange",
   gold: "Gold",
-  red: "Red",
-  pink: "Pink",
-  purple: "Purple",
-  blue: "Blue",
-  teal: "Teal",
+  yellow: "Yellow",
+  lime: "Lime",
   green: "Green",
+  jade: "Jade",
+  teal: "Teal",
+  cyan: "Cyan",
+  blue: "Blue",
+  indigo: "Indigo",
+  violet: "Violet",
+  purple: "Purple",
+  magenta: "Magenta",
+  pink: "Pink",
 } satisfies Record<FishColor, string>;
 
 export function FishAppearance({ fish }: { fish: FishSummary }) {
@@ -77,7 +84,7 @@ export function FishAppearance({ fish }: { fish: FishSummary }) {
                         <FishMark
                           color={fish.color}
                           species={species}
-                          size={40}
+                          size={28}
                         />
                       </Button>
                     </Tooltip>
@@ -88,6 +95,7 @@ export function FishAppearance({ fish }: { fish: FishSummary }) {
                     <Tooltip key={color} label={COLOR_LABELS[color]}>
                       <Button
                         type="button"
+                        icon
                         size="xl"
                         width="full"
                         variant="ghost"

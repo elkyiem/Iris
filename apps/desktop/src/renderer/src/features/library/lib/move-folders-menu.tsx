@@ -5,6 +5,7 @@ import { folders } from "@/features/library/state/folders";
 import { notifyUndoableFolderChange } from "@/features/saves";
 import { errorCopy } from "@/shared/lib/error-copy";
 import { buildFolderTreeMenu } from "@/shared/lib/folder-tree-menu";
+import { formatPlural } from "@/shared/lib/format";
 import { notify } from "@/shared/lib/toast";
 
 function blockedIds(all: readonly Folder[], ids: readonly string[]) {
@@ -54,7 +55,7 @@ export function buildMoveFolderItems(ids: readonly string[]): MenuItemSpec[] {
   const subject =
     moving.length === 1 && moving[0]
       ? `"${moving[0].name}"`
-      : `${ids.length} folders`;
+      : formatPlural(ids.length, { one: "folder", other: "folders" });
   const alreadyIn = (parentId: string | null) =>
     moving.every((folder) => (folder.parentId ?? null) === parentId);
 

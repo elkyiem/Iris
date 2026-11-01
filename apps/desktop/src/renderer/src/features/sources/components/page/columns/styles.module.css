@@ -47,7 +47,7 @@
   display: block;
 }
 
-.status-label,
+.label,
 .meta {
   overflow: hidden;
   text-overflow: ellipsis;

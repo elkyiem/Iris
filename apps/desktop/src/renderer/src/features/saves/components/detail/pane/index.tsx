@@ -303,6 +303,7 @@ export function SaveInspector({
                 multiline
                 disabled
                 variant="borderless"
+                padding="compact"
                 mixedPlaceholder="Multiple descriptions"
                 commit={async () => {}}
               />
@@ -506,10 +507,12 @@ export function SaveInspector({
       {single ? (
         <>
           <Tabs.Panel value="details" className={styles.panel}>
-            <Pane.Body className={styles.scroll}>{details}</Pane.Body>
+            <Pane.Body className={styles.scroll} data-scroll-fade="vertical">
+              {details}
+            </Pane.Body>
           </Tabs.Panel>
           <Tabs.Panel value="related" className={styles.panel}>
-            <Pane.Body className={styles.scroll}>
+            <Pane.Body className={styles.scroll} data-scroll-fade="vertical">
               {indexed ? (
                 <RelatedSaves saveId={single.id} />
               ) : (
@@ -526,7 +529,9 @@ export function SaveInspector({
           </Tabs.Panel>
         </>
       ) : (
-        <Pane.Body className={styles.scroll}>{details}</Pane.Body>
+        <Pane.Body className={styles.scroll} data-scroll-fade="vertical">
+          {details}
+        </Pane.Body>
       )}
     </Tabs.Root>
   );

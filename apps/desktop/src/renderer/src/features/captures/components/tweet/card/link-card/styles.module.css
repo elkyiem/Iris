@@ -53,9 +53,9 @@
   text-overflow: ellipsis;
   font-size: var(--ds-text-md);
   line-height: 16px;
-  color: #fff;
+  color: white;
   white-space: nowrap;
-  background: rgba(0, 0, 0, 0.77);
+  background: var(--ds-black-a11);
   border-radius: var(--ds-radius-xs);
 }
 

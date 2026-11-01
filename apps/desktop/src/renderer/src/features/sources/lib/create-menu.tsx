@@ -1,5 +1,6 @@
 import { IconEye, IconFolderOpen, IconUserPlus } from "@pond/icons";
 import type { Source } from "@pond/schema/db";
+import { watchSourceLabel } from "@pond/schema/watches";
 import type { MenuItemSpec } from "@pond/ui";
 import type { ReactNode } from "react";
 import { BrandTile } from "@/features/sources/components/sync-monitor-source-tile";
@@ -29,12 +30,12 @@ export function watchableSourceItems(
   onPick: (source: Source) => void,
 ): MenuItemSpec[] {
   return WATCH_MENU_SOURCES.map((source) => {
-    const label = getSourceDef(source).label;
+    const label = watchSourceLabel(source);
     return {
       id: `watch-${source}`,
       label,
       icon: sourceMenuIcon(source),
-      keywords: `new watch account ${label}`,
+      keywords: `new watch feed account ${label}`,
       onClick: () => onPick(source),
     };
   });

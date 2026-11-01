@@ -14,26 +14,26 @@ import { saveFolderPresentation } from "@/features/library/state/folder-presenta
 import { folders, useFolders } from "@/features/library/state/folders";
 import { Card, useDisplayPrefs, useItemInfo } from "@/features/saves";
 import { ensureSaves, useSave } from "@/features/saves/pool";
+import { ButtonLink } from "@/shared/components/button-link";
 import {
   SpecContextMenu,
   SpecMenu,
 } from "@/shared/components/spec-context-menu";
 import { useResolvedTheme } from "@/shared/hooks/use-resolved-theme";
-import { getAppRouter } from "@/shared/lib/app-router";
 import {
   FOLDER_MENU_ICONS,
   FOLDER_SWATCHES,
   FolderIcon,
   type FolderIconId,
 } from "@/shared/lib/folder-icons";
+import { formatNumber, formatPlural } from "@/shared/lib/format";
 import { usePrefs } from "@/shared/state/prefs";
 import { useOrganizationTree } from "../../hooks/use-organization-tree";
 import { openOrganizationRenameDialog } from "../../state/organization-rename-dialog";
 import styles from "./styles.module.css";
 
-function countLabel(count: number, singular: string, plural: string): string {
-  return `${count.toLocaleString()} ${count === 1 ? singular : plural}`;
-}
+const ITEMS = { one: "item", other: "items" };
+const SAVES = { one: "save", other: "saves" };
 
 function FolderCard({
   folder,
@@ -96,16 +96,17 @@ function FolderCard({
   const metadata = !summary
     ? ""
     : empty
-      ? countLabel(0, "item", "items")
+      ? formatPlural(0, ITEMS)
       : [
-          directSaveCount > 0
-            ? countLabel(directSaveCount, "item", "items")
-            : null,
+          directSaveCount > 0 ? formatPlural(directSaveCount, ITEMS) : null,
           downloadingCount > 0
-            ? `${downloadingCount.toLocaleString()} downloading`
+            ? `${formatNumber(downloadingCount)} downloading`
             : null,
           childFolderCount > 0
-            ? countLabel(childFolderCount, "subfolder", "subfolders")
+            ? formatPlural(childFolderCount, {
+                one: "subfolder",
+                other: "subfolders",
+              })
             : null,
         ]
           .filter(Boolean)
@@ -384,14 +385,10 @@ export function FolderBrowser({
             </h2>
             {downloading > 0 ? (
               <span className={styles.downloading} role="status">
-                Downloading {countLabel(downloading, "save", "saves")}
-                <Button
-                  size="xs"
-                  variant="text"
-                  onClick={() => getAppRouter()?.history.push("/downloads")}
-                >
+                {`Downloading ${formatPlural(downloading, SAVES)}`}
+                <ButtonLink to="/downloads" size="xs" variant="text">
                   Open Downloads
-                </Button>
+                </ButtonLink>
               </span>
             ) : null}
           </div>

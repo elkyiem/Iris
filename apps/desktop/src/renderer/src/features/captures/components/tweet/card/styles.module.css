@@ -36,6 +36,7 @@
 }
 
 .card {
+  /* X's own palette, kept verbatim so a capture matches the post in either scheme. */
   --tw-bg: #fff;
   --tw-text: #0f1419;
   --tw-secondary: #536471;
@@ -44,6 +45,9 @@
   --tw-verified: #1d9bf0;
   --tw-placeholder: #e1e8ed;
   --tw-thread: #cfd9de;
+  --tw-scrim: rgb(15 20 25 / 0.6);
+  --tw-scrim-strong: rgb(15 20 25 / 0.77);
+  --tw-ring: rgb(255 255 255 / 0.9);
 
   box-sizing: border-box;
   display: flex;

@@ -1,3 +1,4 @@
+import { Button } from "@pond/ui";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { useEffect, useRef, useState } from "react";
 import styles from "./styles.module.css";
@@ -65,9 +66,9 @@ export function PdfThumbnail({
   }, [document, pageNumber, rotation, visible]);
 
   return (
-    <button
+    <Button
       ref={buttonRef}
-      type="button"
+      variant="bare"
       className={styles.thumbnail}
       data-active={active || undefined}
       aria-label={`Go to page ${pageNumber}`}
@@ -76,6 +77,6 @@ export function PdfThumbnail({
     >
       {visible ? <canvas ref={canvasRef} /> : <span aria-hidden />}
       <strong>{pageNumber}</strong>
-    </button>
+    </Button>
   );
 }

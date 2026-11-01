@@ -1,3 +1,4 @@
+import { Button, type ButtonProps } from "@pond/ui";
 import { clsx as cn } from "clsx";
 import React, { memo, type ReactNode } from "react";
 import type { SaveCardOverlayModel } from "@/features/saves/components/card/model";
@@ -36,12 +37,12 @@ function Root({
 
 function Select({
   className,
-  type,
   ...props
-}: React.ComponentPropsWithoutRef<"button">) {
+}: Omit<ButtonProps, "variant" | "width">) {
   return (
-    <button
-      type={type ?? "button"}
+    <Button
+      variant="bare"
+      width="full"
       className={cn(styles.select, className)}
       {...props}
     />

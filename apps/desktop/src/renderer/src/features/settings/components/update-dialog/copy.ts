@@ -6,7 +6,6 @@ export function updateDialogCopy(notice: UpdateNotice) {
       title: "Update Ready",
       description: `Restart to install Pond ${notice.version} now. Otherwise, it installs when you quit.`,
       action: "Restart",
-      busyLabel: "Restarting",
     };
   }
   if (notice.downloading) return null;
@@ -14,6 +13,5 @@ export function updateDialogCopy(notice: UpdateNotice) {
     title: "Update Available",
     description: `Pond ${notice.version} is ready to download.`,
     action: "Download",
-    busyLabel: "Downloading",
   };
 }

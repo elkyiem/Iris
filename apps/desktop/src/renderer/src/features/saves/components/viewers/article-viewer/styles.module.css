@@ -49,7 +49,6 @@
   font-size: var(--article-title);
   font-weight: var(--ds-weight-xl);
   line-height: 1.2;
-  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 

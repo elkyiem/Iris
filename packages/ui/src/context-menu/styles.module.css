@@ -26,16 +26,16 @@
   composes: item from "../shared/styles/popup/styles.module.css";
 }
 
-.item-icon {
-  composes: item-icon from "../shared/styles/popup/styles.module.css";
+.icon {
+  composes: icon from "../shared/styles/popup/styles.module.css";
 }
 
-.item-label {
-  composes: item-label from "../shared/styles/popup/styles.module.css";
+.label {
+  composes: label from "../shared/styles/popup/styles.module.css";
 }
 
-.item-keyboard {
-  composes: item-keyboard from "../shared/styles/popup/styles.module.css";
+.keyboard {
+  composes: keyboard from "../shared/styles/popup/styles.module.css";
 }
 
 .indicator {
@@ -57,8 +57,8 @@
   }
 }
 
-.group-label {
-  composes: group-label from "../shared/styles/popup/styles.module.css";
+.heading {
+  composes: heading from "../shared/styles/popup/styles.module.css";
 }
 
 .separator {

@@ -1,9 +1,9 @@
 import { IconCanvasFill } from "@pond/icons";
-import { Button, Empty } from "@pond/ui";
+import { Empty } from "@pond/ui";
 import type { Canvas } from "@shared/canvas-contracts";
 import { ReactFlowProvider } from "@xyflow/react";
 import { useEffect, useState } from "react";
-import { getAppRouter } from "@/shared/lib/app-router";
+import { ButtonLink } from "@/shared/components/button-link";
 import { canvases } from "../../state/canvases";
 import { Board } from "../board";
 import styles from "./styles.module.css";
@@ -67,13 +67,9 @@ export function CanvasPage({
               : "The canvas file is damaged or unreadable. Pick another canvas from the sidebar."}
           </Empty.Description>
           <Empty.Action>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => getAppRouter()?.history.push("/")}
-            >
+            <ButtonLink to="/" size="sm" variant="secondary">
               Go to Library
-            </Button>
+            </ButtonLink>
           </Empty.Action>
         </Empty.Root>
       ) : (

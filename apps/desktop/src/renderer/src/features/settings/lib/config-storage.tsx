@@ -5,7 +5,8 @@ import {
   type SettingsValues,
 } from "@/features/settings/lib/engine-types";
 
-const guardsOn = (v: SettingsValues) => v.guardsEnabled === true;
+const guardsOff = (v: SettingsValues) => v.guardsEnabled !== true;
+const limitOff = (v: SettingsValues) => guardsOff(v) || v.maxLibraryGb === null;
 
 export const storageSection = defineSection("storage", {
   title: "Storage",
@@ -31,7 +32,7 @@ export const storageSection = defineSection("storage", {
           key: "maxLibraryGb",
           title: "Size Limit",
           description: "Act when the library exceeds this.",
-          visible: guardsOn,
+          disabled: guardsOff,
           options: [
             { value: 10, label: "10\u00A0GB" },
             { value: 25, label: "25\u00A0GB" },
@@ -47,7 +48,7 @@ export const storageSection = defineSection("storage", {
           key: "warnAtPercent",
           title: "Warn At",
           description: "Show a banner at this share of the limit.",
-          visible: (v) => guardsOn(v) && v.maxLibraryGb !== null,
+          disabled: limitOff,
           options: [
             { value: 70, label: "70%" },
             { value: 80, label: "80%" },
@@ -60,7 +61,7 @@ export const storageSection = defineSection("storage", {
           key: "action",
           title: "When the Limit Is Reached",
           description: "What Pond does at the cap.",
-          visible: (v) => guardsOn(v) && v.maxLibraryGb !== null,
+          disabled: limitOff,
           options: [
             { value: "warn", label: "Warn" },
             { value: "pauseSync", label: "Pause Fetching" },

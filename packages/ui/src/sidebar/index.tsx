@@ -59,14 +59,34 @@ function Item({ className, size = "md", onClick, ...props }: ItemProps) {
 
 interface ItemLabelProps extends React.ComponentPropsWithoutRef<"span"> {}
 
-function ItemLabel({ className, ...props }: ItemLabelProps) {
-  return <span className={cn(styles["item-label"], className)} {...props} />;
+function ItemLabel({
+  className,
+  title,
+  onPointerEnter,
+  ...props
+}: ItemLabelProps) {
+  return (
+    <span
+      className={cn(styles.text, className)}
+      title={title}
+      onPointerEnter={(event) => {
+        if (title === undefined) {
+          const label = event.currentTarget;
+          if (label.scrollWidth > label.clientWidth)
+            label.title = label.textContent ?? "";
+          else label.removeAttribute("title");
+        }
+        onPointerEnter?.(event);
+      }}
+      {...props}
+    />
+  );
 }
 
 interface ItemDetailProps extends React.ComponentPropsWithoutRef<"span"> {}
 
 function ItemDetail({ className, ...props }: ItemDetailProps) {
-  return <span className={cn(styles["item-detail"], className)} {...props} />;
+  return <span className={cn(styles.detail, className)} {...props} />;
 }
 
 interface ResultButtonProps extends Button.Props {}
@@ -110,7 +130,7 @@ function GroupLabel({ className, ...props }: GroupLabelProps) {
 interface GroupHeaderProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 function GroupHeader({ className, ...props }: GroupHeaderProps) {
-  return <div className={cn(styles["group-header"], className)} {...props} />;
+  return <div className={cn(styles.heading, className)} {...props} />;
 }
 
 interface GroupContentProps extends React.ComponentPropsWithoutRef<"div"> {}
@@ -128,7 +148,13 @@ function Footer({ className, ...props }: FooterProps) {
 interface ScrollProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 function Scroll({ className, ...props }: ScrollProps) {
-  return <div className={cn(styles.scroll, className)} {...props} />;
+  return (
+    <div
+      className={cn(styles.scroll, className)}
+      data-scroll-fade="vertical"
+      {...props}
+    />
+  );
 }
 
 interface SearchProps extends ComponentProps<typeof Input.Field> {}

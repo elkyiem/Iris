@@ -22,6 +22,7 @@ export function FramelessWindowChrome({
         icon
         size="sm"
         variant="ghost"
+        rounding="full"
         aria-label={closeLabel}
         onClick={onClose}
       >

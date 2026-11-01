@@ -3,6 +3,7 @@ import {
   harvestShouldAdoptSave,
   harvestShouldIgnoreSave,
   harvestShouldReseedFailedSave,
+  harvestShouldRestoreSave,
 } from "./harvest-policy";
 
 describe("harvestShouldAdoptSave", () => {
@@ -47,6 +48,23 @@ describe("harvestShouldIgnoreSave", () => {
     expect(harvestShouldIgnoreSave({ status: "failed", deletedAt: null })).toBe(
       false,
     );
+  });
+});
+
+describe("harvestShouldRestoreSave", () => {
+  it("restores a trashed save only for an interactive save", () => {
+    const trashed = { status: "complete", deletedAt: new Date(1) } as const;
+    expect(harvestShouldRestoreSave(trashed, true)).toBe(true);
+    expect(harvestShouldRestoreSave(trashed, false)).toBe(false);
+    expect(
+      harvestShouldRestoreSave({ status: "complete", deletedAt: null }, true),
+    ).toBe(false);
+    expect(
+      harvestShouldRestoreSave(
+        { status: "skipped", deletedAt: new Date(1) },
+        true,
+      ),
+    ).toBe(false);
   });
 });
 

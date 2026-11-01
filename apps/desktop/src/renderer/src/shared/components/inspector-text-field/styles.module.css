@@ -6,20 +6,16 @@
 .field {
   width: 100%;
 }
-.field :global(textarea) {
-  field-sizing: content;
-  resize: none;
-}
 .error {
   font-size: var(--ds-text-xs);
   color: var(--ds-red-11);
 }
-.root[data-clamped] :global(textarea):not(:focus) {
+.root[data-clamped] .area:not(:focus) {
   max-height: calc(var(--clamp-lines) * 1lh + 16px);
   overflow: hidden;
 }
-.root[data-overflowing] :global(textarea):not(:focus) {
-  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+.root[data-overflowing] .area:not(:focus) {
+  mask-image: linear-gradient(to bottom, black 55%, transparent);
 }
 .more {
   align-self: flex-start;

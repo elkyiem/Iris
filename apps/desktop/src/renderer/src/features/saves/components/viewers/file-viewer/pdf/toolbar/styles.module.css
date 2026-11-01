@@ -5,7 +5,7 @@
   min-width: 0;
 }
 
-.search-count {
+.count {
   padding-inline: 6px;
   font-size: var(--ds-text-xs);
   color: var(--ds-gray-9);

@@ -52,8 +52,9 @@ it("draws one tick per turn and jumps to the turn you pick", () => {
     "Tag them",
   ]);
 
-  const viewport =
-    host.querySelector<HTMLElement>("[data-thread-mark]")?.parentElement;
+  const viewport = host
+    .querySelector<HTMLElement>("[data-thread-mark]")
+    ?.closest<HTMLElement>('[data-scroll-fade="vertical"]');
   if (!viewport) throw new Error("No viewport");
   const scrollTo = vi.fn();
   viewport.scrollTo = scrollTo;

@@ -5,7 +5,13 @@ import { Button, type ButtonProps } from "../button";
 import styles from "./styles.module.css";
 
 function List({ className, ...props }: React.ComponentProps<"div">) {
-  return <div className={cn(styles.list, className)} {...props} />;
+  return (
+    <div
+      className={cn(styles.list, className)}
+      data-scroll-fade="horizontal"
+      {...props}
+    />
+  );
 }
 
 function Item({ className, ...props }: React.ComponentProps<"div">) {

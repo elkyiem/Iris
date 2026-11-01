@@ -1,9 +1,7 @@
 import type { WatchKind } from "@pond/schema/db";
-import log from "electron-log/main.js";
-import { sourceIdFromUrl } from "../pipeline/url";
-import type { WatchEntry, WatchHarvestResult } from "./types";
+import { readFeed } from "./feed";
+import type { FetchWatchPage, WatchHarvestResult } from "./types";
 
-const REQUEST_TIMEOUT_MS = 15_000;
 const USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 " +
   "(KHTML, like Gecko) Version/17.0 Safari/605.1.15 PondBot/0.1";
@@ -17,46 +15,26 @@ function feedUrl(handle: string, kind?: WatchKind): string | null {
   return `https://www.pinterest.com/${encodeURIComponent(handle)}/feed.rss`;
 }
 
-function entriesFromRss(xml: string): WatchEntry[] {
-  const entries: WatchEntry[] = [];
-  const seen = new Set<string>();
-  for (const item of xml.match(/<item>[\s\S]*?<\/item>/g) ?? []) {
-    const link =
-      /<link>\s*([^<\s]+)\s*<\/link>/.exec(item)?.[1] ??
-      /<guid[^>]*>\s*([^<\s]+)\s*<\/guid>/.exec(item)?.[1];
-    if (!link || !/\/pin\/\d+\/?(?:[?#]|$)/.test(link)) continue;
-    const sourceId = sourceIdFromUrl("pinterest", link);
-    if (!sourceId || seen.has(sourceId)) continue;
-    seen.add(sourceId);
-    entries.push({ url: link, sourceId });
-  }
-  return entries;
-}
-
 export async function listPinterestWatch(
   handle: string,
   kind?: WatchKind,
+  signal?: AbortSignal,
+  fetchPage: FetchWatchPage = fetch,
 ): Promise<WatchHarvestResult> {
   const url = feedUrl(handle, kind);
   if (!url) return { ok: false, reason: "unknown" };
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      credentials: "omit",
-      headers: {
-        accept: "application/rss+xml, text/xml",
-        "user-agent": USER_AGENT,
-      },
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    });
-  } catch (err) {
-    log.warn("[pond watch:pinterest] fetch failed", url, err);
-    return { ok: false, reason: "unavailable" };
-  }
-  if (res.status === 404) return { ok: false, reason: "not_found" };
-  if (res.status === 429) return { ok: false, reason: "rate_limited" };
-  if (!res.ok) return { ok: false, reason: "unavailable" };
-  const body = await res.text();
-  if (!/<rss[\s>]/i.test(body)) return { ok: false, reason: "not_found" };
-  return { ok: true, entries: entriesFromRss(body) };
+  const feed = await readFeed(
+    url,
+    (address, init) => {
+      const headers = new Headers(init.headers);
+      headers.set("user-agent", USER_AGENT);
+      return fetchPage(address, { ...init, headers });
+    },
+    signal,
+  );
+  if (!feed.ok) return feed;
+  return {
+    ok: true,
+    entries: feed.entries.filter((entry) => entry.source === "pinterest"),
+  };
 }

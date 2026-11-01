@@ -48,6 +48,7 @@ const timer = setTimeout(
         process.argv.includes("--replay") ||
         process.argv.includes("--interactions") ||
         process.argv.includes("--workflow") ||
+        process.argv.includes("--upgrade-220") ||
         process.argv.includes("--eagle") ||
         process.argv.includes("--pwa-shell") ||
         process.argv.includes("--pwa-shell-restore") ||
@@ -141,15 +142,35 @@ app
         `condition: ${expression}`,
         25000,
       );
-    const startupPrompt = `Array.from(document.querySelectorAll('[role="dialog"]')).some(dialog => {
+    const startupToast = `Array.from(document.querySelectorAll('[data-slot="toasts"] button')).find(button => button.textContent?.trim() === 'Not Now')`;
+    const startupPrompt = `Boolean(${startupToast}) || Array.from(document.querySelectorAll('[role="dialog"]')).some(dialog => {
       const title = dialog.querySelector('h2, [role="heading"]')?.textContent?.trim() ?? '';
       return /^(Meet Your Fish|What's New)/.test(title) || Array.from(dialog.querySelectorAll('button')).some(button => button.textContent?.trim() === 'Not Now');
     })`;
     const dismissStartupPrompt = async () => {
       if (!(await run(startupPrompt))) return;
       await snapshot("startup-prompt");
-      win.webContents.sendInputEvent({ type: "keyDown", keyCode: "Escape" });
-      win.webContents.sendInputEvent({ type: "keyUp", keyCode: "Escape" });
+      if (await run(`Boolean(${startupToast})`)) {
+        const point = await run(
+          `(() => { const button=${startupToast}; const rect=button.getBoundingClientRect(); const x=Math.round(rect.x+rect.width/2), y=Math.round(rect.y+rect.height/2); if(!button.contains(document.elementFromPoint(x,y))) throw new Error('Startup ask is covered'); return {x,y}; })()`,
+        );
+        win.webContents.sendInputEvent({ type: "mouseMove", ...point });
+        win.webContents.sendInputEvent({
+          type: "mouseDown",
+          button: "left",
+          clickCount: 1,
+          ...point,
+        });
+        win.webContents.sendInputEvent({
+          type: "mouseUp",
+          button: "left",
+          clickCount: 1,
+          ...point,
+        });
+      } else {
+        win.webContents.sendInputEvent({ type: "keyDown", keyCode: "Escape" });
+        win.webContents.sendInputEvent({ type: "keyUp", keyCode: "Escape" });
+      }
       await waitFor(`!(${startupPrompt})`);
     };
     const click = async (selector, clickCount = 1) => {
@@ -326,6 +347,7 @@ app
         process.argv.includes("--library-copy-storage-restore");
       const focusProbe = process.argv.includes("--focus-probe");
       const standalone =
+        process.argv.includes("--upgrade-220") ||
         process.argv.includes("--workflow") ||
         process.argv.includes("--release-audit") ||
         process.argv.includes("--identity") ||
@@ -748,6 +770,33 @@ app
           evidence,
           sandbox,
         });
+        clearTimeout(timer);
+        app.exit(0);
+        return;
+      }
+      if (process.argv.includes("--upgrade-220")) {
+        const context = {
+          win,
+          run,
+          click,
+          waitFor,
+          snapshot,
+          query,
+          origin,
+          evidence,
+          sandbox,
+        };
+        const {
+          verifyUpgradeSources,
+        } = require("./web-upgrade-sources-cases.cjs");
+        const { verifyUpgradeFish } = require("./web-upgrade-fish-cases.cjs");
+        const { verifyUpgradeChat } = require("./web-upgrade-chat-cases.cjs");
+        const selected = process.env.CIRCE_UPGRADE_CASE;
+        assert.ok(!selected || ["sources", "fish", "chat"].includes(selected));
+        if (!selected || selected === "sources")
+          await verifyUpgradeSources(context);
+        if (!selected || selected === "fish") await verifyUpgradeFish(context);
+        if (!selected || selected === "chat") await verifyUpgradeChat(context);
         clearTimeout(timer);
         app.exit(0);
         return;

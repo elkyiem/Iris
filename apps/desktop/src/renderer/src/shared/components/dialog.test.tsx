@@ -463,9 +463,20 @@ it("supports command defaults through the shared host", async () => {
   expect(onConfirm).toHaveBeenLastCalledWith("Value");
 });
 
-it("keeps the prompt confirm disabled until the field has a value", async () => {
+it("explains an empty prompt beside the field instead of confirming", async () => {
   const onConfirm = vi.fn();
   await act(async () => root.render(<Dialog.Host />));
-  await act(async () => Dialog.prompt({ title: "Enter value", onConfirm }));
-  expect(button("Confirm").disabled).toBe(true);
+  await act(async () =>
+    Dialog.prompt({
+      title: "Enter value",
+      emptyError: "Enter a page link to import.",
+      onConfirm,
+    }),
+  );
+  expect(button("Confirm").disabled).toBe(false);
+  await act(async () => button("Confirm").click());
+  expect(onConfirm).not.toHaveBeenCalled();
+  expect(document.body.textContent).toContain("Enter a page link to import.");
+  const field = document.activeElement;
+  expect(field?.getAttribute("aria-invalid")).toBe("true");
 });

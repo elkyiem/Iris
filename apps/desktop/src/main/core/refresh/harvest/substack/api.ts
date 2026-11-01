@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from "node:timers/promises";
 import type { ListKind } from "@pond/schema/db";
 import type { Capture } from "@pond/schema/raw";
 import { session } from "electron";
@@ -392,8 +393,4 @@ function reasonFor(status: number): "not_found" | "auth_required" | "error" {
   if (status === 404) return "not_found";
   if (status === 401 || status === 403) return "auth_required";
   return "error";
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

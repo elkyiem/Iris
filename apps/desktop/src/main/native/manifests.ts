@@ -219,8 +219,7 @@ async function writeWindowsNativeHostManifest(
   dependencies: NativeHostManifestDependencies,
 ): Promise<void> {
   const dir = join(dependencies.userDataDirectory(), "native-messaging");
-  // Chromium and Firefox reject each other's allow-list field, so each family
-  // registers its own manifest.
+  /** Chromium and Firefox reject each other's allow-list field, so each family gets its own manifest. */
   const targets = [
     {
       manifestPath: join(dir, HOST_FILENAME),

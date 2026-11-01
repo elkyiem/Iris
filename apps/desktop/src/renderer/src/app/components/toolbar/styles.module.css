@@ -95,37 +95,26 @@
   user-select: none;
 }
 
-.crumb,
+.crumb {
+  justify-content: flex-start;
+  min-width: 0;
+}
+
 .current {
   display: inline-flex;
   gap: 6px;
   align-items: center;
-  justify-content: flex-start;
   min-width: 0;
-  height: 28px;
+  height: var(--ds-size-sm);
   padding: 0 6px;
   font-size: var(--ds-text-md);
   font-weight: var(--ds-weight-lg);
   line-height: 20px;
-  color: var(--ds-gray-10);
-}
-
-.breadcrumbs .crumb {
-  gap: 6px;
-  height: 28px;
-  padding: 0 6px;
-  font-size: var(--ds-text-md);
-}
-
-.current {
   color: var(--ds-gray-12);
 }
 
-.crumb svg,
 .current svg {
   flex: none;
-  width: 16px;
-  height: 16px;
 }
 
 .label {

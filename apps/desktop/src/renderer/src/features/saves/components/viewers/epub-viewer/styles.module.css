@@ -1,11 +1,15 @@
 .root {
+  /* Reader paper and ink, warm in both themes like a printed page. */
+  --epub-paper: #f7f3e9;
+  --epub-ink: #6b6458;
+
   position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: #f7f3e9;
+  background: var(--epub-paper);
 }
 
 .reader {
@@ -19,8 +23,8 @@
   inset: 0;
   display: grid;
   place-items: center;
-  color: #6b6458;
-  background: #f7f3e9;
+  color: var(--epub-ink);
+  background: var(--epub-paper);
 }
 
 .size {

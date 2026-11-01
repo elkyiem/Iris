@@ -27,10 +27,7 @@ export function HeroAvatar({
 
   if (!pfp) {
     const tile = (
-      <span
-        className={styles["source-image"]}
-        data-large={size >= 96 || undefined}
-      >
+      <span className={styles.tile} data-large={size >= 96 || undefined}>
         <BrandTile source={source} size={size} />
       </span>
     );

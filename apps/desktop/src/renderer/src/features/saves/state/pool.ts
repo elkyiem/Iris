@@ -37,7 +37,7 @@ function canSkipFullSort(
     if (prev) {
       if (savedAtMs(prev) !== savedAtMs(save)) return false;
     } else if (savedAtMs(save) <= headMs) {
-      // New ties must follow existing Saves, as in single-upsert's stable sort.
+      /** New ties must follow existing Saves, as in single-upsert's stable sort. */
       return false;
     }
   }

@@ -1,5 +1,13 @@
 import { clsx as cn } from "clsx";
-import { forwardRef } from "react";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardTitle,
+  List,
+} from "./list";
 import styles from "./styles.module.css";
 
 interface PageProps extends React.ComponentPropsWithoutRef<"div"> {
@@ -103,15 +111,6 @@ function SectionDescription({ className, ...props }: SectionDescriptionProps) {
   );
 }
 
-interface ListProps extends React.ComponentPropsWithoutRef<"div"> {}
-
-const List = forwardRef<HTMLDivElement, ListProps>(function List(
-  { className, ...props },
-  ref,
-) {
-  return <div ref={ref} className={cn(styles.list, className)} {...props} />;
-});
-
 interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
   /** Dims the row; disable its control too, since the row can't do that for you. */
   disabled?: boolean;
@@ -150,45 +149,6 @@ interface ItemControlProps extends React.ComponentPropsWithoutRef<"div"> {}
 
 function ItemControl({ className, ...props }: ItemControlProps) {
   return <div className={cn(styles.control, className)} {...props} />;
-}
-
-interface CardProps extends React.ComponentPropsWithoutRef<"div"> {}
-
-const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-  { className, ...props },
-  ref,
-) {
-  return <div ref={ref} className={cn(styles.card, className)} {...props} />;
-});
-
-interface CardTitleProps extends React.ComponentPropsWithoutRef<"h3"> {}
-
-function CardTitle({ className, ...props }: CardTitleProps) {
-  return <h3 className={cn(styles["card-title"], className)} {...props} />;
-}
-
-interface CardDescriptionProps extends React.ComponentPropsWithoutRef<"p"> {}
-
-function CardDescription({ className, ...props }: CardDescriptionProps) {
-  return <p className={cn(styles["card-description"], className)} {...props} />;
-}
-
-interface CardActionProps extends React.ComponentPropsWithoutRef<"div"> {}
-
-function CardAction({ className, ...props }: CardActionProps) {
-  return <div className={cn(styles["card-action"], className)} {...props} />;
-}
-
-interface CardContentProps extends React.ComponentPropsWithoutRef<"div"> {}
-
-function CardContent({ className, ...props }: CardContentProps) {
-  return <div className={cn(styles["card-content"], className)} {...props} />;
-}
-
-interface CardFooterProps extends React.ComponentPropsWithoutRef<"div"> {}
-
-function CardFooter({ className, ...props }: CardFooterProps) {
-  return <div className={cn(styles["card-footer"], className)} {...props} />;
 }
 
 export const Settings = {

@@ -15,7 +15,6 @@ import {
   IconFolderOpen,
   IconGear3,
   IconNodes3,
-  IconSparkle,
   IconTrashXmark,
   IconTrophy,
   IconVersions,
@@ -37,11 +36,7 @@ import { openSources, pickWatchedFolder } from "@/features/sources";
 import { getAppRouter } from "@/shared/lib/app-router";
 import { openSettings } from "@/shared/lib/open-settings";
 import { fishIntroDialog } from "@/shared/state/fish-intro";
-import {
-  isCosignVotingOpen,
-  PROMPT_IDS,
-  promptDialog,
-} from "@/shared/state/prompts";
+import { isCosignVotingOpen, promptToast } from "@/shared/state/prompts";
 import { setupFlow } from "@/shared/state/setup";
 import { supportDialog } from "@/shared/state/support";
 import type { CommandSpec } from "./types";
@@ -238,38 +233,6 @@ export const COMMANDS: readonly CommandSpec[] = [
     shortcut: "app.settings",
     run: () => openSettings(),
   },
-  ...(import.meta.env.DEV
-    ? [
-        {
-          id: "gallery",
-          group: "App",
-          label: "Open Gallery",
-          detail: "Fish and Koi cards in every state",
-          icon: IconAlbum2,
-          keywords: "components cards styles dev playground fish animations",
-          run: () => navigateTo("/gallery"),
-        } satisfies CommandSpec,
-        {
-          id: "preview-prompt-support",
-          group: "App",
-          label: "Preview Prompt: support",
-          icon: IconSparkle,
-          keywords: "dev prompt dialog ask",
-          run: () => supportDialog.open(),
-        } satisfies CommandSpec,
-        ...PROMPT_IDS.map(
-          (id) =>
-            ({
-              id: `preview-prompt-${id}`,
-              group: "App",
-              label: `Preview Prompt: ${id}`,
-              icon: IconSparkle,
-              keywords: "dev prompt dialog ask",
-              run: () => promptDialog.open(id),
-            }) satisfies CommandSpec,
-        ),
-      ]
-    : []),
   {
     id: "run-setup",
     group: "App",
@@ -306,7 +269,7 @@ export const COMMANDS: readonly CommandSpec[] = [
           detail: "Raphael is up for People Design",
           icon: IconTrophy,
           keywords: "cosign award nomination vote raphael design",
-          run: () => promptDialog.open("cosign"),
+          run: () => promptToast.open("cosign"),
         } satisfies CommandSpec,
       ]
     : []),

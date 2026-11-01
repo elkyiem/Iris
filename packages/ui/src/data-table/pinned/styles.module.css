@@ -1,0 +1,62 @@
+@property --pin-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --pin-tint {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+.pinned[data-pinned] {
+  position: sticky;
+  left: calc(var(--data-table-gutter, 8px) + var(--data-table-inset, 0px));
+  z-index: 1;
+  background: linear-gradient(var(--pin-tint), var(--pin-tint)), var(--pin-bg);
+  transition:
+    --pin-bg var(--ds-duration-fast) var(--ds-easing-standard),
+    --pin-tint var(--ds-duration-fast) var(--ds-easing-standard);
+
+  &::before,
+  &::after {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    content: "";
+    opacity: 0;
+  }
+
+  /* Covers the gutter so scrolled columns never show left of the pinned one. */
+  &::before {
+    right: 100%;
+    width: calc(var(--data-table-gutter, 8px) + var(--data-table-inset, 0px));
+    background: inherit;
+  }
+
+  &::after {
+    left: 100%;
+    width: 24px;
+    background:
+      linear-gradient(to right, var(--pin-tint), transparent),
+      linear-gradient(to right, var(--pin-bg), transparent);
+    transition: opacity var(--ds-duration-fast) var(--ds-easing-standard);
+  }
+}
+
+[data-scrolled-x] .pinned[data-pinned] {
+  border-radius: 0;
+
+  &::before,
+  &::after {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pinned[data-pinned] {
+    transition: none;
+  }
+}

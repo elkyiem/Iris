@@ -116,8 +116,7 @@ const PNG_SIGNATURE = Buffer.from([
 ]);
 const ICO_ENTRY_BYTES = 16;
 
-// Sites sometimes serve broken bytes under an image content type, so decode
-// the pixels instead of trusting the header.
+/** Sites serve broken bytes under an image content type, so decode the pixels instead of trusting the header. */
 export async function isReadableImage(buf: Buffer): Promise<boolean> {
   if (buf.subarray(0, 4).equals(ICO_HEADER)) return isReadableIco(buf);
   try {
@@ -128,8 +127,7 @@ export async function isReadableImage(buf: Buffer): Promise<boolean> {
   }
 }
 
-// sharp has no ICO decoder. Check that every entry points at bytes inside
-// the file, and decode the entries that hold a PNG.
+/** sharp has no ICO decoder, so only entry bounds and embedded PNG entries can be checked. */
 async function isReadableIco(buf: Buffer): Promise<boolean> {
   if (buf.byteLength < 6) return false;
   const count = buf.readUInt16LE(4);

@@ -40,7 +40,7 @@ it("expands verified results and adds the actual Save to the composer without op
   expect(host.querySelectorAll("article")).toHaveLength(3);
   expect(host.textContent).not.toContain("unknown");
   const show = host.querySelector<HTMLButtonElement>(
-    'section[aria-label="Consulted Saves"] > button[aria-expanded="false"]',
+    'section[aria-label="Consulted Saves"] > div > button[aria-expanded="false"]',
   );
   await act(async () => show?.click());
   expect(host.querySelectorAll("article")).toHaveLength(6);

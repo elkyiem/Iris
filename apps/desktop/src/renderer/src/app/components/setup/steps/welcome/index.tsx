@@ -1,5 +1,6 @@
 import { IconAlbum2 } from "@pond/icons";
 import { Logo } from "@pond/ui";
+import { formatPlural } from "@/shared/lib/format";
 import type { StepProps } from "../../model";
 import styles from "./styles.module.css";
 
@@ -14,8 +15,7 @@ export function Owner({ profile, library }: StepProps) {
       <IconAlbum2 size={14} aria-hidden />
       <span className={styles.name}>{library.name}</span>
       <span className={styles.meta}>
-        {library.saves.toLocaleString()}{" "}
-        {library.saves === 1 ? "Save" : "Saves"}
+        {formatPlural(library.saves, { one: "Save", other: "Saves" })}
       </span>
     </p>
   );

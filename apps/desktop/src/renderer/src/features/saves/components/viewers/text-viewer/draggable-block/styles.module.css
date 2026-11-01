@@ -3,7 +3,6 @@
   top: 0;
   left: 0;
   display: none;
-  color: var(--ds-gray-8);
   cursor: grab;
   user-select: none;
   opacity: 0;
@@ -15,6 +14,17 @@
   }
 }
 
+.announcement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
 .drop {
   position: absolute;
   top: 0;
@@ -22,7 +32,7 @@
   height: 2px;
   pointer-events: none;
   background: var(--ds-accent-9);
-  border-radius: 1px;
+  border-radius: var(--ds-radius-full);
   opacity: 0;
   will-change: transform;
 }

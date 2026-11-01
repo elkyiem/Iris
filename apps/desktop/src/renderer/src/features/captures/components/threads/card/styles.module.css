@@ -1,4 +1,5 @@
 .card {
+  /* Threads' own palette, kept verbatim so a capture matches the post in either scheme. */
   --tw-bg: #fff;
   --tw-text: #000;
   --tw-secondary: #737373;

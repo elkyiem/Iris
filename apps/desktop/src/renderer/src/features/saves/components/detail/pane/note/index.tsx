@@ -25,6 +25,7 @@ export function SaveNote({
         value={value}
         multiline
         variant="secondary"
+        padding="compact"
         placeholder="Add a note"
         commit={commit}
       />

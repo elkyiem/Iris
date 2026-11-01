@@ -35,3 +35,19 @@ jobs:
           sudo chown root:root "$SANDBOX"
           sudo chmod 4755 "$SANDBOX"
           xvfb-run -a node apps/desktop/scripts/smoke-web-ci.mjs
+      - name: Preserve failed fixture screenshots
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: circe-browser-failure
+          if-no-files-found: ignore
+          include-hidden-files: true
+          path: |
+            .artifacts/web-verification/failed.png
+            .artifacts/web-verification/failed.txt
+            .artifacts/web-verification/library-identity-failed.png
+            .artifacts/web-verification/library-identity-failed.txt
+            .artifacts/web-verification/upgrade220-fish-failure.png
+            .artifacts/web-verification/upgrade220-fish-failure.txt
+            .artifacts/web-verification/upgrade220-sources-failure.png
+            .artifacts/web-verification/upgrade220-sources-failure.txt

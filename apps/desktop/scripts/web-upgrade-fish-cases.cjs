@@ -203,6 +203,9 @@ exports.verifyUpgradeFish = async function verifyUpgradeFish({
       `document.activeElement === document.querySelector(${JSON.stringify(nameSelector)})`,
     );
     win.webContents.selectAll();
+    await waitFor(
+      `(() => {const input=document.querySelector(${JSON.stringify(nameSelector)});return document.hasFocus() && document.activeElement===input && input.selectionStart===0 && input.selectionEnd===input.value.length;})()`,
+    );
     await win.webContents.insertText(name);
     key("Tab");
     await persisted({ name });

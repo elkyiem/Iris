@@ -47,6 +47,17 @@ handling, favicon updates, icon/emoji reset, name and combined identity edits,
 reload and supervised host-restart reconnection, then restore the fixture
 Library's original identity.
 
+The first pushed CI runs passed repository checks and builds but did not pass
+the whole browser matrix. One stopped while replacing the settings name; the
+other passed identity, release checks, Sources, Fish and chat rendering/scrolling
+before timing out at the startup toast. That case's wait used the same 20-second
+deadline as the real toast's delay. It now allows 35 seconds only at that
+explicit delayed-UI boundary; other browser waits and unit-test deadlines are
+unchanged. Identity text replacement now observes the completed native Select
+All command before sending IME text, retaining its exact-value assertion and
+adding failure diagnostics. CI retains selected fixture failure screenshots
+and text, excluding profiles and credentials.
+
 The cancelled desktop smoke was restarted. Its first attempt blocked inside
 macOS Keychain access, confirmed by a native process sample. The isolated
 `smoke:desktop` command now passes Electron's `--use-mock-keychain` flag, as

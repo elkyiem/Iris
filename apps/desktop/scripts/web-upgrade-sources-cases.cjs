@@ -92,6 +92,9 @@ exports.verifyUpgradeSources = async function verifyUpgradeSources({
       `document.activeElement === document.querySelector(${JSON.stringify(selector)})`,
     );
     win.webContents.selectAll();
+    await waitFor(
+      `(() => {const input=document.querySelector(${JSON.stringify(selector)});return document.hasFocus() && document.activeElement===input && input.selectionStart===0 && input.selectionEnd===input.value.length;})()`,
+    );
     await win.webContents.insertText(value);
     await waitFor(
       `document.querySelector(${JSON.stringify(selector)})?.value === ${JSON.stringify(value)}`,

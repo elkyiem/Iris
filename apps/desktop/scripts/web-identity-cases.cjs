@@ -67,10 +67,25 @@ exports.verifyBrowserIdentity = async function verifyBrowserIdentity({
     );
     // This standalone window has no application Edit menu accelerator.
     win.webContents.selectAll();
-    await win.webContents.insertText(value);
-    await waitFor(
-      `document.querySelector(${JSON.stringify(selector)})?.value === ${JSON.stringify(value)}`,
-    );
+    // Selection and IME insertion travel through separate renderer commands.
+    // Observe the selection before replacing text, especially after relaunch.
+    try {
+      await waitFor(
+        `(() => {const input=document.querySelector(${JSON.stringify(selector)});return document.hasFocus() && document.activeElement===input && input.selectionStart===0 && input.selectionEnd===input.value.length;})()`,
+      );
+      await win.webContents.insertText(value);
+      await waitFor(
+        `document.querySelector(${JSON.stringify(selector)})?.value === ${JSON.stringify(value)}`,
+      );
+    } catch (error) {
+      console.error(
+        "WEB_IDENTITY_INPUT_FAILED",
+        await run(
+          `(() => {const input=document.querySelector(${JSON.stringify(selector)});return {value:input?.value,disabled:input?.disabled,focused:document.activeElement===input,documentFocused:document.hasFocus(),selection:[input?.selectionStart,input?.selectionEnd]};})()`,
+        ),
+      );
+      throw error;
+    }
   };
   const clickText = async (selector, text) => {
     await waitFor(
@@ -380,11 +395,14 @@ exports.verifyBrowserIdentity = async function verifyBrowserIdentity({
     await win.loadURL(`${origin}/settings/library`);
     await waitFor("document.querySelector('[aria-label=\"Library Name\"]')");
     const settingsName = `${prefix} settings`;
+    console.log("WEB_IDENTITY_SETTINGS_STAGE", "ready");
     await replaceInput('[aria-label="Library Name"]', settingsName);
+    console.log("WEB_IDENTITY_SETTINGS_STAGE", "typed");
     const previous = await instance();
     const previousDocument = await run("performance.timeOrigin");
     key("Enter");
     await connect({ previous, previousDocument });
+    console.log("WEB_IDENTITY_SETTINGS_STAGE", "reconnected");
     const renamed = await verify({
       name: settingsName,
       mark: settingsOnly ? initial.mark : rocket,

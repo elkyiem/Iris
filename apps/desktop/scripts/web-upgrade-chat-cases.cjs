@@ -384,6 +384,7 @@ exports.verifyUpgradeChat = async function verifyUpgradeChat({
     await win.loadURL(`${origin}/?q=`);
     await waitFor(
       "[...document.querySelectorAll('[data-slot=toasts] button')].some(button=>button.textContent.trim()==='Not Now')",
+      35000,
     );
     await run(
       "[...document.querySelectorAll('[data-slot=toasts] button')].find(button=>button.textContent.trim()==='Not Now').setAttribute('data-upgrade-not-now','')",

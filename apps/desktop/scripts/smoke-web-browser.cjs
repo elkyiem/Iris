@@ -129,18 +129,18 @@ app
       chmodSync(textPath, 0o600);
       return text;
     };
-    const waitFor = (expression) =>
+    const waitFor = (expression, timeoutMs = 20000) =>
       boundedOperation(
         () =>
           run(`new Promise((resolve, reject) => {
     const started = Date.now(); const check = () => {
       if (${expression}) resolve(true);
-      else if (Date.now() - started > 20000) reject(new Error("Browser condition timed out: " + ${JSON.stringify(expression)}));
+      else if (Date.now() - started > ${timeoutMs}) reject(new Error("Browser condition timed out: " + ${JSON.stringify(expression)}));
       else setTimeout(check, 100);
     }; check();
   })`),
         `condition: ${expression}`,
-        25000,
+        timeoutMs + 5000,
       );
     const startupToast = `Array.from(document.querySelectorAll('[data-slot="toasts"] button')).find(button => button.textContent?.trim() === 'Not Now')`;
     const startupPrompt = `Boolean(${startupToast}) || Array.from(document.querySelectorAll('[role="dialog"]')).some(dialog => {

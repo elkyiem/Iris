@@ -123,6 +123,7 @@ export function BrowserConnections() {
               <Button
                 size="sm"
                 variant="ghost"
+                data-connection-id={device.id}
                 aria-label={
                   device.id === data.currentId
                     ? `Forget this browser (${label})`

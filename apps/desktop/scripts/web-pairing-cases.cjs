@@ -237,7 +237,7 @@ exports.verifyBrowserPairing = async function verifyBrowserPairing({
     const listing = await ownerList();
     const recipient = listing.devices.find((device) => device.id === childId);
     assert.ok(recipient);
-    const disconnect = `button[aria-label=${JSON.stringify(`Disconnect ${recipient.label}`)}]`;
+    const disconnect = `button[data-connection-id=${JSON.stringify(childId)}]`;
     await waitFor(
       `document.querySelectorAll(${JSON.stringify(disconnect)}).length===1`,
     );
@@ -249,9 +249,7 @@ exports.verifyBrowserPairing = async function verifyBrowserPairing({
       "[...document.querySelectorAll('[role=alertdialog] button,[role=dialog] button')].find(button=>button.textContent.trim()==='Disconnect').setAttribute('data-pairing-confirm','')",
     );
     await click("[data-pairing-confirm]");
-    await waitFor(
-      `!document.body.innerText.includes(${JSON.stringify(recipient.label)})`,
-    );
+    await waitFor(`!document.querySelector(${JSON.stringify(disconnect)})`);
     await child.loadURL(origin);
     await childWait("document.querySelector('#pairing-code')");
     await typeCode(unused);

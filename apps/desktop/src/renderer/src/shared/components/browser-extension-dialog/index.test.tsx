@@ -13,6 +13,9 @@ const SIGNED = {
   signature: "developer-id",
 };
 
+const pendingCleanups = new Set<() => Promise<void>>();
+let testGeneration = 0;
+
 /**
  * `IS_MAC` is read from `navigator.platform` when the platform module first loads, so the
  * platform has to be in place before the dialog is imported and the module graph reset
@@ -28,6 +31,7 @@ async function renderDialog(
   },
   runtime: "desktop" | "browser" = "desktop",
 ) {
+  const generation = testGeneration;
   document.documentElement.dataset.runtime = runtime;
   Object.defineProperty(globalThis.navigator, "platform", {
     value: platform,
@@ -51,9 +55,25 @@ async function renderDialog(
     },
   });
   const { BrowserExtensionDialog } = await import("./index");
+  if (generation !== testGeneration)
+    throw new Error("Extension dialog setup outlived its test.");
   const host = document.createElement("div");
   document.body.append(host);
   const root = createRoot(host);
+  let cleanupPromise: Promise<void> | null = null;
+  const cleanup = () => {
+    cleanupPromise ??= (async () => {
+      try {
+        await act(async () => root.unmount());
+      } finally {
+        host.remove();
+        pendingCleanups.delete(cleanup);
+      }
+    })();
+    return cleanupPromise;
+  };
+  // Register ownership before rendering: setup can fail before a test receives its view.
+  pendingCleanups.add(cleanup);
   await act(async () =>
     root.render(<BrowserExtensionDialog open onOpenChange={() => {}} />),
   );
@@ -71,17 +91,19 @@ async function renderDialog(
       if (!button) throw new Error(`No button labelled ${label}`);
       await act(async () => button.click());
     },
-    async cleanup() {
-      await act(async () => root.unmount());
-      host.remove();
-      vi.unstubAllGlobals();
-    },
+    cleanup,
   };
 }
 
-afterEach(() => {
-  document.body.replaceChildren();
-  delete document.documentElement.dataset.runtime;
+afterEach(async () => {
+  testGeneration++;
+  try {
+    for (const cleanup of pendingCleanups) await cleanup();
+  } finally {
+    vi.unstubAllGlobals();
+    document.body.replaceChildren();
+    delete document.documentElement.dataset.runtime;
+  }
 });
 
 it("reports Safari as enabled and offers no action", async () => {

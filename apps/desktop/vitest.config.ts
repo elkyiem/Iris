@@ -34,6 +34,8 @@ export default defineConfig({
     },
   },
   test: {
+    // Keep cold module transforms and jsdom workers within the shared development machine's budget.
+    maxWorkers: 2,
     projects: [
       {
         test: {

@@ -47,6 +47,7 @@ const timer = setTimeout(
         process.argv.includes("--previews") ||
         process.argv.includes("--replay") ||
         process.argv.includes("--interactions") ||
+        process.argv.includes("--workflow") ||
         process.argv.includes("--eagle") ||
         process.argv.includes("--pwa-shell") ||
         process.argv.includes("--pwa-shell-restore") ||
@@ -325,6 +326,7 @@ app
         process.argv.includes("--library-copy-storage-restore");
       const focusProbe = process.argv.includes("--focus-probe");
       const standalone =
+        process.argv.includes("--workflow") ||
         process.argv.includes("--release-audit") ||
         process.argv.includes("--identity") ||
         libraryAdmin ||
@@ -728,6 +730,23 @@ app
           sandbox,
           refreshSession,
           settingsOnly: process.argv.includes("--identity-settings"),
+        });
+        clearTimeout(timer);
+        app.exit(0);
+        return;
+      }
+      if (process.argv.includes("--workflow")) {
+        const { verifyBrowserWorkflow } = require("./web-workflow-cases.cjs");
+        await verifyBrowserWorkflow({
+          win,
+          run,
+          click,
+          waitFor,
+          snapshot,
+          query,
+          origin,
+          evidence,
+          sandbox,
         });
         clearTimeout(timer);
         app.exit(0);

@@ -1,5 +1,99 @@
 # Circé verification record
 
+## Recorded browser workflow — 2026-10-31
+
+`smoke-web-browser.cjs --workflow` exercises one complete UI journey against a
+fresh disposable host Library: import three PNGs through Import Files, search,
+open an image, edit its title and note, create a tag, create and assign a folder,
+create a Canvas from the Save's context menu, and drag the Canvas card. Reloads
+verify the rendered edits, folder membership and final card position. The
+recorded run passed all eight assertions; the card moved from `(0, 0)` to
+`(144, 72)` and rendered at those persisted coordinates after reload.
+
+All mutations use Chromium pointer input, editing commands and text input, or
+Chromium's real file chooser with local fixture paths supplied through CDP.
+Host queries only read back results. The test refuses nonempty Libraries and
+hosts outside its `sandbox-workflow` profile. It leaves its fixtures in that
+disposable profile for the runtime owner to remove after stopping the test host.
+Do not point it at a personal Library or start a second shared runtime.
+
+`CIRCE_RECORD_WORKFLOW=1` adds a diagnostic step label and brief reading pauses.
+The private 28-second recording captures the actual Chromium window at its
+original pace. This on-demand test is not currently part of CI. It demonstrates
+macOS Chromium and reload persistence; it does not establish physical Windows,
+iPad, host-restart, or complete feature-parity acceptance.
+
+The subsequent local `pnpm check` was **not green**: 27 of 28 tasks succeeded,
+but the desktop suite reported 24 failed, 5,052 passed and 47 skipped tests
+across 13 failing files. Failures include component assertions and timeouts in
+extension setup, downloads, import scope, rename, folder operations, conversion,
+view controls, Library customization, Save viewing and model selection. Their
+causes have not been established by this recording task. The passing Chromium
+journey does not supersede those failures. The full log is retained privately as
+`added-commits-20261031/recording/workflow-check.log` under the evidence directory.
+
+## Investigation of the local check failures — 2026-10-31
+
+Reran the exact 13 failing files with their original assertions and five-second
+test deadlines, using two workers. This passed 167 of 169 tests. Only the two
+export-dialog tests still failed, and both also failed when run alone. Thus the
+initial 24 failures did not establish 24 independently broken application
+features.
+
+Tracing the first export test showed its initial render scope completing in
+about 17 ms, then an empty dialog host until the five-second deadline while its
+real lazy module loaded. After the timeout, late rendering could outlive global
+fixture cleanup. Loading that same real module in `beforeAll` made both tests
+pass. The tests still exercise `ConversionDialogHost`, its lazy boundary, export
+fields, progress and cancellation. Module-load failure still fails setup; this
+is not a cold browser-chunk performance test.
+
+The original extension and download failures also logged overlapping React
+`act()` calls before later tests saw empty content or missing controls. Extension
+test setup previously returned its cleanup handle only after rendering finished.
+It now registers cleanup before rendering, refuses a stale setup that finishes
+after its test, and restores globals from `afterEach`. Cleanup returns one shared
+promise and stays registered until unmount completes, so teardown joins an
+already-running cleanup.
+
+The desktop runner now has an explicit two-worker budget. Installed Vitest's
+default selected nine workers on this ten-core Mac; the initial run also had
+leftover recording windows, which were removed. These factors were not isolated
+from one another, so the results do not prove worker count was the sole cause of
+the other 22 failures. Production UI and behavior were not changed to obtain
+passing tests, and no assertions, test cases or deadlines were relaxed.
+
+| Previously failing area | Tests in affected file | Controlled run after setup fixes |
+| --- | ---: | --- |
+| Library queries | 55 | Pass |
+| Extension setup | 10 | Pass |
+| Model picker | 3 | Pass |
+| Export/conversion dialog | 2 | Pass |
+| Folder drag-and-drop | 6 | Pass |
+| Smart Folder sidebar | 11 | Pass |
+| Batch rename | 2 | Pass |
+| Library customization | 7 | Pass |
+| View menu | 7 | Pass |
+| Download page | 25 | Pass |
+| Folder tree selection | 17 | Pass |
+| Mixed-file Save viewer | 3 | Pass |
+| Source import scope | 21 | Pass |
+
+All 169 tests across these 13 files passed in the focused run. React Doctor's
+changed-file scan reported no findings; that score is not a whole-application
+health score. Logs and the setup trace remain private under
+`.artifacts/research/test-failures-20261031`.
+
+The subsequent full `pnpm check` exited successfully: all 28 tasks passed, with
+722 desktop test files passing and five skipped. Desktop totals were 5,076
+passed and 47 skipped, with zero failures; the skip count is unchanged from the
+failed run. All originally failing cases passed in this full run, and the
+overlapping-`act()` cascades did not recur. Existing non-failing unwrapped-update
+warnings remain in other component tests. The complete check took 17m51s on this
+shared Mac with the two-worker budget. This verifies the automated suite, not
+physical Windows/iPad acceptance or cold browser-chunk performance. No shared
+host was restarted during this investigation.
+
 ## Browser audit of the added commits — 2026-10-30
 
 Audited every commit in `ca206520..582eba6f`, then exercised the rebuilt browser

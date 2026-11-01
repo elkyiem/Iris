@@ -1,12 +1,17 @@
 import type { ConversionJob } from "@shared/conversion-contracts";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
-import { expect, it, vi } from "vitest";
+import { beforeAll, expect, it, vi } from "vitest";
 import {
   closeConversionDialog,
   openConversionDialog,
 } from "@/features/library/state/conversion-dialog";
 import { ConversionDialogHost } from "./host";
+
+// Compile the real lazy module before timing dialog behavior; keep the host and its lazy boundary.
+beforeAll(async () => {
+  await import(".");
+});
 
 it("opens the consolidated export dialog on original files without conversion fields", async () => {
   vi.stubGlobal(

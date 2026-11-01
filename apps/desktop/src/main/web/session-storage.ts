@@ -16,6 +16,11 @@ const StoredSessions = z.strictObject({
         idHash: z.string().regex(/^[a-f0-9]{64}$/),
         expiry: z.number().int().nonnegative(),
         scope: z.string().max(2000),
+        deviceId: z.string().uuid().optional(),
+        label: z.string().max(80).optional(),
+        createdAt: z.number().nonnegative().optional(),
+        lastUsedAt: z.number().nonnegative().optional(),
+        remembered: z.boolean().optional(),
       }),
     )
     .max(100),

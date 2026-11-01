@@ -1,6 +1,10 @@
 import type { QueryName } from "../../../shared/query-contracts";
 
 export const queryOperationAccess = {
+  "webConnections.list": "hidden",
+  "webConnections.createCode": "hidden",
+  "webConnections.cancelCode": "hidden",
+  "webConnections.revoke": "hidden",
   "accounts.blueskySession": "hidden",
   "accounts.blueskySignIn": "hidden",
   "accounts.blueskySignOut": "hidden",

@@ -51,3 +51,7 @@ jobs:
             .artifacts/web-verification/upgrade220-fish-failure.txt
             .artifacts/web-verification/upgrade220-sources-failure.png
             .artifacts/web-verification/upgrade220-sources-failure.txt
+            .artifacts/web-verification/pairing-browser-failed.png
+            .artifacts/web-verification/pairing-browser-failed.txt
+            .artifacts/web-verification/pairing-owner-failed.png
+            .artifacts/web-verification/pairing-owner-failed.txt

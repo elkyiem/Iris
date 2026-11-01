@@ -1,0 +1,63 @@
+.form {
+  display: grid;
+  gap: 20px;
+  inline-size: min(360px, 100%);
+  min-inline-size: 0;
+  animation: enter var(--ds-duration-medium) var(--ds-easing-standard) both;
+}
+.header {
+  display: grid;
+  gap: 20px;
+  inline-size: min(360px, 100%);
+  margin-block-end: 4px;
+}
+.heading {
+  display: grid;
+  gap: 6px;
+}
+.heading h1 {
+  font-size: var(--ds-text-xl);
+  font-weight: var(--ds-weight-xl);
+  letter-spacing: -0.02em;
+}
+.heading p {
+  font-size: var(--ds-text-md);
+  color: var(--ds-gray-10);
+}
+.field {
+  gap: 12px;
+}
+.remember {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-gray-11);
+  cursor: pointer;
+}
+.remember > span {
+  display: grid;
+  gap: 3px;
+}
+.detail {
+  font-size: var(--ds-text-xs);
+  color: var(--ds-gray-10);
+}
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .form {
+    animation: none;
+  }
+}
+:global([data-reduce-motion="true"]) .form {
+  animation: none;
+}

@@ -1,0 +1,20 @@
+.content {
+  display: grid;
+  gap: 20px;
+}
+.code {
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-text-xl);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  letter-spacing: 0.18em;
+}
+.expiry {
+  font-size: var(--ds-text-sm);
+  color: var(--ds-gray-10);
+}
+.error {
+  padding-inline: 16px;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-red-11);
+}

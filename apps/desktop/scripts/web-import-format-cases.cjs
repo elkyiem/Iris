@@ -511,7 +511,7 @@ exports.verifyBrowserImportFormats = async function verifyBrowserImportFormats({
     );
     if (await run("Boolean(document.querySelector('#host-key-file'))"))
       await choose(
-        () => click("#host-key-file"),
+        () => click('button[aria-label="Choose key file"]'),
         join(sandbox, "web-access-key"),
       );
     await waitFor(

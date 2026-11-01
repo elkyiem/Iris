@@ -16,6 +16,11 @@ import {
 } from "../../shared/enrichment-contracts";
 import { WEB_QUERY_ACCESS } from "../../shared/web-capabilities";
 import {
+  BrowserConnectionsRequestSchema,
+  BrowserLoginOptionsSchema,
+  PairBrowserSchema,
+} from "../../shared/web-connections-contracts";
+import {
   WebFixtureSchema,
   WebQueryRequestSchema,
 } from "../../shared/web-contracts";
@@ -39,7 +44,12 @@ import { WebVideoRequestSchema } from "../../shared/web-video-contracts";
 import { WebWatchedFolderRequestSchema } from "../../shared/web-watched-folder-contracts";
 import type { WireSyncAction } from "../../shared/wire";
 import { LibraryTransitionError, libraryAccess } from "../core/library-access";
-import { createWebSessions } from "./auth";
+import {
+  createWebSessions,
+  REMEMBERED_BROWSER_SECONDS,
+  WEB_SESSION_SECONDS,
+} from "./auth";
+import { createWebConnections } from "./connections";
 import { WebRequestError } from "./errors";
 import { createWebEventQueue } from "./event-queue";
 import { createExtensionApi, type ExtensionHost } from "./extension-api";
@@ -48,9 +58,12 @@ import { validateWebPreferences } from "./preferences";
 import type { ReplayScope } from "./replay-host";
 
 const COOKIE = "iris_session";
-const Login = z.strictObject({ key: z.string().max(256) });
+const Login = BrowserLoginOptionsSchema.extend({
+  key: z.string().max(256),
+}).strict();
 
 export interface WebHost {
+  connections?: ReturnType<typeof createWebConnections>;
   replay?: (
     input: ReturnType<typeof WebReplayRequestSchema.parse>,
     scope: ReplayScope,
@@ -187,6 +200,13 @@ export function createWebApp(host: WebHost) {
       ]),
     );
   const sessions = host.sessions ?? createWebSessions(host.key);
+  const connections =
+    host.connections ??
+    createWebConnections({
+      sessions,
+      origin: host.origin,
+      libraryId: host.libraryId,
+    });
   const failures = new Map<string, { count: number; until: number }>();
   const requestOrigin = (hostHeader: string | undefined) =>
     [host.origin, ...(host.origins ?? [])].find(
@@ -218,6 +238,8 @@ export function createWebApp(host: WebHost) {
     }
     await next();
   });
+  app.use("/web/session", bodyLimit({ maxSize: 1024 }));
+  app.use("/web/pair", bodyLimit({ maxSize: 1024 }));
   app.post("/web/session", async (c) => {
     if (sessions.isClosed())
       return c.json(
@@ -233,8 +255,9 @@ export function createWebApp(host: WebHost) {
         { error: "Too many attempts. Try again in five minutes." },
         429,
       );
-    const { key } = Login.parse(await c.req.json());
-    const id = sessions.login(key, sessionScope(c.req.header("host")));
+    const { key, ...options } = Login.parse(await c.req.json());
+    const scope = sessionScope(c.req.header("host"));
+    const id = sessions.login(key, scope, options);
     if (!id) {
       const entry =
         failure && failure.until > Date.now()
@@ -245,13 +268,72 @@ export function createWebApp(host: WebHost) {
       return c.json({ error: "The access key was not accepted." }, 401);
     }
     await sessions.flush();
+    if (!sessions.valid(id, scope))
+      return c.json(
+        { error: "The host is restarting. Try again shortly." },
+        503,
+      );
     failures.delete(ip);
     setCookie(c, COOKIE, id, {
       httpOnly: true,
       sameSite: "Strict",
       secure: c.req.header("origin")?.startsWith("https:"),
       path: "/",
-      maxAge: 43200,
+      maxAge: options.remember
+        ? REMEMBERED_BROWSER_SECONDS
+        : WEB_SESSION_SECONDS,
+    });
+    return c.json({
+      libraryId: host.libraryId(),
+      fixtures: Boolean(host.fixture),
+    });
+  });
+  app.post("/web/pair", async (c) => {
+    if (sessions.isClosed())
+      return c.json(
+        { error: "The host is restarting. Try again shortly." },
+        503,
+      );
+    if (c.req.header("origin") !== requestOrigin(c.req.header("host")))
+      return c.json({ error: "Origin required." }, 403);
+    const ip = getConnInfo(c).remote.address ?? "local";
+    const failure = failures.get(ip);
+    if (failure && failure.until > Date.now() && failure.count >= 10)
+      return c.json(
+        { error: "Too many attempts. Try again in five minutes." },
+        429,
+      );
+    const input = PairBrowserSchema.parse(await c.req.json());
+    const id = await connections.redeem(
+      sessionScope(c.req.header("host")),
+      input,
+    );
+    if (!id) {
+      const entry =
+        failure && failure.until > Date.now()
+          ? failure
+          : { count: 0, until: Date.now() + 300_000 };
+      entry.count += 1;
+      if (failures.size >= 200) {
+        const oldest = failures.keys().next().value;
+        if (oldest) failures.delete(oldest);
+      }
+      failures.set(ip, entry);
+      return c.json(
+        {
+          error:
+            "This code is incorrect or expired. Generate a new code on a connected device.",
+        },
+        401,
+      );
+    }
+    failures.delete(ip);
+    setCookie(c, COOKIE, id, {
+      httpOnly: true,
+      sameSite: "Strict",
+      secure: c.req.header("origin")?.startsWith("https:"),
+      path: "/",
+      maxAge: input.remember ? REMEMBERED_BROWSER_SECONDS : WEB_SESSION_SECONDS,
     });
     return c.json({
       libraryId: host.libraryId(),
@@ -269,6 +351,7 @@ export function createWebApp(host: WebHost) {
       );
     if (c.req.header("origin") !== requestOrigin(c.req.header("host")))
       return c.json({ error: "Origin required." }, 403);
+    connections.revokeCookie(getCookie(c, COOKIE));
     sessions.revoke(getCookie(c, COOKIE));
     await sessions.flush();
     deleteCookie(c, COOKIE, { path: "/" });
@@ -307,6 +390,15 @@ export function createWebApp(host: WebHost) {
     await next();
   });
   app.use("/web/inference", bodyLimit({ maxSize: 8 * 1024 * 1024 }));
+  app.use("/web/connections", bodyLimit({ maxSize: 1024 }));
+  app.post("/web/connections", async (c) => {
+    const input = BrowserConnectionsRequestSchema.parse(await c.req.json());
+    const cookie = getCookie(c, COOKIE);
+    const scope = c.get("authenticatedScope");
+    if (!sessions.valid(cookie, scope))
+      return c.json({ error: "This browser is no longer connected." }, 401);
+    return c.json(await connections.manage(input, scope, cookie));
+  });
   app.post("/web/inference", async (c) =>
     host.inference
       ? host.inference(

@@ -344,7 +344,10 @@ exports.verifyBrowserHostMaintenance =
         debuggerApi.on("message", listener);
       });
       try {
-        const [, chosen] = await Promise.all([click("#host-key-file"), opened]);
+        const [, chosen] = await Promise.all([
+          click('button[aria-label="Choose key file"]'),
+          opened,
+        ]);
         await debuggerApi.sendCommand("DOM.setFileInputFiles", {
           backendNodeId: chosen.backendNodeId,
           files: [join(sandbox, "web-access-key")],

@@ -1,5 +1,60 @@
 # Circé verification record
 
+## Browser pairing and remembered devices — 2026-11-01
+
+The connection screen now uses Pond's theme, fields, buttons, checkbox and dialog
+components. `@pond/ui/otp-field` wraps the installed Base UI OTP primitive, with
+six numeric slots, paste and keyboard navigation, accessible labels and reduced
+motion. The key-file fallback uses the same components.
+
+Native Settings and already authenticated browsers share a typed connection
+management contract. Six-digit grants are generated explicitly, bound to the
+exact origin and Library, expire after two minutes and allow five attempts.
+Successful redemption consumes the grant synchronously before persistence.
+Remembered browsers receive a fixed 90-day HttpOnly session; unchecked and legacy
+connections retain twelve hours. Only credential digests and device metadata are
+stored. Revocation persists before acknowledgment and invalidates outstanding
+codes issued by that browser. These operations are unavailable to the generic
+web-query endpoint and hidden from agent operations.
+
+Verification uses a disposable Library, never the personal Twitter Library:
+
+- Domain and real HTTP tests cover leading zeroes, expiry, attempt limits,
+  origin/Library isolation, replay, concurrent redemption, replacement, logout,
+  issuer revocation during persistence, failed durable writes and legacy session
+  migration. Security review found a cross-origin cancellation edge case; its
+  regression now preserves the other origin's pending grant.
+- Real React/Base UI DOM tests cover numeric typing/paste, navigation, labels,
+  busy/disabled controls, remembered options and key-file fallback errors.
+- `smoke-web-browser.cjs --pairing` drives actual Chromium controls in an owner
+  browser and an isolated 390×844 browser. It rejects a wrong code, pairs with
+  the correct code, checks the 90-day cookie, reloads, replaces the host through
+  an actual Library rename, restores the original name and verifies the same
+  authorization survives. The newly paired browser generates a code. Actual
+  Settings disconnect then revokes its session and outstanding grant.
+- Native UI verification opens Settings in the disposable host, generates a
+  code and uses it in an independent browser. Its Library loads, and disconnect
+  makes the session unauthorized. The personal host is restored afterward.
+- The existing `--identity` browser regression passes file selection, invalid
+  images, favicon, icon/emoji/reset, name/combined identity, reload and supervised
+  host replacement. Test drivers now open the access-key fallback explicitly.
+
+Local repository gates passed: `pnpm check` completed all 28 tasks, with 733
+desktop files passing/five skipped and 5,187 tests passing/47 skipped. Shared UI
+passed 81 tests across 29 files. Production build completed all 12 tasks; the
+separate browser and Circé extension builds passed within existing budgets.
+Electron ABI database/vector checks passed eight tests, and isolated visible
+desktop startup/preload smoke passed. React Doctor on this change against `HEAD`
+reported 100/100 with no findings. No lint suppression or budget increase was
+added. Trusted HTTPS health confirmed the installed Circé host, original Twitter
+Library ID/path and live connection-management endpoint; the probe revoked its
+own session. The disposable pairing profile was removed afterward.
+
+The pairing acceptance is included in Circé web CI. Selected fixture failure
+screenshots/text are retained; browser profiles, credentials and session stores
+are excluded. Physical Windows/iPad input and certificate installation remain
+separate from macOS Chromium and phone-viewport acceptance.
+
 ## Pond 2.2.0 upgrade — 2026-11-01
 
 The integration advances the upstream base from `a1f7cdd0` to `60b40a9a`

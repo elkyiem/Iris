@@ -21,6 +21,7 @@ import { createWebApp, type WebHost } from "./app";
 import { webAccessKey } from "./auth";
 import { runWebCommand, WebCommandSchema } from "./commands";
 import { webHostConfig } from "./config";
+import { createWebConnections, registerWebConnections } from "./connections";
 import { openExtensionAuth } from "./extension-auth";
 import { createExtensionBridge } from "./extension-bridge";
 import { createWebFiles } from "./files";
@@ -112,6 +113,15 @@ export async function startWebHost() {
     key,
     warn: (cause) => log.warn("[circe] browser session storage failed", cause),
   });
+  await sessions.flush();
+  const connectionOrigin = origin.startsWith("https:")
+    ? origin
+    : (origins.find((value) => value.startsWith("https:")) ?? origin);
+  const connections = createWebConnections({
+    sessions,
+    origin: connectionOrigin,
+    libraryId,
+  });
   const copyLibrary = createWebLibraryCopy({
     locations,
     libraryId,
@@ -161,6 +171,7 @@ export async function startWebHost() {
     origins,
     key,
     sessions,
+    connections,
     extension: extension.host,
     assets: resolveMainOut("../browser"),
     libraryId,
@@ -303,8 +314,10 @@ export async function startWebHost() {
         ),
   );
   const unregisterTransfers = registerTransferDelivery(files.transferJobs);
+  const unregisterConnections = registerWebConnections(connections);
   const closeOwners = async () => {
     unregisterTransfers();
+    unregisterConnections();
     await Promise.all([sessions.close(), replay.close()]);
   };
   server.once("close", () => {

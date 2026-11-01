@@ -35,6 +35,32 @@ the two bundles and reopening Circé. Reinstallation refreshes the Dock bookmark
 and archives the previous owned bundle. The installed original Pond app and its
 profile are separate. Launcher errors are in `~/Library/Logs/Circé/launcher.log`.
 
+## Connect another device
+
+On the Mac app, or a browser already connected to the Library, open **Settings →
+Library → Connected browsers → Connect a device**. On the new device, open
+`https://circe.elkyiem` and enter the six-digit code. The new device still needs
+Tailscale, the short-address DNS setup and trust in the existing HTTPS certificate.
+Pairing grants application access; it does not configure those network settings.
+
+A code works once, expires after two minutes and is invalidated after five wrong
+attempts. Generating a replacement or closing the dialog cancels the previous
+code. Keep the issuing device connected until pairing finishes. The code belongs
+to the exact address and Library displayed in the dialog.
+
+**Remember this browser** is selected by default and keeps that browser connected
+for a fixed 90 days, including Mac host restarts. Clear it for a twelve-hour
+connection. Each browser profile is a separate connection; private browsing or
+clearing site cookies loses that browser's connection. Existing sessions keep
+their original twelve-hour expiry. The access-key and key-file options remain
+available under **Use an access key instead**.
+
+Any connected browser can pair another browser and disconnect listed browsers
+from the same Settings section. **Forget this browser** disconnects the current
+browser. Disconnecting a browser also cancels a code it has not yet used; browsers
+it previously paired remain independent connections. Quit Circé on the Mac to
+stop the host for every device.
+
 ## Terminal launch
 
 For a finite offline regression check of the resident inference owner after a

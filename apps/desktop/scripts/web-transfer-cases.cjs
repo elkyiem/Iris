@@ -285,7 +285,10 @@ exports.verifyBrowserTransfers = async function verifyBrowserTransfers({
       debuggerApi.on("message", listener);
     });
     try {
-      const [, chooser] = await Promise.all([click("#host-key-file"), opened]);
+      const [, chooser] = await Promise.all([
+        click('button[aria-label="Choose key file"]'),
+        opened,
+      ]);
       // The browser reads the existing host key through its genuine file input; no key is logged or rotated.
       await debuggerApi.sendCommand("DOM.setFileInputFiles", {
         backendNodeId: chooser.backendNodeId,

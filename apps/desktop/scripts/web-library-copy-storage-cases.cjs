@@ -288,7 +288,7 @@ exports.verifyBrowserLibraryCopyStorage =
         });
         try {
           const [, chosen] = await Promise.all([
-            click("#host-key-file"),
+            click('button[aria-label="Choose key file"]'),
             opened,
           ]);
           await debuggerApi.sendCommand("DOM.setFileInputFiles", {

@@ -170,7 +170,8 @@ exports.verifyBrowserIdentity = async function verifyBrowserIdentity({
       return !previous || next !== previous;
     }, "a ready replacement host");
     if (navigate) await win.loadURL(origin);
-    const login = "Boolean(document.querySelector('#host-key-file'))";
+    const login =
+      "Boolean(document.querySelector('[data-browser-connection]'))";
     const connected =
       'Boolean(document.querySelector(\'[aria-label="Library Menu"], [aria-label="Library Name"], [data-library-search]\'))';
     await waitUntil(
@@ -181,8 +182,10 @@ exports.verifyBrowserIdentity = async function verifyBrowserIdentity({
       "the browser connection page or restored Library session",
     );
     if (await run(login)) {
+      if (!(await run("Boolean(document.querySelector('#host-key'))")))
+        await click("#connection-method");
       await pickFile(
-        () => click("#host-key-file"),
+        () => click('button[aria-label="Choose key file"]'),
         join(sandbox, "web-access-key"),
       );
       await waitUntil(

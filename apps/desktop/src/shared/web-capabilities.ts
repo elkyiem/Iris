@@ -2,6 +2,10 @@ import type { QueryName } from "./query-contracts";
 
 /** Explicit browser coverage: every new desktop query requires a deliberate decision. */
 export const WEB_QUERY_ACCESS = {
+  "webConnections.list": "host",
+  "webConnections.createCode": "host",
+  "webConnections.cancelCode": "host",
+  "webConnections.revoke": "host",
   "accounts.disconnect": "write",
   "accounts.blueskySession": "read",
   "accounts.blueskySignIn": "write",

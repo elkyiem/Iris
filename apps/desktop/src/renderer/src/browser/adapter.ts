@@ -24,6 +24,7 @@ import { version } from "../../../../package.json";
 import type { PondApi, StorageGuardStatusWire } from "../../../preload";
 import { createBrowserCanvases } from "./canvases";
 import { openBrowserCombine } from "./combine-images";
+import { createBrowserConnections } from "./connections";
 import { onBrowserEditRequest } from "./edit-requests";
 import { browserFeedback } from "./feedback";
 import { createBrowserFiles } from "./files";
@@ -96,7 +97,7 @@ export async function webRequest(path: string, body?: string, method = "POST") {
     const result = parseWebValue(await response.text());
     const failure = z.object({ error: z.string() }).safeParse(result);
     const message =
-      response.status === 401 && path !== "session"
+      response.status === 401 && path !== "session" && path !== "pair"
         ? "Your host session has expired. Reload to reconnect."
         : failure.success
           ? failure.data.error
@@ -160,6 +161,7 @@ export async function installBrowserAdapter(libraryId: string) {
   });
   const canvases = createBrowserCanvases(webRequest);
   const libraries = createBrowserLibrary(webRequest);
+  const connections = createBrowserConnections(webRequest);
   const watchedFolder = createBrowserWatchedFolder(webRequest);
   const infer = createBrowserInference({
     request: webRequest,
@@ -170,7 +172,12 @@ export async function installBrowserAdapter(libraryId: string) {
       | WebValue
       | QueryResult<"settings.getPrefs">
       | QueryResult<"settings.setPrefs"> = null;
-    if (name === "enrichment.infer")
+    if (connections.handles(name))
+      result = await connections.query(
+        name,
+        z.record(z.string(), z.json()).parse(args[0] ?? {}),
+      );
+    else if (name === "enrichment.infer")
       result = await infer(HostInferenceSchema.parse(args[0]));
     else if (watchedFolder.handles(name))
       result = await watchedFolder.query(

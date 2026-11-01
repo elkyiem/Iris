@@ -473,7 +473,7 @@ exports.verifyBrowserPwaShell = async function verifyBrowserPwaShell({
     void chooser.catch(() => {});
     // Only the file path is passed to CDP; no key bytes enter tool arguments, logs, or the clipboard.
     try {
-      await click("#host-key-file");
+      await click('button[aria-label="Choose key file"]');
       const opened = await chooser;
       await debug.sendCommand("DOM.setFileInputFiles", {
         backendNodeId: opened.backendNodeId,
@@ -1153,6 +1153,7 @@ exports.verifyBrowserPwaShell = async function verifyBrowserPwaShell({
         ),
         401,
       );
+      await click("#connection-method");
       const login = await run(
         "(()=>{const form=document.querySelector('[aria-label=\"Host connection\"]'),r=form.getBoundingClientRect();return{left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height,viewport:{width:innerWidth,height:innerHeight}}})()",
       );
@@ -1167,7 +1168,11 @@ exports.verifyBrowserPwaShell = async function verifyBrowserPwaShell({
           "Connect",
           true,
         ),
-        file: await control("#host-key-file", "Access key file chooser", true),
+        file: await control(
+          'button[aria-label="Choose key file"]',
+          "Access key file chooser",
+          true,
+        ),
       };
       await prove("settings-disconnect-confirm-phone-login");
       await keyFileLogin();

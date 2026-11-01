@@ -99,6 +99,10 @@ import type {
   TransferQueryInputs,
   TransferQueryResults,
 } from "./transfer-contracts";
+import type {
+  WebConnectionQueryInputs,
+  WebConnectionQueryResults,
+} from "./web-connections-contracts";
 import type { WirePrefsPatch } from "./wire";
 
 interface IdInput {
@@ -138,7 +142,8 @@ interface SavedViewInput {
 export type { OkResult } from "./query-contracts-shared";
 
 export interface QueryInputs
-  extends EnrichmentQueryInputs,
+  extends WebConnectionQueryInputs,
+    EnrichmentQueryInputs,
     AccountQueryInputs,
     SafariExtensionQueryInputs,
     TransferQueryInputs,
@@ -355,7 +360,8 @@ export interface QueryInputs
 }
 
 export interface QueryResults
-  extends EnrichmentQueryResults,
+  extends WebConnectionQueryResults,
+    EnrichmentQueryResults,
     AccountQueryResults,
     SafariExtensionQueryResults,
     TransferQueryResults,

@@ -11,7 +11,9 @@ if (!process.env.CI)
     "This ephemeral runner is for CI. Local chats use the designated shared host.",
   );
 const cwd = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const directory = await mkdtemp(join(tmpdir(), "iris-web-ci-upgrade-220-"));
+const directory = await mkdtemp(
+  join(tmpdir(), "iris-web-ci-upgrade-220-pairing-"),
+);
 const env = {
   ...process.env,
   POND_SANDBOX: directory,
@@ -76,6 +78,7 @@ try {
   });
   await run(process.execPath, ["scripts/smoke-web-release.mjs"]);
   await run(electron, ["scripts/smoke-web-browser.cjs", "--upgrade-220"]);
+  await run(electron, ["scripts/smoke-web-browser.cjs", "--pairing"]);
 } finally {
   clearTimeout(deadline);
   host.kill("SIGTERM");

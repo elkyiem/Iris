@@ -45,10 +45,12 @@ import { transferJobsQueries } from "./transfer-jobs";
 import { updateQueries } from "./updates";
 import { videoQueries } from "./video";
 import { watchesQueries } from "./watches";
+import { webConnectionQueries } from "./web-connections";
 
 type ContractHandlers = Required<QueryHandlerMap>;
 
 const queryRegistry = {
+  ...webConnectionQueries,
   ...enrichmentQueries,
   ...transferJobsQueries,
   ...updateQueries,

@@ -49,6 +49,7 @@ const timer = setTimeout(
         process.argv.includes("--interactions") ||
         process.argv.includes("--workflow") ||
         process.argv.includes("--upgrade-220") ||
+        process.argv.includes("--pairing") ||
         process.argv.includes("--eagle") ||
         process.argv.includes("--pwa-shell") ||
         process.argv.includes("--pwa-shell-restore") ||
@@ -174,6 +175,11 @@ app
       await waitFor(`!(${startupPrompt})`);
     };
     const click = async (selector, clickCount = 1) => {
+      if (
+        selector === 'button[aria-label="Choose key file"]' &&
+        !(await run('Boolean(document.querySelector("#host-key"))'))
+      )
+        await click("#connection-method");
       app.focus({ steal: true });
       win.focus();
       // Focus before a prompt snapshot: an occluded renderer can suspend animation frames.
@@ -246,10 +252,16 @@ app
     };
     try {
       await win.loadURL(origin);
+      await waitFor('document.querySelector("[data-browser-connection]")');
+      await snapshot("login-code");
+      await click("#connection-method");
       await waitFor('document.querySelector("#host-key-file")');
+      await waitFor(
+        `['#host-key','button[aria-label="Choose key file"]'].every(selector => { const el=document.querySelector(selector); if(!el)return false; const r=el.getBoundingClientRect(); return r.width>0 && r.height>0 && el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); })`,
+      );
       assert.equal(
         await run(
-          `['host-key','host-key-file'].every(id => { const el=document.getElementById(id), r=el.getBoundingClientRect(); return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2) === el; })`,
+          `['#host-key','button[aria-label="Choose key file"]'].every(selector => { const el=document.querySelector(selector), r=el.getBoundingClientRect(); return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); })`,
         ),
         true,
         "Sign-in controls must receive pointer input",
@@ -347,6 +359,7 @@ app
         process.argv.includes("--library-copy-storage-restore");
       const focusProbe = process.argv.includes("--focus-probe");
       const standalone =
+        process.argv.includes("--pairing") ||
         process.argv.includes("--upgrade-220") ||
         process.argv.includes("--workflow") ||
         process.argv.includes("--release-audit") ||
@@ -766,6 +779,24 @@ app
           waitFor,
           snapshot,
           query,
+          origin,
+          evidence,
+          sandbox,
+        });
+        clearTimeout(timer);
+        app.exit(0);
+        return;
+      }
+      if (process.argv.includes("--pairing")) {
+        const { verifyBrowserPairing } = require("./web-pairing-cases.cjs");
+        await verifyBrowserPairing({
+          win,
+          run,
+          click,
+          waitFor,
+          snapshot,
+          query,
+          refreshSession,
           origin,
           evidence,
           sandbox,

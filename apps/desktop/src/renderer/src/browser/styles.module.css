@@ -4,18 +4,13 @@
   z-index: 10;
   display: grid;
   gap: 16px;
-  place-content: center;
+  align-content: safe center;
+  justify-content: center;
+  justify-items: center;
   padding: 24px;
+  overflow: auto;
   color: var(--ds-gray-12);
   background: var(--ds-background-1);
-}
-.connect form {
-  display: grid;
-  gap: 16px;
-  max-width: 360px;
-}
-.connect h1 {
-  font-size: 28px;
 }
 .connect input {
   font-size: 16px;

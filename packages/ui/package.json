@@ -26,6 +26,7 @@
     "./button": "./src/button/index.tsx",
     "./empty": "./src/empty/index.tsx",
     "./input": "./src/input/index.tsx",
+    "./otp-field": "./src/otp-field/index.tsx",
     "./logo": "./src/logo/index.tsx",
     "./pane-header": "./src/pane-header/index.tsx",
     "./tab": "./src/tab/index.tsx",

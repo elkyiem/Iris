@@ -242,7 +242,7 @@ exports.verifyBrowserLibraries = async function verifyBrowserLibraries({
     );
     if (await run(login)) {
       await pickFile(
-        () => click("#host-key-file"),
+        () => click('button[aria-label="Choose key file"]'),
         join(sandbox, "web-access-key"),
       );
       await waitUntil(() => run(connected), "access-key file login");

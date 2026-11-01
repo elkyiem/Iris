@@ -1,15 +1,85 @@
 import { Button } from "@pond/ui";
-import { WebSessionSchema } from "@shared/web-contracts";
-import { useEffect, useState } from "react";
+import type { WebSessionSchema } from "@shared/web-contracts";
+import { MotionConfig } from "motion/react";
+import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { installBrowserAdapter, webRequest } from "./adapter";
-import { BrowserConnectionForm } from "./connection-form";
+import { installBrowserAdapter } from "./adapter";
+import {
+  BrowserConnectionForm,
+  BrowserConnectionHeader,
+} from "./connection-form";
 import { BrowserFixtureControls } from "./fixture-controls";
 import { registerBrowserPwa } from "./pwa";
-import { readBrowserSession } from "./session";
+import { connectBrowser, readBrowserSession } from "./session";
 import "../styles.css";
 import "../app/boot-shell";
 import styles from "./styles.module.css";
+
+function BrowserConnectionStatus({
+  session,
+  ready,
+  status,
+  error,
+  busy,
+  onBusy,
+  onStatus,
+  onError,
+}: {
+  session: ReturnType<typeof WebSessionSchema.parse>;
+  ready: boolean;
+  status: string;
+  error: string;
+  busy: boolean;
+  onBusy: (busy: boolean) => void;
+  onStatus: (status: string) => void;
+  onError: (error: string) => void;
+}) {
+  if (ready && !session.fixtures && !error && status === "Connected to Circé")
+    return null;
+  return (
+    <section className={styles.bar} aria-label="Host connection">
+      <span role="status">{status}</span>
+      {ready && session.fixtures ? (
+        <BrowserFixtureControls
+          busy={busy}
+          onBusy={onBusy}
+          onStatus={onStatus}
+          onError={onError}
+        />
+      ) : null}
+      <Button
+        onClick={async () => {
+          try {
+            const response = await fetch("/web/session", {
+              method: "DELETE",
+              headers: { "x-iris-library": session.libraryId },
+            });
+            if (!response.ok)
+              throw new Error("Couldn’t disconnect. Try again.");
+            location.reload();
+          } catch (cause) {
+            onError(
+              cause instanceof Error
+                ? cause.message
+                : "Couldn’t disconnect. Try again.",
+            );
+          }
+        }}
+      >
+        Disconnect
+      </Button>
+      <p id="host-error" role="alert" hidden={!error}>
+        {error}
+      </p>
+      {error && (
+        <>
+          <Button onClick={() => location.reload()}>Reload</Button>
+          <Button onClick={() => onError("")}>Dismiss</Button>
+        </>
+      )}
+    </section>
+  );
+}
 
 function BrowserConnection() {
   const [session, setSession] = useState<ReturnType<
@@ -20,6 +90,7 @@ function BrowserConnection() {
   const [busy, setBusy] = useState(false);
   const [ready, setReady] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  const connecting = useRef(false);
   useEffect(() => {
     void registerBrowserPwa();
     let active = true;
@@ -75,7 +146,7 @@ function BrowserConnection() {
         aria-label="Host connection"
         aria-busy={!error}
       >
-        <h1>Circé</h1>
+        <BrowserConnectionHeader />
         {error ? (
           <>
             <p role="alert">{error}</p>
@@ -86,89 +157,51 @@ function BrowserConnection() {
         )}
       </section>
     );
-  if (
-    ready &&
-    session &&
-    !session.fixtures &&
-    !error &&
-    status === "Connected to Circé"
-  )
-    return null;
+  if (session)
+    return (
+      <BrowserConnectionStatus
+        session={session}
+        ready={ready}
+        status={status}
+        error={error}
+        busy={busy}
+        onBusy={setBusy}
+        onStatus={setStatus}
+        onError={setError}
+      />
+    );
   return (
-    <section
-      className={session ? styles.bar : styles.connect}
-      aria-label="Host connection"
-    >
-      {!session ? (
-        <BrowserConnectionForm
-          status={status}
-          busy={busy}
-          onError={setError}
-          onConnect={async (key) => {
-            setBusy(true);
-            setError("");
-            try {
-              setSession(
-                WebSessionSchema.parse(
-                  await webRequest("session", JSON.stringify({ key })),
-                ),
-              );
-            } catch (cause) {
-              setError(
-                cause instanceof Error ? cause.message : "Connection failed.",
-              );
-            } finally {
-              setBusy(false);
-            }
-          }}
-        />
-      ) : (
-        <>
-          <span role="status">{status}</span>
-          {ready && session.fixtures ? (
-            <BrowserFixtureControls
-              busy={busy}
-              onBusy={setBusy}
-              onStatus={setStatus}
-              onError={setError}
-            />
-          ) : null}
-          <Button
-            onClick={async () => {
-              try {
-                const response = await fetch("/web/session", {
-                  method: "DELETE",
-                  headers: { "x-iris-library": session.libraryId },
-                });
-                if (!response.ok)
-                  throw new Error("Couldn’t disconnect. Try again.");
-                location.reload();
-              } catch (cause) {
-                setError(
-                  cause instanceof Error
-                    ? cause.message
-                    : "Couldn’t disconnect. Try again.",
-                );
-              }
-            }}
-          >
-            Disconnect
-          </Button>
-        </>
-      )}
-      <p id="host-error" role="alert" hidden={!error}>
-        {error}
-      </p>
-      {error && (
-        <>
-          <Button onClick={() => location.reload()}>Reload</Button>
-          <Button onClick={() => setError("")}>Dismiss</Button>
-        </>
-      )}
+    <section className={styles.connect} aria-label="Host connection">
+      <BrowserConnectionHeader />
+      <BrowserConnectionForm
+        error={error}
+        busy={busy}
+        onError={setError}
+        onConnect={async (input) => {
+          if (connecting.current) return;
+          connecting.current = true;
+          setBusy(true);
+          setError("");
+          try {
+            setSession(await connectBrowser(input));
+          } catch (cause) {
+            setError(
+              cause instanceof Error ? cause.message : "Connection failed.",
+            );
+          } finally {
+            connecting.current = false;
+            setBusy(false);
+          }
+        }}
+      />
     </section>
   );
 }
 
 const host = document.getElementById("browser-connection");
 if (!host) throw new Error("Browser connection mount missing.");
-createRoot(host).render(<BrowserConnection />);
+createRoot(host).render(
+  <MotionConfig reducedMotion="user">
+    <BrowserConnection />
+  </MotionConfig>,
+);

@@ -33,6 +33,7 @@ export { Keyboard } from "./keyboard";
 export { Loader } from "./loader";
 export { LOGO_PATH, LOGO_VIEW_BOX, Logo, type LogoProps } from "./logo";
 export { Menu, type MenuItemSpec } from "./menu";
+export { OTPField } from "./otp-field";
 export { Pane } from "./pane-header";
 export {
   PickerPanel,

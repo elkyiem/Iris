@@ -5,6 +5,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { serve } from "@hono/node-server";
 import { afterEach, describe, expect, it } from "vitest";
+import {
+  BrowserConnectionsSchema,
+  PairingCodeSchema,
+} from "../../shared/web-connections-contracts";
 import type { WireSyncAction } from "../../shared/wire";
 import { libraryAccess } from "../core/library-access";
 import { createKeychain } from "../keychain";
@@ -12,6 +16,213 @@ import { createWebApp, type WebHost } from "./app";
 import { createWebSessions } from "./auth";
 
 const cleanups: Array<() => Promise<void>> = [];
+
+async function connectionRequest(
+  test: Awaited<ReturnType<typeof host>>,
+  cookie: string,
+  input:
+    | { action: "list" | "create" }
+    | { action: "cancel" | "revoke"; id: string },
+) {
+  return test.request("/web/connections", {
+    method: "POST",
+    headers: {
+      cookie,
+      origin: test.config.origin,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+}
+
+describe("browser pairing HTTP", () => {
+  it("pairs a remembered browser, lets it connect a second browser, and durably disconnects it", async () => {
+    const test = await host();
+    const owner = await test.login();
+    const created = await connectionRequest(test, owner, { action: "create" });
+    expect(created.status).toBe(200);
+    const code = PairingCodeSchema.parse(await created.json());
+    const pair = await test.request("/web/pair", {
+      method: "POST",
+      headers: {
+        origin: test.config.origin,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        code: code.code,
+        remember: true,
+        label: "Windows browser",
+      }),
+    });
+    expect(pair.status).toBe(200);
+    expect(pair.headers.get("set-cookie")).toContain("Max-Age=7776000");
+    expect(pair.headers.get("set-cookie")).toContain("HttpOnly");
+    const cookie = pair.headers.get("set-cookie")?.split(";")[0];
+    if (!cookie) throw new Error("Missing paired cookie");
+    const listing = BrowserConnectionsSchema.parse(
+      await (await connectionRequest(test, cookie, { action: "list" })).json(),
+    );
+    expect(listing.devices).toHaveLength(2);
+    expect(
+      listing.devices.find((row) => row.id === listing.currentId),
+    ).toMatchObject({ label: "Windows browser", remembered: true });
+    expect(JSON.stringify(listing)).not.toContain(cookie.split("=")[1]);
+    const next = await connectionRequest(test, cookie, { action: "create" });
+    expect(next.status).toBe(200);
+    const childCode = PairingCodeSchema.parse(await next.json());
+    if (!listing.currentId) throw new Error("Missing device identity");
+    expect(
+      (
+        await connectionRequest(test, owner, {
+          action: "revoke",
+          id: listing.currentId,
+        })
+      ).status,
+    ).toBe(200);
+    expect(
+      (await test.request("/web/session", { headers: { cookie } })).status,
+    ).toBe(401);
+    const denied = await test.request("/web/pair", {
+      method: "POST",
+      headers: {
+        origin: test.config.origin,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ code: childCode.code }),
+    });
+    expect(denied.status).toBe(401);
+  });
+
+  it("accepts only one simultaneous redemption and preserves the default twelve-hour cookie", async () => {
+    const test = await host();
+    const owner = await test.login();
+    const code = PairingCodeSchema.parse(
+      await (await connectionRequest(test, owner, { action: "create" })).json(),
+    );
+    const redeem = () =>
+      test.request("/web/pair", {
+        method: "POST",
+        headers: {
+          origin: test.config.origin,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ code: code.code }),
+      });
+    const replies = await Promise.all([redeem(), redeem()]);
+    expect(replies.map((reply) => reply.status).sort()).toEqual([200, 401]);
+    expect(
+      replies.find((reply) => reply.status === 200)?.headers.get("set-cookie"),
+    ).toContain("Max-Age=43200");
+  });
+
+  it("keeps management out of guest, cross-origin and generic-query access", async () => {
+    const test = await host();
+    expect(
+      (await connectionRequest(test, "", { action: "create" })).status,
+    ).toBe(401);
+    const owner = await test.login();
+    expect(
+      (
+        await test.request("/web/connections", {
+          method: "POST",
+          headers: {
+            cookie: owner,
+            origin: "https://other.test",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ action: "create" }),
+        })
+      ).status,
+    ).toBe(403);
+    expect(
+      (
+        await test.request("/web/query", {
+          method: "POST",
+          headers: {
+            cookie: owner,
+            origin: test.config.origin,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            name: "webConnections.createCode",
+            params: {},
+          }),
+        })
+      ).status,
+    ).toBe(422);
+    expect(test.calls).not.toContain("webConnections.createCode");
+    const code = PairingCodeSchema.parse(
+      await (await connectionRequest(test, owner, { action: "create" })).json(),
+    );
+    expect(
+      (
+        await test.request("/web/pair", {
+          method: "POST",
+          headers: {
+            origin: "https://other.test",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ code: code.code }),
+        })
+      ).status,
+    ).toBe(403);
+    expect(
+      (
+        await test.request("/web/pair", {
+          method: "POST",
+          headers: {
+            origin: test.config.origin,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ code: code.code }),
+        })
+      ).status,
+    ).toBe(200);
+  });
+
+  it("exhausts a code globally despite forwarded-address changes and invalidates it on logout", async () => {
+    const test = await host();
+    const owner = await test.login();
+    const code = PairingCodeSchema.parse(
+      await (await connectionRequest(test, owner, { action: "create" })).json(),
+    );
+    const wrong = code.code === "000000" ? "000001" : "000000";
+    for (const ip of ["1", "2", "3", "4", "5"]) {
+      const reply = await test.request("/web/pair", {
+        method: "POST",
+        headers: {
+          origin: test.config.origin,
+          "content-type": "application/json",
+          "x-forwarded-for": ip,
+        },
+        body: JSON.stringify({ code: wrong }),
+      });
+      expect(reply.status).toBe(401);
+    }
+    const redeem = (value: string) =>
+      test.request("/web/pair", {
+        method: "POST",
+        headers: {
+          origin: test.config.origin,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ code: value }),
+      });
+    expect((await redeem(code.code)).status).toBe(401);
+    const next = PairingCodeSchema.parse(
+      await (await connectionRequest(test, owner, { action: "create" })).json(),
+    );
+    expect(
+      (
+        await test.request("/web/session", {
+          method: "DELETE",
+          headers: { origin: test.config.origin, cookie: owner },
+        })
+      ).status,
+    ).toBe(200);
+    expect((await redeem(next.code)).status).toBe(401);
+  });
+});
 afterEach(async () => {
   for (const close of cleanups.splice(0)) await close();
 });

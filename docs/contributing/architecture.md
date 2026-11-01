@@ -336,6 +336,28 @@ the current key. A same-Library host replacement preserves login; logout settles
 the persisted revocation before acknowledging. Public built assets remain
 available while a Library transition closes private request admission.
 
+Circé browser pairing is owned by `main/web/connections.ts` and the ephemeral
+`pairing.ts` challenge store. Native Settings or an authenticated browser can
+explicitly generate a six-digit code for its exact origin and active Library.
+Each code expires after two minutes, permits five attempts globally, and is
+consumed synchronously before session persistence. Replacement, cancellation,
+issuer disconnect and host shutdown invalidate outstanding grants. Browser
+management uses the dedicated authenticated `/web/connections` endpoint;
+`webConnections.*` queries are native-only in the generic web allowlist and
+hidden from agent operation catalogs. The browser adapter maps the same typed
+Settings operations onto that endpoint. Native management uses the configured
+primary HTTPS address, falling back to the configured loopback origin.
+
+Remembered browsers receive independent high-entropy HttpOnly credentials with
+a fixed 90-day expiry; ordinary/legacy sessions retain twelve hours. Only
+digests and connection metadata are persisted. Existing records acquire stable
+public UUIDs without exposing digests. Device revocation is durable and closes
+its private streams; retry after storage failure rewrites the revoked state.
+Revoking an issuer also invalidates its unredeemed codes; already connected
+browsers remain independently manageable. Shared `@pond/ui/otp-field` owns
+Base UI input behavior and styling only. Circé owns pairing policy, transport,
+connection state and Settings controls.
+
 Browser interface zoom is device-local. Canvas normalizes CSS scale into its
 physical camera and back into persisted world coordinates. PWA generation emits
 manifest/icons and caches only the public reconnect page and 192-pixel icon.

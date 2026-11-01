@@ -72,7 +72,7 @@ async function enterKey(value: string) {
   });
 }
 
-it("requires a complete six digit code and connects with leading zeroes and remember enabled", async () => {
+it("automatically connects only after six digits, including a grouped paste with leading zeroes", async () => {
   const { onConnect } = await renderForm();
   expect(input("#pairing-code").labels?.[0]?.textContent).toBe(
     "Connection code",
@@ -83,14 +83,10 @@ it("requires a complete six digit code and connects with leading zeroes and reme
   expect(
     host.querySelector('[role="checkbox"]')?.getAttribute("aria-checked"),
   ).toBe("true");
-  expect(button("Connect").disabled).toBe(true);
+  expect(host.querySelector('button[type="submit"]')).toBeNull();
   await pasteCode("00123");
-  expect(button("Connect").disabled).toBe(true);
-  await click("Connect");
   expect(onConnect).not.toHaveBeenCalled();
-  await pasteCode("001234");
-  expect(button("Connect").disabled).toBe(false);
-  await click("Connect");
+  await pasteCode("001 234");
   expect(onConnect).toHaveBeenCalledExactlyOnceWith({
     method: "code",
     code: "001234",
@@ -141,39 +137,63 @@ it("offers an explicitly labelled access key fallback and respects the remember 
   });
 });
 
-it("preserves the entered code when switching methods and clears a displayed error on editing", async () => {
+it("preserves a partial code when switching methods without connecting and clears an error on editing", async () => {
   const onError = vi.fn();
-  await renderForm({ error: "That code has expired.", onError });
+  const { onConnect } = await renderForm({
+    error: "That code has expired.",
+    onError,
+  });
   expect(host.querySelector('[role="alert"]')?.textContent).toBe(
     "That code has expired.",
   );
   expect(input("#pairing-code").getAttribute("aria-invalid")).toBe("true");
-  await pasteCode("001234");
+  await pasteCode("00123");
   expect(onError).toHaveBeenCalledWith("");
   await click("Use an access key instead");
   await click("Use a connection code");
-  expect(input('input[name="code"]').value).toBe("001234");
-  expect(button("Connect").disabled).toBe(false);
+  expect(input('input[name="code"]').value).toBe("00123");
+  expect(onConnect).not.toHaveBeenCalled();
 });
 
-it("disables connection controls while busy and ignores a second form submission", async () => {
-  const onConnect = vi.fn(async () => {});
+it("disables code controls while connecting and ignores another form submission", async () => {
+  let finish: (() => void) | undefined;
+  const onConnect = vi.fn(
+    () =>
+      new Promise<void>((resolve) => {
+        finish = resolve;
+      }),
+  );
   await renderForm({ onConnect });
   await pasteCode("001234");
-  await click("Connect");
+  expect(onConnect).toHaveBeenCalledTimes(1);
   await renderForm({ onConnect, busy: true });
-  expect(button("Connect").disabled).toBe(true);
-  expect(button("Connect").getAttribute("aria-busy")).toBe("true");
+  expect(host.querySelector('button[type="submit"]')).toBeNull();
+  expect(host.querySelector("form")?.getAttribute("aria-busy")).toBe("true");
+  expect(host.querySelector('[role="status"]')?.textContent).toBe(
+    "Connecting…",
+  );
   expect(button("Use an access key instead").disabled).toBe(true);
   expect(input("#pairing-code").disabled).toBe(true);
   const checkbox = host.querySelector<HTMLButtonElement>('[role="checkbox"]');
   expect(checkbox?.getAttribute("aria-disabled")).toBe("true");
   expect(input('input[type="checkbox"]').disabled).toBe(true);
-  await click("Connect");
   const form = host.querySelector("form");
   if (!form) throw new Error("Missing connection form");
   await act(async () => form.requestSubmit());
   expect(onConnect).toHaveBeenCalledTimes(1);
+  await act(async () => finish?.());
+});
+
+it("clears a submitted code and returns focus after an error without retrying on rerender", async () => {
+  const { onConnect } = await renderForm();
+  await pasteCode("001234");
+  expect(onConnect).toHaveBeenCalledTimes(1);
+  expect(input('input[name="code"]').value).toBe("");
+  await renderForm({ onConnect, error: "This code is incorrect or expired." });
+  expect(document.activeElement).toBe(input("#pairing-code"));
+  expect(onConnect).toHaveBeenCalledTimes(1);
+  await pasteCode("002345");
+  expect(onConnect).toHaveBeenCalledTimes(2);
 });
 
 it("rejects oversized key files before attempting a connection", async () => {

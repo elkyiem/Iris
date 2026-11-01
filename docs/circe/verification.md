@@ -1,5 +1,35 @@
 # Circé verification record
 
+## Minimal automatic pairing screen — 2026-11-01
+
+The sign-in screen now centers the logo, six OTP slots, Remember this browser and
+the access-key fallback. The title and code label remain available to assistive
+technology; the subtitle, setup instructions, expiry description and OTP Connect
+button are visually removed. Base UI's built-in `autoSubmit` submits after the
+sixth digit. Failed attempts clear the code and return focus to the first slot;
+busy controls prevent another submission. Access-key entry keeps explicit submit.
+
+Seven form tests pass, including incomplete input, grouped paste with leading
+zeroes, automatic submission, remembered options, error reentry and busy-state
+protection. Real HTTPS preview inspection verifies desktop and 390×844 layouts,
+the key fallback and a 320×400 layout without horizontal overflow. A finite
+isolated Chromium check enables actual coarse-pointer emulation and verifies a
+centered logo, no OTP submit button, a square 16px checkbox and 44px label target.
+The pairing browser case now enters the sixth digit without clicking Connect;
+it also checks the coarse-pointer layout. Physical iPad/Windows remain separate.
+
+Both previous Linux runs passed the pairing acceptance. `web` completed; `dev`
+failed afterward with `ENOTEMPTY` during profile cleanup. Its launcher could exit
+before Chromium's final writer. The CI host now owns a separate process group,
+terminates its remaining descendants before removal and retries transient
+filesystem contention. A real-process regression proves a child that ignores
+SIGTERM cannot keep writing after its launcher exits. Production host shutdown
+is unchanged.
+
+Local `pnpm check` passed all 28 tasks: 733 desktop files passed/five skipped,
+5,188 tests passed/47 skipped. Production and browser builds passed unchanged
+budgets, typecheck passed and React Doctor reported 100/100 for this change.
+
 ## Browser pairing and remembered devices — 2026-11-01
 
 The connection screen now uses Pond's theme, fields, buttons, checkbox and dialog

@@ -5,6 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { setTimeout as pause } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import electron from "electron";
+import { spawnProcessGroup } from "./process-group.mjs";
 
 if (!process.env.CI)
   throw new Error(
@@ -22,12 +23,16 @@ const env = {
   CIRCE_WEB_FIXTURES: "1",
 };
 delete env.ELECTRON_RUN_AS_NODE;
-const host = spawn(process.execPath, ["scripts/start-web.mjs"], {
-  cwd,
-  env,
-  stdio: "inherit",
-});
-const closed = new Promise((resolve) => host.once("exit", resolve));
+const hostGroup = spawnProcessGroup(
+  process.execPath,
+  ["scripts/start-web.mjs"],
+  {
+    cwd,
+    env,
+    stdio: "inherit",
+  },
+);
+const host = hostGroup.child;
 const run = (executable, args, extraEnv = {}) =>
   new Promise((resolve, reject) => {
     const child = spawn(executable, args, {
@@ -81,14 +86,11 @@ try {
   await run(electron, ["scripts/smoke-web-browser.cjs", "--pairing"]);
 } finally {
   clearTimeout(deadline);
-  host.kill("SIGTERM");
-  const ended = await Promise.race([
-    closed.then(() => true),
-    pause(5000).then(() => false),
-  ]);
-  if (!ended) {
-    host.kill("SIGKILL");
-    await closed;
-  }
-  await rm(directory, { recursive: true, force: true });
+  await hostGroup.stop();
+  await rm(directory, {
+    recursive: true,
+    force: true,
+    maxRetries: 5,
+    retryDelay: 100,
+  });
 }

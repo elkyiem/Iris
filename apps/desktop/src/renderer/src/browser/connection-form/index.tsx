@@ -1,6 +1,14 @@
-import { Button, Checkbox, Field, Input, OTPField, Reveal } from "@pond/ui";
+import {
+  Button,
+  Checkbox,
+  Field,
+  Input,
+  Loader,
+  OTPField,
+  Reveal,
+} from "@pond/ui";
 import type { BrowserConnectionInput } from "@shared/web-connections-contracts";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import appIcon from "../../generated/app-icon-previews/aqua.png";
 import styles from "./styles.module.css";
 
@@ -21,10 +29,7 @@ export function BrowserConnectionHeader() {
   return (
     <header className={styles.header}>
       <img src={appIcon} width="56" height="56" alt="" />
-      <div className={styles.heading}>
-        <h1>Connect to Circé</h1>
-        <p>Your Library, on this device.</p>
-      </div>
+      <h1 className={styles.visuallyHidden}>Connect to Circé</h1>
     </header>
   );
 }
@@ -44,11 +49,16 @@ export function BrowserConnectionForm({
   const [remember, setRemember] = useState(true);
   const [useKey, setUseKey] = useState(false);
   const picker = useRef<HTMLInputElement>(null);
+  const firstDigit = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (error && !busy) firstDigit.current?.focus();
+  }, [error, busy]);
   const options = { remember, label: browserLabel() };
   return (
     <form
       className={styles.form}
       data-browser-connection
+      aria-busy={busy}
       onSubmit={async (event) => {
         event.preventDefault();
         if (busy) return;
@@ -56,7 +66,10 @@ export function BrowserConnectionForm({
           const key = new FormData(event.currentTarget).get("key");
           if (key instanceof File || key === null) return;
           await onConnect({ method: "key", key, ...options });
-        } else await onConnect({ method: "code", code, ...options });
+        } else if (code.length === 6) {
+          await onConnect({ method: "code", code, ...options });
+          setCode("");
+        }
       }}
     >
       <Field.Root invalid={Boolean(error)} className={styles.field}>
@@ -81,15 +94,18 @@ export function BrowserConnectionForm({
           </>
         ) : (
           <>
-            <Field.Label htmlFor="pairing-code">Connection code</Field.Label>
-            <Field.Description>
-              On a connected device, open Settings → Library → Connected
-              browsers to get a code.
-            </Field.Description>
+            <Field.Label
+              htmlFor="pairing-code"
+              className={styles.visuallyHidden}
+            >
+              Connection code
+            </Field.Label>
             <OTPField.Root
               id="pairing-code"
               name="code"
               length={6}
+              autoSubmit
+              className={styles.otp}
               value={code}
               onValueChange={(value) => {
                 setCode(value);
@@ -102,12 +118,19 @@ export function BrowserConnectionForm({
               {[1, 2, 3, 4, 5, 6].map((digit) => (
                 <OTPField.Input
                   key={digit}
+                  ref={digit === 1 ? firstDigit : undefined}
                   aria-label={digit === 1 ? undefined : `Digit ${digit} of 6`}
                 />
               ))}
             </OTPField.Root>
           </>
         )}
+        <Reveal visible={busy && !useKey} initial={false}>
+          <div role="status" className={styles.progress}>
+            <Loader.Spinner />
+            <span className={styles.visuallyHidden}>Connecting…</span>
+          </div>
+        </Reveal>
         <Reveal visible={Boolean(error)} initial={false}>
           <Field.Error id="host-error" match role="alert">
             {error}
@@ -127,20 +150,19 @@ export function BrowserConnectionForm({
         </Checkbox.Root>
         <span>
           <span id="remember-browser-label">Remember this browser</span>
-          <span id="remember-browser-description" className={styles.detail}>
+          <span
+            id="remember-browser-description"
+            className={styles.visuallyHidden}
+          >
             Stay connected for 90 days.
           </span>
         </span>
       </label>
-      <Button
-        type="submit"
-        width="full"
-        size="lg"
-        loading={busy}
-        disabled={!useKey && code.length !== 6}
-      >
-        Connect
-      </Button>
+      {useKey && (
+        <Button type="submit" width="full" size="lg" loading={busy}>
+          Connect
+        </Button>
+      )}
       <input
         ref={picker}
         id="host-key-file"

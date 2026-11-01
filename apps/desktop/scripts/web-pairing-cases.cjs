@@ -98,13 +98,11 @@ exports.verifyBrowserPairing = async function verifyBrowserPairing({
     for (const character of value) {
       await child.webContents.insertText(character);
       entered += character;
-      await childWait(
-        `[...document.querySelectorAll('input[type=text]:not([aria-hidden=true])')].map(input=>input.value).join('')===${JSON.stringify(entered)}`,
-      );
+      if (entered.length < value.length)
+        await childWait(
+          `[...document.querySelectorAll('input[type=text]:not([aria-hidden=true])')].map(input=>input.value).join('')===${JSON.stringify(entered)}`,
+        );
     }
-    await childWait(
-      `[...document.querySelectorAll('input[type=text]:not([aria-hidden=true])')].map(input=>input.value).join('')===${JSON.stringify(value)}`,
-    );
   };
   const childConnected = () =>
     childWait(
@@ -150,6 +148,15 @@ exports.verifyBrowserPairing = async function verifyBrowserPairing({
     await snapshot("pairing-owner-code");
     await child.loadURL(origin);
     await childWait("document.querySelector('#pairing-code')");
+    child.webContents.debugger.attach("1.3");
+    await child.webContents.debugger.sendCommand(
+      "Emulation.setTouchEmulationEnabled",
+      {
+        enabled: true,
+        maxTouchPoints: 1,
+      },
+    );
+    await childWait("matchMedia('(pointer:coarse)').matches");
     const geometry = await childRun(
       "(()=>{const form=document.querySelector('[data-browser-connection]'),r=form.getBoundingClientRect();return {left:r.left,right:r.right,bottom:r.bottom,width:innerWidth,height:innerHeight};})()",
     );
@@ -158,9 +165,17 @@ exports.verifyBrowserPairing = async function verifyBrowserPairing({
         geometry.right <= geometry.width + 1 &&
         geometry.bottom <= geometry.height + 1,
     );
+    const touch = await childRun(`(()=>{
+      const checkbox=document.querySelector('[role=checkbox]').getBoundingClientRect();
+      const label=document.querySelector('label[for=remember-browser]').getBoundingClientRect();
+      return {coarse:matchMedia('(pointer:coarse)').matches, checkboxWidth:checkbox.width, checkboxHeight:checkbox.height, labelHeight:label.height, submit:!!document.querySelector('button[type=submit]')};
+    })()`);
+    assert.equal(touch.coarse, true);
+    assert.ok(Math.abs(touch.checkboxHeight - touch.checkboxWidth) < 1);
+    assert.ok(touch.labelHeight >= 44);
+    assert.equal(touch.submit, false);
     await childSnapshot("pairing-phone-login");
     await typeCode(code === "000000" ? "000001" : "000000");
-    await childClick('button[type="submit"]');
     await childWait(
       "document.querySelector('[role=alert]')?.textContent.includes('incorrect or expired')",
     );
@@ -168,7 +183,6 @@ exports.verifyBrowserPairing = async function verifyBrowserPairing({
     await child.loadURL(origin);
     await childWait("document.querySelector('#pairing-code')");
     await typeCode(code);
-    await childClick('button[type="submit"]');
     await childConnected();
     const connected = await childRun(
       "window.pond.query('webConnections.list')",
@@ -253,7 +267,6 @@ exports.verifyBrowserPairing = async function verifyBrowserPairing({
     await child.loadURL(origin);
     await childWait("document.querySelector('#pairing-code')");
     await typeCode(unused);
-    await childClick('button[type="submit"]');
     await childWait(
       "document.querySelector('[role=alert]')?.textContent.includes('incorrect or expired')",
     );

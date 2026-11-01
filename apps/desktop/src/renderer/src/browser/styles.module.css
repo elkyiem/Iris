@@ -3,7 +3,7 @@
   inset: 0;
   z-index: 10;
   display: grid;
-  gap: 16px;
+  gap: 32px;
   align-content: safe center;
   justify-content: center;
   justify-items: center;
@@ -17,8 +17,8 @@
 }
 
 @media (pointer: coarse) {
-  .connect input,
-  .connect button {
+  .connect input:not([type="checkbox"]),
+  .connect button:not([role="checkbox"]) {
     min-block-size: calc(44px / var(--browser-interface-zoom, 1));
   }
 }

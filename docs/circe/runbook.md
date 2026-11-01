@@ -39,7 +39,8 @@ profile are separate. Launcher errors are in `~/Library/Logs/Circé/launcher.log
 
 On the Mac app, or a browser already connected to the Library, open **Settings →
 Library → Connected browsers → Connect a device**. On the new device, open
-`https://circe.elkyiem` and enter the six-digit code. The new device still needs
+`https://circe.elkyiem` and enter the six-digit code. It connects automatically
+when all six digits are entered. The new device still needs
 Tailscale, the short-address DNS setup and trust in the existing HTTPS certificate.
 Pairing grants application access; it does not configure those network settings.
 

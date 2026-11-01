@@ -1,31 +1,38 @@
 .form {
   display: grid;
   gap: 20px;
-  inline-size: min(360px, 100%);
+  justify-items: center;
+  inline-size: min(320px, 100%);
   min-inline-size: 0;
   animation: enter var(--ds-duration-medium) var(--ds-easing-standard) both;
 }
 .header {
   display: grid;
-  gap: 20px;
-  inline-size: min(360px, 100%);
-  margin-block-end: 4px;
+  place-items: center;
 }
-.heading {
-  display: grid;
-  gap: 6px;
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip-path: inset(50%);
 }
-.heading h1 {
-  font-size: var(--ds-text-xl);
-  font-weight: var(--ds-weight-xl);
-  letter-spacing: -0.02em;
+.otp,
+.progress {
+  display: flex;
+  justify-content: center;
 }
-.heading p {
-  font-size: var(--ds-text-md);
+.progress {
   color: var(--ds-gray-10);
 }
 .field {
   gap: 12px;
+  inline-size: 100%;
+  min-inline-size: 0;
 }
 .remember {
   display: flex;
@@ -39,9 +46,11 @@
   display: grid;
   gap: 3px;
 }
-.detail {
-  font-size: var(--ds-text-xs);
-  color: var(--ds-gray-10);
+@media (pointer: coarse) {
+  .remember {
+    align-items: center;
+    min-block-size: 44px;
+  }
 }
 @keyframes enter {
   from {
